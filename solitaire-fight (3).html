@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solitaire Fight ⚔️</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
+<style>
+:root {
+  --gold: #FFD700;
+  --gold-dark: #B8860B;
+  --darker: #05050a;
+  --text: #e8e0d0;
+  --text-dim: #6a6058;
+  --glow-gold: 0 0 18px rgba(255,215,0,0.45);
+  /* card dimensions */
+  --cw: 56px;      /* card width */
+  --ch: 96px;      /* card height – standard playing card 1:1.71 ratio */
+  --peek: 16px;    /* how many px each hidden card peeks ABOVE the face-up card */
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { height:100%; overflow:hidden; }
+
+body {
+  background: var(--darker);
+  font-family: 'Cairo', sans-serif;
+  color: var(--text);
+  background-image:
+    radial-gradient(ellipse at 15% 15%, rgba(26,55,100,.2) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 85%, rgba(180,40,40,.13) 0%, transparent 55%);
+}
+
+.screen { display:none; width:100%; height:100%; }
+.screen.active { display:flex; flex-direction:column; }
+
+/* ─────── MENU ─────── */
+#menu-screen { align-items:center; justify-content:center; overflow:hidden; position:relative; }
+.bg-deco { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.bg-suit { position:absolute; font-size:90px; opacity:.035; animation:floatS 9s ease-in-out infinite; }
+.bg-suit:nth-child(1){top:4%;left:4%;animation-delay:0s}
+.bg-suit:nth-child(2){top:10%;right:6%;font-size:65px;animation-delay:2s}
+.bg-suit:nth-child(3){bottom:8%;left:8%;animation-delay:4s}
+.bg-suit:nth-child(4){bottom:15%;right:4%;font-size:110px;animation-delay:1.5s}
+.bg-suit:nth-child(5){top:45%;left:1%;font-size:50px;animation-delay:3.5s}
+.bg-suit:nth-child(6){top:35%;right:2%;font-size:80px;animation-delay:5s}
+@keyframes floatS{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-22px) rotate(8deg)}}
+
+.logo-wrap { text-align:center; margin-bottom:38px; }
+.logo-main { font-family:'Cinzel Decorative',serif; font-size:clamp(22px,4.5vw,44px); color:var(--gold); text-shadow:var(--glow-gold),0 3px 8px rgba(0,0,0,.9); }
+.logo-line { width:180px; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:11px auto; }
+.logo-sub { font-size:11px; color:var(--text-dim); letter-spacing:4px; text-transform:uppercase; }
+
+.menu-box { background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99)); border:1px solid rgba(255,215,0,.18); border-radius:16px; padding:30px 34px; width:100%; max-width:450px; box-shadow:0 24px 64px rgba(0,0,0,.65); }
+.sec-lbl { text-align:center; font-size:11px; color:var(--gold); letter-spacing:4px; text-transform:uppercase; margin-bottom:16px; opacity:.75; }
+
+.mbtn { width:100%; padding:14px 17px; margin-bottom:9px; border:none; border-radius:10px; cursor:pointer; font-family:'Cairo',sans-serif; font-size:15px; font-weight:700; display:flex; align-items:center; gap:11px; transition:all .22s; position:relative; overflow:hidden; }
+.mbtn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.06);transform:translateX(-100%);transition:transform .28s}
+.mbtn:hover::before{transform:translateX(0)} .mbtn:hover{transform:translateY(-2px)}
+.mbtn-solo{background:linear-gradient(135deg,#0e2e1a,#071510);border:1px solid rgba(39,174,96,.35);color:#4ade80}
+.mbtn-solo:hover{border-color:rgba(39,174,96,.75);box-shadow:0 0 18px rgba(39,174,96,.2)}
+.mbtn-local{background:linear-gradient(135deg,#101e38,#080f1e);border:1px solid rgba(41,128,185,.35);color:#60a5fa}
+.mbtn-local:hover{border-color:rgba(41,128,185,.75);box-shadow:0 0 18px rgba(41,128,185,.2)}
+.mbtn-online{background:linear-gradient(135deg,#2e0e0e,#180707);border:1px solid rgba(200,50,50,.35);color:#f87171}
+.mbtn-online:hover{border-color:rgba(200,50,50,.75);box-shadow:0 0 18px rgba(200,50,50,.2)}
+.mbtn-ico{font-size:21px;flex-shrink:0} .mbtn-t{text-align:right} .mbtn-t span{display:block} .mbtn-t .sm{font-size:11px;opacity:.55;font-weight:400}
+.submenu{display:none;margin-top:3px;padding:11px;background:rgba(0,0,0,.35);border-radius:8px;border:1px solid rgba(255,215,0,.08)}
+.submenu.open{display:block}
+.smbtn{width:100%;padding:9px 12px;margin-bottom:7px;border:none;border-radius:7px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px;transition:all .2s}
+.smbtn:last-child{margin-bottom:0}
+.smbtn-t{background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.28);color:#4ade80} .smbtn-t:hover{background:rgba(39,174,96,.22)}
+.smbtn-s{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.28);color:#f87171} .smbtn-s:hover{background:rgba(231,76,60,.22)}
+hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
+
+/* ─────── ONLINE SETUP ─────── */
+#online-screen { align-items:center; justify-content:center; overflow-y:auto; }
+.setup-box { background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99)); border:1px solid rgba(255,215,0,.18); border-radius:16px; padding:30px; width:100%; max-width:420px; box-shadow:0 24px 64px rgba(0,0,0,.65); margin:20px; }
+.setup-title { font-family:'Cinzel Decorative',serif; font-size:17px; color:var(--gold); text-align:center; margin-bottom:20px; }
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tab{flex:1;padding:8px;border:1px solid rgba(255,215,0,.18);border-radius:7px;background:transparent;color:var(--text-dim);cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;transition:all .2s}
+.tab.on{background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.4);color:var(--gold)}
+.tc{display:none}.tc.on{display:block}
+.lbl{display:block;font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;margin-top:11px}
+.inp{width:100%;padding:10px 13px;background:rgba(0,0,0,.45);border:1px solid rgba(255,215,0,.18);border-radius:7px;color:var(--text);font-family:'Cairo',sans-serif;font-size:14px;outline:none;transition:border-color .2s;text-align:right}
+.inp:focus{border-color:rgba(255,215,0,.5)} select.inp{cursor:pointer}
+.abtn{width:100%;padding:12px;border:none;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;transition:all .22s;margin-top:13px}
+.abtn-gold{background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:#0a0a0f}
+.abtn-gold:hover{transform:translateY(-2px);box-shadow:var(--glow-gold)}
+.abtn-dim{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--text-dim)}
+.abtn-dim:hover{background:rgba(255,255,255,.1)}
+.status{text-align:center;padding:9px 13px;border-radius:7px;font-size:13px;margin-top:10px;display:none}
+.status.on{display:block}
+.status.wait{background:rgba(41,128,185,.18);border:1px solid rgba(41,128,185,.35);color:#60a5fa}
+.status.ok{background:rgba(39,174,96,.18);border:1px solid rgba(39,174,96,.35);color:#4ade80}
+.status.err{background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.35);color:#f87171}
+.codebox{text-align:center;padding:13px;background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.2);border-radius:8px;margin:12px 0;display:none}
+.codebox.on{display:block}
+.code-val{font-family:'Cinzel Decorative',serif;font-size:28px;color:var(--gold);letter-spacing:7px}
+.code-lbl{font-size:11px;color:var(--text-dim);margin-bottom:4px}
+
+/* ─────── GAME SCREEN ─────── */
+#game-screen { overflow:hidden; }
+
+.ghead { display:flex; align-items:center; justify-content:space-between; padding:5px 12px; background:rgba(0,0,0,.65); border-bottom:1px solid rgba(255,215,0,.1); flex-shrink:0; gap:8px; height:36px; }
+.gtitle { font-family:'Cinzel Decorative',serif; font-size:12px; color:var(--gold); opacity:.8; }
+.mbadge { padding:2px 10px; border-radius:20px; font-size:10px; font-weight:700; letter-spacing:1px; }
+.mbadge.turns { background:rgba(39,174,96,.18); border:1px solid rgba(39,174,96,.38); color:#4ade80; }
+.mbadge.speed { background:rgba(231,76,60,.18); border:1px solid rgba(231,76,60,.38); color:#f87171; }
+.qbtn { padding:3px 11px; background:rgba(192,57,43,.18); border:1px solid rgba(192,57,43,.38); border-radius:6px; color:#f87171; cursor:pointer; font-family:'Cairo',sans-serif; font-size:11px; transition:all .2s; }
+.qbtn:hover { background:rgba(192,57,43,.35); }
+
+/* ── Split layout ── */
+.game-split {
+  flex: 1;
+  display: grid;
+  grid-template-rows: 1fr 2px 1fr;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.split-divider {
+  background: linear-gradient(90deg,transparent,rgba(255,215,0,.3),transparent);
+  position: relative;
+  flex-shrink: 0;
+}
+.split-divider::after {
+  content: '⚔️';
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 14px;
+  background: var(--darker);
+  padding: 0 6px;
+  line-height: 1;
+}
+
+/* Each player half */
+.half {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  overflow: hidden;
+  position: relative;
+  gap: 6px;
+}
+
+/* Opponent half is rotated 180° so they face toward us */
+.half.opponent { transform: rotate(180deg); }
+
+/* Active turn glow */
+.half.myturn { background: rgba(255,215,0,.025); }
+
+/* ── Player info bar ── */
+.pinfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  flex-shrink: 0;
+}
+.pname { font-size: 12px; font-weight:700; color:var(--gold); display:flex; align-items:center; gap:5px; }
+.pulse { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 7px var(--gold); animation:pulseA 1s infinite; display:none; }
+.myturn .pulse { display:block; }
+@keyframes pulseA{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+.pstats { display:flex; align-items:center; gap:7px; }
+.hpbar-w { display:flex; align-items:center; gap:4px; }
+.hpbar { width:70px; height:5px; background:rgba(255,255,255,.1); border-radius:3px; overflow:hidden; }
+.hpfill { height:100%; background:linear-gradient(90deg,#c0392b,#e74c3c); border-radius:3px; transition:width .4s; }
+.hptxt { font-size:11px; color:#f87171; font-weight:700; min-width:26px; }
+.cleft { font-size:10px; color:var(--text-dim); }
+
+/* ═══════════════════════════════════════════════
+   STACKS  —  vertical, like real solitaire
+   Each stack shows face-down cards peeking
+   downward, with the face-up TOP card at bottom.
+   ═══════════════════════════════════════════════ */
+.stacks-row {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  flex-shrink: 0;
+  justify-content: center;
+  width: 100%;
+}
+
+.stack-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--cw);
+  flex-shrink: 0;
+  gap: 3px;
+}
+
+.stack-count {
+  font-size: 9px;
+  color: var(--text-dim);
+  min-height: 11px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/*
+  .stack-pile:
+  A relative container; inside it we absolutely position
+  all the face-down cards + the face-up top card.
+  Height = (nHidden * peek) + cardHeight
+*/
+.stack-pile {
+  position: relative;
+  width: 100%;
+}
+
+/* Face-down card in the pile */
+.pile-card-down {
+  position: absolute;
+  width: 100%;
+  height: var(--ch);
+  border-radius: 5px;
+  border: 1px solid rgba(255,215,0,.2);
+  overflow: hidden;
+}
+
+/* Default CSS back pattern */
+.pile-card-down .back-pattern {
+  width: 100%; height: 100%;
+  background: linear-gradient(155deg,#1a2a44,#0c1828);
+  display: flex; align-items:center; justify-content:center;
+}
+.pile-card-down .back-pattern::after {
+  content: '';
+  position: absolute; inset: 3px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(100,150,255,.07) 0, rgba(100,150,255,.07) 1px,
+    transparent 0, transparent 5px
+  );
+}
+
+/* Face-up top card — placed at the bottom of the pile */
+.pile-card-up {
+  position: absolute;
+  width: 100%;
+  height: var(--ch);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  user-select: none;
+  transition: transform .18s, box-shadow .18s, border-color .18s;
+  overflow: hidden;
+  cursor: default;
+}
+
+.pile-card-up.face-up {
+  background: linear-gradient(155deg,#f9f5ea,#ece7d4);
+  border: 1.5px solid rgba(0,0,0,.18);
+}
+.pile-card-up.face-up.hearts,
+.pile-card-up.face-up.diamonds { color: #b02020; }
+.pile-card-up.face-up.spades,
+.pile-card-up.face-up.clubs   { color: #111828; }
+
+.pile-card-up.has-image .card-inner { display:none; }
+.pile-card-up.has-image { background-size:cover; background-position:center; background-repeat:no-repeat; }
+
+.pile-card-up.empty-slot {
+  background: rgba(255,255,255,.02);
+  border: 1.5px dashed rgba(255,255,255,.1);
+  color: rgba(255,255,255,.15);
+  font-size: 11px;
+}
+
+.pile-card-up.playable {
+  cursor: pointer;
+}
+
+/* Card inner layout */
+.card-inner {
+  width:100%; height:100%;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  position:relative;
+}
+.ci-tl { position:absolute; top:3px; right:4px; text-align:right; line-height:1.1; }
+.ci-br { position:absolute; bottom:3px; left:4px; transform:rotate(180deg); text-align:right; line-height:1.1; }
+.ci-val  { font-size:clamp(9px,1.3vw,13px); font-weight:900; display:block; }
+.ci-ssm  { font-size:clamp(8px,1.1vw,11px); display:block; }
+.ci-slg  { font-size:clamp(18px,3vw,28px); line-height:1; }
+
+/* ─────── HAND AREA ─────── */
+/*
+  Big, clearly visible hand card + deck.
+  No overlap. Centered horizontally.
+*/
+.hand-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+/* Big hand card */
+.hand-card {
+  width: 95px;
+  height: 145px;
+  border-radius: 11px;
+  display: flex; flex-direction:column; align-items:center; justify-content:center;
+  font-weight: 700;
+  position: relative; overflow: hidden;
+  border: 2.5px solid var(--gold);
+  box-shadow: var(--glow-gold), 0 6px 18px rgba(0,0,0,.6);
+  flex-shrink: 0;
+}
+.hand-card.face-up { background: linear-gradient(155deg,#f9f5ea,#ece7d4); }
+.hand-card.face-up.hearts,
+.hand-card.face-up.diamonds { color:#b02020; }
+.hand-card.face-up.spades,
+.hand-card.face-up.clubs   { color:#111828; }
+.hand-card.has-image .card-inner { display:none; }
+.hand-card.has-image { background-size:cover; background-position:center; }
+.hand-card .ci-val { font-size:17px; }
+.hand-card .ci-ssm { font-size:14px; }
+.hand-card .ci-slg { font-size:38px; }
+
+.hand-empty {
+  width:95px; height:163px; border-radius:11px;
+  background:rgba(255,255,255,.03); border:2px dashed rgba(255,255,255,.12);
+  display:flex; align-items:center; justify-content:center;
+  font-size:34px; color:rgba(255,255,255,.15);
+  flex-shrink:0;
+}
+
+/* Big deck pile */
+.deck-pile {
+  width: 95px;
+  height: 163px;
+  border-radius: 11px;
+  background: linear-gradient(135deg,#141e34,#0a1020);
+  border: 2.5px solid rgba(255,215,0,.35);
+  display: flex; align-items:center; justify-content:center;
+  cursor: pointer; transition:all .2s; position:relative; overflow:hidden; flex-shrink:0;
+}
+.deck-pile::before {
+  content:''; position:absolute; inset:3px; border-radius:6px;
+  background: repeating-linear-gradient(
+    45deg,rgba(255,215,0,.06) 0,rgba(255,215,0,.06) 1px,
+    transparent 0,transparent 5px
+  );
+}
+.deck-pile:hover { border-color:rgba(255,215,0,.75); box-shadow:var(--glow-gold); transform:scale(1.05); }
+.deck-pile .dico { font-size:30px; opacity:.5; position:relative; }
+.deck-pile.has-back-img { background-size:cover; background-position:center; }
+.deck-pile.has-back-img::before { display:none; }
+.deck-pile.has-back-img .dico { display:none; }
+.deck-off { opacity:.35; pointer-events:none; }
+
+/* ─────── WIN ─────── */
+#win-screen { align-items:center; justify-content:center; background:radial-gradient(ellipse at center,rgba(255,215,0,.08) 0%,var(--darker) 70%); overflow-y:auto; }
+.win-wrap { text-align:center; padding:44px 36px; max-width:380px; width:100%; }
+.win-trophy { font-size:76px; animation:trophyPop .5s ease-out; }
+@keyframes trophyPop{0%{transform:scale(0) rotate(-20deg)}65%{transform:scale(1.2) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
+.win-title { font-family:'Cinzel Decorative',serif; font-size:clamp(20px,4vw,36px); color:var(--gold); text-shadow:var(--glow-gold); margin:16px 0 8px; }
+.win-sub { color:var(--text-dim); font-size:14px; margin-bottom:24px; }
+.wstats { background:rgba(255,215,0,.05); border:1px solid rgba(255,215,0,.15); border-radius:10px; padding:16px; margin-bottom:20px; }
+.sgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.sval { color:var(--gold); font-size:22px; font-weight:700; }
+.slbl { color:var(--text-dim); font-size:11px; }
+
+/* damage pop */
+.dmg-pop { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Cinzel Decorative',serif; font-size:44px; color:#f87171; text-shadow:0 0 22px rgba(248,113,113,.85); pointer-events:none; z-index:1000; animation:dmgA .9s forwards; }
+@keyframes dmgA{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}25%{opacity:1;transform:translate(-50%,-72%) scale(1.25)}70%{opacity:1;transform:translate(-50%,-82%) scale(1)}100%{opacity:0;transform:translate(-50%,-110%) scale(.8)}}
+
+/* notif */
+.notif { position:fixed; top:16px; left:50%; transform:translateX(-50%); background:rgba(22,22,38,.97); border:1px solid rgba(255,215,0,.3); border-radius:8px; padding:10px 18px; font-size:13px; z-index:999; animation:notifA 3.2s forwards; white-space:nowrap; }
+@keyframes notifA{0%{opacity:0;transform:translateX(-50%) translateY(-16px)}14%{opacity:1;transform:translateX(-50%) translateY(0)}78%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+
+.ldots::after{content:'...';animation:ld 1.4s infinite}
+@keyframes ld{0%,100%{content:'.'}33%{content:'..'}66%{content:'...'}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:rgba(0,0,0,.18)}::-webkit-scrollbar-thumb{background:rgba(255,215,0,.2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ MENU ═══════════ -->
+<div id="menu-screen" class="screen active">
+  <div class="bg-deco">
+    <span class="bg-suit">♠</span><span class="bg-suit">♥</span>
+    <span class="bg-suit">♦</span><span class="bg-suit">♣</span>
+    <span class="bg-suit">🃏</span><span class="bg-suit">⚔️</span>
+  </div>
+  <div class="logo-wrap">
+    <div class="logo-main">⚔️ SOLITAIRE FIGHT ⚔️</div>
+    <div class="logo-line"></div>
+    <div class="logo-sub">لعبة الورق التنافسية</div>
+  </div>
+  <div class="menu-box">
+    <div class="sec-lbl">اختر طريقة اللعب</div>
+    <button class="mbtn mbtn-solo" onclick="toggleSub('sub-solo')">
+      <span class="mbtn-ico">🎮</span>
+      <div class="mbtn-t"><span>لاعب واحد</span><span class="sm">مارس اللعبة بمفردك</span></div>
+    </button>
+    <div id="sub-solo" class="submenu">
+      <button class="smbtn smbtn-t" onclick="startGame('solo','turns')">🔄 مود الأدوار</button>
+      <button class="smbtn smbtn-s" onclick="startGame('solo','speed')">⚡ مود السرعة</button>
+    </div>
+    <button class="mbtn mbtn-local" onclick="toggleSub('sub-local')" style="margin-top:4px">
+      <span class="mbtn-ico">👥</span>
+      <div class="mbtn-t"><span>لاعبين – نفس الجهاز</span><span class="sm">العب مع صاحبك</span></div>
+    </button>
+    <div id="sub-local" class="submenu">
+      <button class="smbtn smbtn-t" onclick="startGame('local','turns')">🔄 مود الأدوار</button>
+      <button class="smbtn smbtn-s" onclick="startGame('local','speed')">⚡ مود السرعة</button>
+    </div>
+    <hr class="div">
+    <button class="mbtn mbtn-online" onclick="showOnline()">
+      <span class="mbtn-ico">🌐</span>
+      <div class="mbtn-t"><span>أونلاين</span><span class="sm">العب مع أي شخص</span></div>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ ONLINE SETUP ═══════════ -->
+<div id="online-screen" class="screen">
+  <div class="setup-box">
+    <div class="setup-title">🌐 اللعب الأونلاين</div>
+    <div class="tabs">
+      <button class="tab on" onclick="switchTab('create')">إنشاء غرفة</button>
+      <button class="tab" onclick="switchTab('join')">انضمام</button>
+    </div>
+    <div id="tc-create" class="tc on">
+      <label class="lbl">اسمك</label><input class="inp" id="c-name" value="لاعب 1">
+      <label class="lbl">Ably API Key</label><input class="inp" id="c-key" placeholder="xxxx.xxxx:xxxxxxxxxx" dir="ltr">
+      <label class="lbl">مود اللعبة</label>
+      <select class="inp" id="c-mode">
+        <option value="turns">🔄 مود الأدوار</option>
+        <option value="speed">⚡ مود السرعة</option>
+      </select>
+      <button class="abtn abtn-gold" onclick="createRoom()">إنشاء غرفة</button>
+      <div class="codebox" id="codebox"><div class="code-lbl">شارك الكود مع صاحبك</div><div class="code-val" id="code-val">----</div></div>
+      <div class="status" id="st-create"></div>
+    </div>
+    <div id="tc-join" class="tc">
+      <label class="lbl">اسمك</label><input class="inp" id="j-name" value="لاعب 2">
+      <label class="lbl">Ably API Key</label><input class="inp" id="j-key" placeholder="xxxx.xxxx:xxxxxxxxxx" dir="ltr">
+      <label class="lbl">كود الغرفة</label>
+      <input class="inp" id="j-code" placeholder="أدخل الكود" dir="ltr" style="letter-spacing:5px;text-align:center;text-transform:uppercase">
+      <button class="abtn abtn-gold" onclick="joinRoom()">انضمام</button>
+      <div class="status" id="st-join"></div>
+    </div>
+    <button class="abtn abtn-dim" onclick="showMenu()" style="margin-top:10px">← رجوع</button>
+  </div>
+</div>
+
+<!-- ═══════════ GAME ═══════════ -->
+<div id="game-screen" class="screen">
+  <div class="ghead">
+    <span class="gtitle">⚔️ Solitaire Fight</span>
+    <span id="mbadge" class="mbadge turns">أدوار</span>
+    <button class="qbtn" onclick="quitGame()">✕ خروج</button>
+  </div>
+  <div class="game-split">
+    <div class="half opponent" id="half-top"></div>
+    <div class="split-divider"></div>
+    <div class="half" id="half-bot"></div>
+  </div>
+</div>
+
+<!-- ═══════════ WIN ═══════════ -->
+<div id="win-screen" class="screen">
+  <div class="win-wrap">
+    <div class="win-trophy">🏆</div>
+    <div id="win-title" class="win-title">فزت!</div>
+    <div id="win-sub" class="win-sub"></div>
+    <div class="wstats"><div class="sgrid" id="win-stats"></div></div>
+    <button class="abtn abtn-gold" onclick="showMenu()">القائمة الرئيسية</button>
+    <button class="abtn abtn-dim" onclick="restartGame()" style="margin-top:8px">العب مرة تانية</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   CARD IMAGE MAP  —  ضع رابط صورة لكل كرت هنا
+   ═══════════════════════════════════════════════════════════
+   Format:  "VALUE_SUIT" : "https://..."
+   Values : A  2  3  4  5  6  7  8  9  10  J  Q  K
+   Suits  : S (♠ سباد)   H (♥ هارت)   D (♦ دايموند)   C (♣ كلوب)
+
+   مثال:
+     "A_S"  : "https://example.com/cards/ace_spades.png",
+     "K_H"  : "https://example.com/cards/king_hearts.png",
+
+   لو الكرت مش عنده صورة سيظهر بالتصميم الافتراضي.
+   ═══════════════════════════════════════════════════════════ */
+const CARD_IMAGES = {
+
+  /* ♠  SPADES  ─────────────────────────────────── */
+  "A_S"  : "",   /* Ace   of Spades   */
+  "2_S"  : "",   /* 2     of Spades   */
+  "3_S"  : "",   /* 3     of Spades   */
+  "4_S"  : "",   /* 4     of Spades   */
+  "5_S"  : "",   /* 5     of Spades   */
+  "6_S"  : "",   /* 6     of Spades   */
+  "7_S"  : "",   /* 7     of Spades   */
+  "8_S"  : "",   /* 8     of Spades   */
+  "9_S"  : "",   /* 9     of Spades   */
+  "10_S" : "",   /* 10    of Spades   */
+  "J_S"  : "",   /* Jack  of Spades   */
+  "Q_S"  : "",   /* Queen of Spades   */
+  "K_S"  : "",   /* King  of Spades   */
+
+  /* ♥  HEARTS  ─────────────────────────────────── */
+  "A_H"  : "",   /* Ace   of Hearts   */
+  "2_H"  : "",   /* 2     of Hearts   */
+  "3_H"  : "",   /* 3     of Hearts   */
+  "4_H"  : "",   /* 4     of Hearts   */
+  "5_H"  : "",   /* 5     of Hearts   */
+  "6_H"  : "",   /* 6     of Hearts   */
+  "7_H"  : "",   /* 7     of Hearts   */
+  "8_H"  : "",   /* 8     of Hearts   */
+  "9_H"  : "",   /* 9     of Hearts   */
+  "10_H" : "",   /* 10    of Hearts   */
+  "J_H"  : "",   /* Jack  of Hearts   */
+  "Q_H"  : "",   /* Queen of Hearts   */
+  "K_H"  : "",   /* King  of Hearts   */
+
+  /* ♦  DIAMONDS  ───────────────────────────────── */
+  "A_D"  : "",   /* Ace   of Diamonds */
+  "2_D"  : "",   /* 2     of Diamonds */
+  "3_D"  : "",   /* 3     of Diamonds */
+  "4_D"  : "",   /* 4     of Diamonds */
+  "5_D"  : "",   /* 5     of Diamonds */
+  "6_D"  : "",   /* 6     of Diamonds */
+  "7_D"  : "",   /* 7     of Diamonds */
+  "8_D"  : "",   /* 8     of Diamonds */
+  "9_D"  : "",   /* 9     of Diamonds */
+  "10_D" : "",   /* 10    of Diamonds */
+  "J_D"  : "",   /* Jack  of Diamonds */
+  "Q_D"  : "",   /* Queen of Diamonds */
+  "K_D"  : "",   /* King  of Diamonds */
+
+  /* ♣  CLUBS  ──────────────────────────────────── */
+  "A_C"  : "",   /* Ace   of Clubs    */
+  "2_C"  : "",   /* 2     of Clubs    */
+  "3_C"  : "",   /* 3     of Clubs    */
+  "4_C"  : "",   /* 4     of Clubs    */
+  "5_C"  : "",   /* 5     of Clubs    */
+  "6_C"  : "",   /* 6     of Clubs    */
+  "7_C"  : "",   /* 7     of Clubs    */
+  "8_C"  : "",   /* 8     of Clubs    */
+  "9_C"  : "",   /* 9     of Clubs    */
+  "10_C" : "",   /* 10    of Clubs    */
+  "J_C"  : "",   /* Jack  of Clubs    */
+  "Q_C"  : "",   /* Queen of Clubs    */
+  "K_C"  : "k",   /* King  of Clubs    */
+
+};
+
+/* ── ظهر الكرت (الوجه المقلوب) ──────────────────────────── */
+const CARD_BACK_IMAGE = "";   /* https://... رابط صورة ظهر الكرت */
+
+/* ═══════════════════════════════════════════════════════════ */
+
+const SUITS  = ['♠','♥','♦','♣'];
+const SNAMES = ['spades','hearts','diamonds','clubs'];
+const SCODES = ['S','H','D','C'];
+const VALS   = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const VNUMS  = {A:1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13};
+
+function ri(n){ return Math.floor(Math.random()*n); }
+function randCard(){
+  const vi=ri(13), si=ri(4);
+  return { val:VALS[vi], si, sn:SNAMES[si], sc:SCODES[si], suit:SUITS[si], num:VNUMS[VALS[vi]] };
+}
+function imgKey(c){ return `${c.val}_${c.sc}`; }
+function cardImg(c){
+  const k=imgKey(c);
+  const v=CARD_IMAGES[k];
+  if(!v||typeof v!=='string') return null;
+  const t=v.trim();
+  if(t.length===0) return null;
+  // accept data: URIs and http(s):// URLs
+  if(t.startsWith('data:')||t.startsWith('http')||t.startsWith('//')||t.startsWith('/')) return t;
+  return null;
+}
+function backImg(){ const v=CARD_BACK_IMAGE; return (v&&v.trim().length>0)?v.trim():null; }
+
+function canPlay(h,t){
+  const d=Math.abs(h.num-t.num);
+  return d===1||d===12;  // ±1 with A↔K wrap
+}
+
+/* ── Player state ── */
+function mkPlayer(name,id){
+  const stacks=[];
+  for(let s=0;s<8;s++){
+    const st=[];
+    for(let c=0;c<10;c++) st.push(randCard());
+    stacks.push(st);
+  }
+  return { id, name, stacks, hand:null, hp:250, maxHp:250, removed:0, drawCount:0 };
+}
+function totalCards(p){ return p.stacks.reduce((a,s)=>a+s.length,0); }
+function topOf(p,si){ const s=p.stacks[si]; return s.length?s[s.length-1]:null; }
+
+/* ── Global ── */
+let G={};
+
+/* ── Screens ── */
+function showScreen(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function showMenu(){ stopOnline(); showScreen('menu-screen'); }
+function showOnline(){ showScreen('online-screen'); }
+function toggleSub(id){
+  const el=document.getElementById(id), was=el.classList.contains('open');
+  document.querySelectorAll('.submenu').forEach(s=>s.classList.remove('open'));
+  if(!was) el.classList.add('open');
+}
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',(i===0&&t==='create')||(i===1&&t==='join')));
+  document.getElementById('tc-create').classList.toggle('on',t==='create');
+  document.getElementById('tc-join').classList.toggle('on',t==='join');
+}
+
+/* ── Start ── */
+function startGame(pMode,gMode,onlineData=null){
+  G={ pMode, gMode, players:[], turn:0, started:Date.now(), ended:false,
+      myIdx:onlineData?onlineData.myIdx:0, online:onlineData };
+
+  if(pMode==='solo'){
+    G.players=[mkPlayer('أنت',0)];
+  } else {
+    const n1=onlineData?onlineData.n1:'لاعب 1';
+    const n2=onlineData?onlineData.n2:'لاعب 2';
+    G.players=[mkPlayer(n1,0),mkPlayer(n2,1)];
+  }
+
+  if(gMode==='turns'){
+    G.players[0].hand=randCard(); G.players[0].drawCount++;
+  } else {
+    G.turn=-1;
+    G.players.forEach(p=>{ p.hand=randCard(); p.drawCount++; });
+  }
+
+  showScreen('game-screen');
+  const b=document.getElementById('mbadge');
+  b.textContent=gMode==='turns'?'🔄 أدوار':'⚡ سرعة';
+  b.className='mbadge '+gMode;
+  render();
+}
+
+/* ── Render ── */
+function render(){
+  if(G.players.length===1){
+    document.getElementById('half-top').innerHTML='';
+    document.getElementById('half-top').classList.remove('myturn');
+    renderHalf('half-bot',0);
+    document.getElementById('half-bot').classList.toggle('myturn', G.gMode==='turns');
+  } else if(G.pMode==='local'){
+    renderHalf('half-top',1);
+    renderHalf('half-bot',0);
+    document.getElementById('half-top').classList.toggle('myturn',G.turn===1);
+    document.getElementById('half-bot').classList.toggle('myturn',G.turn===0);
+  } else {
+    const opp=1-G.myIdx;
+    renderHalf('half-top',opp);
+    renderHalf('half-bot',G.myIdx);
+    document.getElementById('half-top').classList.toggle('myturn',G.turn===opp);
+    document.getElementById('half-bot').classList.toggle('myturn',G.turn===G.myIdx);
+  }
+}
+
+function renderHalf(halfId, pIdx){
+  const half=document.getElementById(halfId);
+  half.innerHTML='';
+
+  const p=G.players[pIdx];
+  const isMyTurn=G.gMode==='turns'&&G.turn===pIdx;
+  const interact=canInteract(pIdx);
+
+  // ── Info bar ──
+  const info=document.createElement('div');
+  info.className='pinfo';
+  const hpPct=Math.max(0,p.hp/p.maxHp*100);
+  info.innerHTML=`
+    <div class="pname">
+      <div class="pulse" style="${isMyTurn?'display:block':''}"></div>
+      ${p.name}
+    </div>
+    <div class="pstats">
+      ${G.gMode==='speed'?`
+        <div class="hpbar-w">
+          <div class="hpbar"><div class="hpfill" style="width:${hpPct}%"></div></div>
+          <span class="hptxt">${p.hp}</span>
+        </div>`
+        :`<span class="cleft">${totalCards(p)} كرت</span>`}
+    </div>`;
+  half.appendChild(info);
+
+  // ── Compute card geometry ──
+  // Read CSS vars (fallback to defaults)
+  const cs=getComputedStyle(document.documentElement);
+  const cw=parseInt(cs.getPropertyValue('--cw'))||52;
+  const ch=parseInt(cs.getPropertyValue('--ch'))||73;
+  const pk=parseInt(cs.getPropertyValue('--peek'))||16;
+
+  // ── Stacks row ──
+  const row=document.createElement('div');
+  row.className='stacks-row';
+
+  for(let si=0;si<8;si++){
+    const stack=p.stacks[si];
+    const top=stack.length?stack[stack.length-1]:null;
+    const cnt=stack.length;
+    // TOP card (face-up) sits at y=0 fully visible.
+    // Behind it, hidden cards each peek `pk` pixels downward.
+    // pile grows downward: pileH = ch + nPeek*pk
+    const nPeek=Math.min(Math.max(0,cnt-1),9);
+    const pileH=cnt===0?ch:ch+nPeek*pk;
+
+    const col=document.createElement('div');
+    col.className='stack-col';
+
+    const cntEl=document.createElement('div');
+    cntEl.className='stack-count';
+    cntEl.textContent=cnt>0?String(cnt):'✓';
+    col.appendChild(cntEl);
+
+    const pile=document.createElement('div');
+    pile.className='stack-pile';
+    pile.style.height=pileH+'px';
+    pile.style.width=cw+'px';
+
+    if(cnt===0){
+      // Empty slot – face-up card placeholder at bottom
+      const tc=document.createElement('div');
+      tc.className='pile-card-up empty-slot';
+      tc.style.top=(nPeek*pk)+'px';
+      tc.style.zIndex='20';
+      tc.textContent='✓';
+      pile.appendChild(tc);
+    } else {
+      // LAYOUT: face-up card sits at the BOTTOM (y = nPeek*pk), fully visible.
+      // Hidden cards stack ABOVE it, each peeking `pk` px out from under the next.
+      //   deepest hidden card  -> y = 0            (topmost visually)
+      //   card just above face-up -> y = (nPeek-1)*pk
+      //   face-up card         -> y = nPeek*pk     (bottom, full height visible)
+
+      // 1. Hidden / face-down cards (behind, sticking up above face-up card)
+      const back=backImg();
+      for(let d=0;d<nPeek;d++){
+        const dc=document.createElement('div');
+        dc.className='pile-card-down';
+        // d=0 is deepest (top of pile visually) -> y=0
+        // d=nPeek-1 is just above face-up card  -> y=(nPeek-1)*pk
+        dc.style.top=(d*pk)+'px';
+        dc.style.zIndex=String(d+1);
+        if(back){
+          dc.style.backgroundImage=`url('${back}')`;
+          dc.style.backgroundSize='cover';
+          dc.style.backgroundPosition='center';
+        } else {
+          dc.innerHTML='<div class="back-pattern"></div>';
+        }
+        pile.appendChild(dc);
+      }
+
+      // 2. Face-up card at the BOTTOM – fully visible, highest z-index
+      const img=cardImg(top);
+      const playable=interact&&isMyTurn&&p.hand&&canPlay(p.hand,top);
+      const tc=document.createElement('div');
+      tc.className='pile-card-up face-up '+top.sn+(img?' has-image':'')+(playable?' playable':'');
+      tc.style.top=(nPeek*pk)+'px';
+      tc.style.zIndex=String(nPeek+2);
+      if(img) tc.style.backgroundImage=`url('${img}')`;
+      tc.innerHTML=`<div class="card-inner">
+        <div class="ci-tl"><span class="ci-val">${top.val}</span><span class="ci-ssm">${top.suit}</span></div>
+        <span class="ci-slg">${top.suit}</span>
+        <div class="ci-br"><span class="ci-val">${top.val}</span><span class="ci-ssm">${top.suit}</span></div>
+      </div>`;
+      if(playable){ const csi=si; tc.onclick=()=>playCard(pIdx,csi); }
+      pile.appendChild(tc);
+    }
+
+    col.appendChild(pile);
+    row.appendChild(col);
+  }
+  half.appendChild(row);
+
+  // ── Hand + Deck ──
+  const handArea=document.createElement('div');
+  handArea.className='hand-area';
+
+  // Deck
+  const deckOk=interact&&(G.gMode==='speed'||isMyTurn);
+  const deck=document.createElement('div');
+  deck.className='deck-pile'+(deckOk?'':' deck-off');
+  const bk=backImg();
+  if(bk){ deck.classList.add('has-back-img'); deck.style.backgroundImage=`url('${bk}')`; }
+  else deck.innerHTML='<span class="dico">🂠</span>';
+  if(deckOk) deck.onclick=()=>onDeckClick(pIdx);
+  handArea.appendChild(deck);
+
+  // Hand card
+  const handEl=document.createElement('div');
+  if(p.hand){
+    const img=cardImg(p.hand);
+    handEl.className='hand-card face-up '+p.hand.sn+(img?' has-image':'');
+    if(img) handEl.style.backgroundImage=`url('${img}')`;
+    handEl.innerHTML=`<div class="card-inner">
+      <div class="ci-tl"><span class="ci-val">${p.hand.val}</span><span class="ci-ssm">${p.hand.suit}</span></div>
+      <span class="ci-slg">${p.hand.suit}</span>
+      <div class="ci-br"><span class="ci-val">${p.hand.val}</span><span class="ci-ssm">${p.hand.suit}</span></div>
+    </div>`;
+  } else {
+    handEl.className='hand-empty';
+    handEl.textContent=isMyTurn?'✋':'🤚';
+  }
+  handArea.appendChild(handEl);
+  half.appendChild(handArea);
+}
+
+function canInteract(pIdx){
+  if(G.pMode==='online') return pIdx===G.myIdx;
+  return true;
+}
+
+/* ── Logic ── */
+function playCard(pIdx,si){
+  if(G.ended) return;
+  const p=G.players[pIdx];
+  if(!p.hand) return;
+  if(G.gMode==='turns'&&G.turn!==pIdx) return;
+  const top=topOf(p,si);
+  if(!top||!canPlay(p.hand,top)) return;
+
+  p.stacks[si].pop();
+  p.hand=top;
+  p.removed++;
+
+  if(G.gMode==='speed'&&G.players.length>1){
+    const opp=1-pIdx, dmg=top.num;
+    G.players[opp].hp=Math.max(0,G.players[opp].hp-dmg);
+    showDmg(dmg);
+    if(checkSpeedWin()) return;
+  }
+
+  if(G.pMode==='online') syncMove(pIdx,si,top);
+  if(totalCards(p)===0){ endGame(pIdx); return; }
+  render();
+}
+
+function onDeckClick(pIdx){
+  if(G.ended) return;
+  const p=G.players[pIdx];
+  if(G.gMode==='turns'){
+    if(G.turn!==pIdx) return;
+    if(p.hand){ p.hand=null; nextTurn(); }
+    else { p.hand=randCard(); p.drawCount++; render(); }
+  } else {
+    p.hand=randCard(); p.drawCount++; render();
+  }
+  if(G.pMode==='online') syncDeck(pIdx);
+}
+
+function nextTurn(){
+  if(G.players.length===1){ G.players[0].hand=randCard(); G.players[0].drawCount++; render(); return; }
+  G.turn=1-G.turn;
+  const p=G.players[G.turn];
+  p.hand=randCard(); p.drawCount++;
+  render();
+}
+
+function checkSpeedWin(){
+  for(let i=0;i<G.players.length;i++){
+    if(G.players[i].hp<=0){ endGame(1-i); return true; }
+  }
+  return false;
+}
+
+function showDmg(n){
+  const el=document.createElement('div');
+  el.className='dmg-pop'; el.textContent=`-${n} 💥`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),950);
+}
+
+function endGame(wIdx){
+  if(G.ended) return; G.ended=true;
+  const w=G.players[wIdx];
+  const secs=Math.floor((Date.now()-G.started)/1000);
+  const m=Math.floor(secs/60),s=secs%60;
+  document.getElementById('win-title').textContent=G.players.length>1?`🏆 ${w.name} فاز!`:'🏆 أنهيت!';
+  document.getElementById('win-sub').textContent=G.gMode==='speed'?'أنهى نقاط حياة الخصم!':'نزّل كل الكروت!';
+  document.getElementById('win-stats').innerHTML=`
+    <div style="text-align:center"><div class="sval">${w.removed}</div><div class="slbl">كرت نزّلها</div></div>
+    <div style="text-align:center"><div class="sval">${m}:${String(s).padStart(2,'0')}</div><div class="slbl">وقت اللعبة</div></div>`;
+  showScreen('win-screen');
+}
+
+function quitGame(){ if(confirm('تأكيد الخروج؟')){ stopOnline(); showMenu(); } }
+function restartGame(){ startGame(G.pMode,G.gMode,G.online); }
+
+/* ── Ably Online ── */
+let abl=null,ach=null;
+function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:4},()=>c[ri(c.length)]).join(''); }
+
+async function createRoom(){
+  const key=document.getElementById('c-key').value.trim();
+  const name=document.getElementById('c-name').value.trim()||'لاعب 1';
+  const mode=document.getElementById('c-mode').value;
+  if(!key){ setStatus('create','أدخل Ably API Key','err'); return; }
+  try{
+    setStatus('create','جاري الاتصال<span class="ldots"></span>','wait');
+    abl=new Ably.Realtime({key});
+    const code=genCode();
+    document.getElementById('code-val').textContent=code;
+    document.getElementById('codebox').classList.add('on');
+    ach=abl.channels.get('sf-'+code);
+    setStatus('create',`✅ كود الغرفة: <b>${code}</b><br>في انتظار اللاعب التاني<span class="ldots"></span>`,'wait');
+    ach.subscribe('join',msg=>{
+      const gn=msg.data.name;
+      setStatus('create',`✅ انضم ${gn}! جاري البدء<span class="ldots"></span>`,'ok');
+      ach.publish('start',{mode,n1:name,n2:gn});
+      setTimeout(()=>startOnlineGame(mode,name,gn,0),800);
+    });
+  }catch(e){ setStatus('create','❌ خطأ: '+e.message,'err'); }
+}
+
+async function joinRoom(){
+  const key=document.getElementById('j-key').value.trim();
+  const name=document.getElementById('j-name').value.trim()||'لاعب 2';
+  const code=document.getElementById('j-code').value.trim().toUpperCase();
+  if(!key){ setStatus('join','أدخل Ably API Key','err'); return; }
+  if(!code){ setStatus('join','أدخل كود الغرفة','err'); return; }
+  try{
+    setStatus('join','جاري الاتصال<span class="ldots"></span>','wait');
+    abl=new Ably.Realtime({key});
+    ach=abl.channels.get('sf-'+code);
+    ach.subscribe('start',msg=>{ const d=msg.data; setTimeout(()=>startOnlineGame(d.mode,d.n1,d.n2,1),500); });
+    ach.publish('join',{name});
+    setStatus('join','✅ تم الانضمام — في انتظار البداية<span class="ldots"></span>','wait');
+  }catch(e){ setStatus('join','❌ خطأ: '+e.message,'err'); }
+}
+
+function startOnlineGame(mode,n1,n2,myIdx){
+  startGame('online',mode,{myIdx,n1,n2});
+  if(ach){
+    ach.subscribe('move',msg=>{ if(msg.data.pIdx!==G.myIdx) applyRemoteMove(msg.data); });
+    ach.subscribe('deck',msg=>{ if(msg.data.pIdx!==G.myIdx) applyRemoteDeck(msg.data.pIdx); });
+  }
+}
+
+function syncMove(pIdx,si,newHand){ if(ach) ach.publish('move',{pIdx,si,newHand}); }
+function syncDeck(pIdx){ if(ach) ach.publish('deck',{pIdx}); }
+
+function applyRemoteMove(d){
+  const p=G.players[d.pIdx]; if(!p) return;
+  p.stacks[d.si].pop(); p.hand=d.newHand; p.removed++;
+  if(G.gMode==='speed'){ G.players[1-d.pIdx].hp=Math.max(0,G.players[1-d.pIdx].hp-d.newHand.num); if(checkSpeedWin()) return; }
+  if(totalCards(p)===0){ endGame(d.pIdx); return; }
+  if(G.gMode==='turns') nextTurn();
+  render();
+}
+
+function applyRemoteDeck(pIdx){
+  const p=G.players[pIdx]; if(!p) return;
+  if(p.hand){ p.hand=null; if(G.gMode==='turns') nextTurn(); }
+  else { p.hand=randCard(); p.drawCount++; render(); }
+}
+
+function stopOnline(){ if(ach){ach.unsubscribe();ach=null;} if(abl){abl.close();abl=null;} }
+function setStatus(w,msg,cls){ const el=document.getElementById('st-'+w); el.innerHTML=msg; el.className='status on '+cls; }
+</script>
+</body>
+</html>
