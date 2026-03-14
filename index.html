@@ -635,9 +635,10 @@ function onTimerExpire(pIdx){
   showNotif('⏰ انتهى الوقت! انتقل الدور');
   const p=G.players[pIdx];
   p.hand=null;
-  const nextCard=G.players.length>1 ? randCard() : null;
-  if(G.pMode==='online') syncDeck(pIdx, nextCard);
-  nextTurnWithCard(nextCard);
+  const nextTurnIdx=G.players.length>1 ? 1-pIdx : pIdx;
+  const nextCard=randCard();
+  if(G.pMode==='online') syncDeck(pIdx, nextTurnIdx, nextCard);
+  doNextTurn(nextTurnIdx, nextCard);
 }
 
 /* ══════════════════════════════════════════════════
@@ -1014,56 +1015,50 @@ function onDeckClick(pIdx){
     if(G.turn!==pIdx) return;
     if(timerProcessing) return;
     if(p.hand){
-      // عنده كرت → ينهي دوره، ويحضّر الكرت للتاني مسبقاً
       timerProcessing=true;
       stopTimer();
       p.hand=null;
-      // نولّد الكرت الجديد للاعب التاني هنا عشان نبعته معاه
-      const nextPIdx=1-pIdx;
-      const nextCard=G.players.length>1 ? randCard() : null;
-      if(G.pMode==='online') syncDeck(pIdx, nextCard);
-      nextTurnWithCard(nextCard);
+      // الجهاز الحالي يحسب الدور الجديد والكرت ويبعتهم للتاني
+      const nextTurnIdx = G.players.length>1 ? 1-pIdx : pIdx;
+      const nextCard = randCard();
+      if(G.pMode==='online'){
+        syncDeck(pIdx, nextTurnIdx, nextCard);
+      }
+      doNextTurn(nextTurnIdx, nextCard);
     } else {
       p.hand=randCard(); p.drawCount++;
-      if(G.pMode==='online') syncDeck(pIdx, null);
+      if(G.pMode==='online') syncDeck(pIdx, -1, null);
       render();
     }
   } else {
     if(!canInteract(pIdx)) return;
     p.hand=randCard(); p.drawCount++;
-    if(G.pMode==='online') syncDeck(pIdx, null);
+    if(G.pMode==='online') syncDeck(pIdx, -1, null);
     render();
   }
 }
 
-/* nextTurn العادية للـ local/solo */
-function nextTurn(){
-  if(G.players.length===1){G.players[0].hand=randCard();G.players[0].drawCount++;render();return;}
+/* تنفيذ الانتقال للدور التالي — نفس الكود للي بيرسل وللي بيستقبل */
+function doNextTurn(nextTurnIdx, nextCard){
   const prevP=G.players[G.turn];
   tickFreezeCounters(prevP);
-  G.turn=1-G.turn;
+  G.turn=nextTurnIdx;
   const p=G.players[G.turn];
   p.turnSuitCount={S:0,H:0,D:0,C:0};
   p.usedAbility={S:false,H:false,D:false,C:false};
   p._frozenHits={};
-  p.hand=randCard(); p.drawCount++;
+  p.hand=nextCard; p.drawCount++;
   render();
   startTimer(G.turn);
 }
 
-/* nextTurn للأونلاين — بتاخد الكرت جاهز عشان الاتنين يكون عندهم نفسه */
-function nextTurnWithCard(newCard){
-  const prevP=G.players[G.turn];
-  tickFreezeCounters(prevP);
-  G.turn=1-G.turn;
-  const p=G.players[G.turn];
-  p.turnSuitCount={S:0,H:0,D:0,C:0};
-  p.usedAbility={S:false,H:false,D:false,C:false};
-  p._frozenHits={};
-  if(newCard){ p.hand=newCard; p.drawCount++; }
-  else { p.hand=randCard(); p.drawCount++; }
-  render();
-  startTimer(G.turn);
+/* للـ solo والـ local */
+function nextTurn(){
+  if(G.players.length===1){
+    G.players[0].hand=randCard(); G.players[0].drawCount++; render(); return;
+  }
+  const nextCard=randCard();
+  doNextTurn(1-G.turn, nextCard);
 }
 
 function tickFreezeCounters(p){
@@ -1157,14 +1152,13 @@ function startOnlineGame(mode,n1,n2,myIdx){
   if(ach){
     ach.unsubscribe('move');ach.unsubscribe('deck');ach.unsubscribe('ability');
     ach.subscribe('move',msg=>{if(msg.data.pIdx!==G.myIdx)applyRemoteMove(msg.data);});
-    ach.subscribe('deck',msg=>{if(msg.data.pIdx!==G.myIdx)applyRemoteDeck(msg.data.pIdx, msg.data.nextCard);});
+    ach.subscribe('deck',msg=>{if(msg.data.pIdx!==G.myIdx)applyRemoteDeck(msg.data);});
     ach.subscribe('ability',msg=>{if(msg.data.pIdx!==G.myIdx)applyRemoteAbility(msg.data);});
   }
 }
 
 function syncMove(pIdx,si,newHand){if(ach)ach.publish('move',{pIdx,si,newHand});}
-/* بنبعت الكرت الجديد للتاني عشان الاتنين يشتغلوا على نفس الكرت */
-function syncDeck(pIdx,nextCard){if(ach)ach.publish('deck',{pIdx,nextCard});}
+function syncDeck(pIdx,nextTurnIdx,nextCard){if(ach)ach.publish('deck',{pIdx,nextTurnIdx,nextCard});}
 function syncAbility(pIdx,sc,optId){if(ach)ach.publish('ability',{pIdx,sc,optId});}
 
 function applyRemoteMove(d){
@@ -1185,18 +1179,19 @@ function applyRemoteMove(d){
   render();
 }
 
-function applyRemoteDeck(pIdx, nextCard){
-  const p=G.players[pIdx];if(!p)return;
+function applyRemoteDeck(d){
+  const p=G.players[d.pIdx];if(!p)return;
   if(G.gMode==='turns'){
-    if(p.hand){
-      // الخصم ينهي دوره — نستخدم الكرت اللي جاء معاه عشان نكون متزامنين
-      p.hand=null;
-      nextTurnWithCard(nextCard||null);
+    if(d.nextTurnIdx===-1||d.nextTurnIdx===undefined){
+      // مجرد سحب كرت مش نهاية دور
+      p.hand=d.nextCard||randCard(); p.drawCount++; render();
     } else {
-      p.hand=nextCard||randCard(); p.drawCount++; render();
+      // نهاية دور — نطبق مباشرة بنفس القيم اللي جاءت
+      p.hand=null;
+      doNextTurn(d.nextTurnIdx, d.nextCard);
     }
   } else {
-    p.hand=nextCard||randCard(); p.drawCount++; render();
+    p.hand=d.nextCard||randCard(); p.drawCount++; render();
   }
 }
 
