@@ -402,34 +402,67 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
    │  صور الكروت — ضع رابط كل كرت هنا               │
    └──────────────────────────────────────────────────┘ */
 const CARD_IMAGES = {
-  "A_S":"https://i.postimg.cc/MTh7HmVL/S_ice_A.png","2_S":"https://i.postimg.cc/432bkgds/S_ice_2.png",
-  "3_S":"https://i.postimg.cc/cJkMySH4/S_ice_3.png","4_S":"https://i.postimg.cc/7LtM8k6D/i_S_ice_4.png",
-  "5_S":"https://i.postimg.cc/KYprS2zY/S_ice_5.png","6_S":"https://i.postimg.cc/R0pQ5BFH/S_ice_6.png",
-  "7_S":"https://i.postimg.cc/C1ZCwQBz/S_ice_7.png","8_S":"https://i.postimg.cc/50H5fRYY/S_ice_8.png",
-  "9_S":"https://i.postimg.cc/sXBP3NQW/S_ice_9.png","10_S":"https://i.postimg.cc/QtBgjy9c/S_ice_10.png",
-  "J_S":"https://i.postimg.cc/tT1d9MZD/S_ice_J.png","Q_S":"https://i.postimg.cc/Jny3R2D2/S_ice_Q.png",
-  "K_S":"https://i.postimg.cc/26PQy7hc/S_ice_K.png",
-  "A_H":"https://i.postimg.cc/VL9qsM67/H_sun_A.png","2_H":"https://i.postimg.cc/jd6HqN5m/H_sun_2.png",
-  "3_H":"https://i.postimg.cc/kXNQM84Z/H_sun_3.png","4_H":"https://i.postimg.cc/hP8L4xjY/H_sun_4.png",
-  "5_H":"https://i.postimg.cc/YqN62g0w/H_sun_5.png","6_H":"https://i.postimg.cc/CxFjR1ny/H_sun_6.png",
-  "7_H":"https://i.postimg.cc/kgnx24R3/H_sun_7.png","8_H":"https://i.postimg.cc/W12Md3qj/H_sun_8.png",
-  "9_H":"https://i.postimg.cc/g2YvxJLm/H_sun_9.png","10_H":"https://i.postimg.cc/qvk8NR6J/H_sun_10.png",
-  "J_H":"https://i.postimg.cc/htS9XjQG/H_sun_J.png","Q_H":"https://i.postimg.cc/QdXpFtKT/H_sun_q.png",
-  "K_H":"https://i.postimg.cc/3xKgkR0p/H_sun_k.png",
-  "A_D":"https://i.postimg.cc/SxNMyvHF/B_moon_1.png","2_D":"https://i.postimg.cc/xTPmV2p1/B_moon_2.png",
-  "3_D":"https://i.postimg.cc/8zP610xp/B_moon_3.png","4_D":"https://i.postimg.cc/tCz6GjvQ/B_moon_4.png",
-  "5_D":"https://i.postimg.cc/65KZP30Y/B_moon_5.png","6_D":"https://i.postimg.cc/rFT4HmJ0/B_moon_6.png",
-  "7_D":"https://i.postimg.cc/gkph7JDx/B_moon_7.png","8_D":"https://i.postimg.cc/X7W5PJ8v/B_moon_8.png",
-  "9_D":"https://i.postimg.cc/wxLJFJht/B_moon_9.png","10_D":"https://i.postimg.cc/J0NknV1K/B_moon_10.png",
-  "J_D":"https://i.postimg.cc/D0rXZk2B/B_moon_j.png","Q_D":"https://i.postimg.cc/3NXvR5K1/B_moon.png",
-  "K_D":"https://i.postimg.cc/7h3268xN/B_moon_K.png",
-  "A_C":"https://i.postimg.cc/PxcCrVbj/F_BH_A.png","2_C":"https://i.postimg.cc/250qgSVp/F_BH_2.png",
-  "3_C":"https://i.postimg.cc/vm01CZcy/F_BH_3.png","4_C":"https://i.postimg.cc/cJFKPLrZ/F_BH_4.png",
-  "5_C":"https://i.postimg.cc/bvmG4wsj/F_BH_5.png","6_C":"https://i.postimg.cc/ydWJKCZR/F_BH_6.png",
-  "7_C":"https://i.postimg.cc/85sFGg6m/F_BH_7.png","8_C":"https://i.postimg.cc/k4DVCPbs/F_BH_8.png",
-  "9_C":"https://i.postimg.cc/qRgtrH31/F_BH_9.png","10_C":"https://i.postimg.cc/9Mz42H7K/F_BH_10.png",
-  "J_C":"https://i.postimg.cc/bJMZNVxB/F_BH_J.png","Q_C":"https://i.postimg.cc/d1XhtN2b/F_BH_Q.png",
-  "K_C":"https://i.postimg.cc/vBj4H27d/F_BH_K.png",
+
+  /* ♠  SPADES  ─────────────────────────────────── */
+  "A_S"  : "https://i.postimg.cc/MTh7HmVL/S_ice_A.png",   /* Ace   of Spades   */
+  "2_S"  : "https://i.postimg.cc/432bkgds/S_ice_2.png",   /* 2     of Spades   */
+  "3_S"  : "https://i.postimg.cc/cJkMySH4/S_ice_3.png",   /* 3     of Spades   */
+  "4_S"  : "https://i.postimg.cc/7LtM8k6D/i_S_ice_4.png", /* 4     of Spades   */
+  "5_S"  : "https://i.postimg.cc/KYprS2zY/S_ice_5.png",   /* 5     of Spades   */
+  "6_S"  : "https://i.postimg.cc/R0pQ5BFH/S_ice_6.png",   /* 6     of Spades   */
+  "7_S"  : "https://i.postimg.cc/C1ZCwQBz/S_ice_7.png",   /* 7     of Spades   */
+  "8_S"  : "https://i.postimg.cc/50H5fRYY/S_ice_8.png",   /* 8     of Spades   */
+  "9_S"  : "https://i.postimg.cc/sXBP3NQW/S_ice_9.png",   /* 9     of Spades   */
+  "10_S" : "https://i.postimg.cc/QtBgjy9c/S_ice_10.png",  /* 10    of Spades   */
+  "J_S"  : "https://i.postimg.cc/tT1d9MZD/S_ice_J.png",   /* Jack  of Spades   */
+  "Q_S"  : "https://i.postimg.cc/Jny3R2D2/S_ice_Q.png",   /* Queen of Spades   */
+  "K_S"  : "https://i.postimg.cc/26PQy7hc/S_ice_K.png",   /* King  of Spades   */
+
+  /* ♥  HEARTS  ─────────────────────────────────── */
+  "A_H"  : "https://i.postimg.cc/VL9qsM67/H_sun_A.png",   /* Ace   of Hearts   */
+  "2_H"  : "https://i.postimg.cc/jd6HqN5m/H_sun_2.png",   /* 2     of Hearts   */
+  "3_H"  : "https://i.postimg.cc/kXNQM84Z/H_sun_3.png",   /* 3     of Hearts   */
+  "4_H"  : "https://i.postimg.cc/hP8L4xjY/H_sun_4.png",   /* 4     of Hearts   */
+  "5_H"  : "https://i.postimg.cc/YqN62g0w/H_sun_5.png",   /* 5     of Hearts   */
+  "6_H"  : "https://i.postimg.cc/CxFjR1ny/H_sun_6.png",   /* 6     of Hearts   */
+  "7_H"  : "https://i.postimg.cc/kgnx24R3/H_sun_7.png",   /* 7     of Hearts   */
+  "8_H"  : "https://i.postimg.cc/W12Md3qj/H_sun_8.png",   /* 8     of Hearts   */
+  "9_H"  : "https://i.postimg.cc/g2YvxJLm/H_sun_9.png",   /* 9     of Hearts   */
+  "10_H" : "https://i.postimg.cc/qvk8NR6J/H_sun_10.png",  /* 10    of Hearts   */
+  "J_H"  : "https://i.postimg.cc/htS9XjQG/H_sun_J.png",   /* Jack  of Hearts   */
+  "Q_H"  : "https://i.postimg.cc/QdXpFtKT/H_sun_q.png",   /* Queen of Hearts   */
+  "K_H"  : "https://i.postimg.cc/3xKgkR0p/H_sun_k.png",   /* King  of Hearts   */
+
+  /* ♦  DIAMONDS  ───────────────────────────────── */
+  "A_D"  : "https://i.postimg.cc/SxNMyvHF/B_moon_1.png",  /* Ace   of Diamonds */
+  "2_D"  : "https://i.postimg.cc/xTPmV2p1/B_moon_2.png",  /* 2     of Diamonds */
+  "3_D"  : "https://i.postimg.cc/8zP610xp/B_moon_3.png",  /* 3     of Diamonds */
+  "4_D"  : "https://i.postimg.cc/tCz6GjvQ/B_moon_4.png",  /* 4     of Diamonds */
+  "5_D"  : "https://i.postimg.cc/65KZP30Y/B_moon_5.png",  /* 5     of Diamonds */
+  "6_D"  : "https://i.postimg.cc/rFT4HmJ0/B_moon_6.png",  /* 6     of Diamonds */
+  "7_D"  : "https://i.postimg.cc/gkph7JDx/B_moon_7.png",  /* 7     of Diamonds */
+  "8_D"  : "https://i.postimg.cc/X7W5PJ8v/B_moon_8.png",  /* 8     of Diamonds */
+  "9_D"  : "https://i.postimg.cc/wxLJFJht/B_moon_9.png",  /* 9     of Diamonds */
+  "10_D" : "https://i.postimg.cc/J0NknV1K/B_moon_10.png", /* 10    of Diamonds */
+  "J_D"  : "https://i.postimg.cc/D0rXZk2B/B_moon_j.png",  /* Jack  of Diamonds */
+  "Q_D"  : "https://i.postimg.cc/3NXvR5K1/B_moon.png",    /* Queen of Diamonds */
+  "K_D"  : "https://i.postimg.cc/7h3268xN/B_moon_K.png",  /* King  of Diamonds */
+
+  /* ♣  CLUBS  ──────────────────────────────────── */
+  "A_C"  : "https://i.postimg.cc/PxcCrVbj/F_BH_A.png",   /* Ace   of Clubs    */
+  "2_C"  : "https://i.postimg.cc/250qgSVp/F_BH_2.png",   /* 2     of Clubs    */
+  "3_C"  : "https://i.postimg.cc/vm01CZcy/F_BH_3.png",   /* 3     of Clubs    */
+  "4_C"  : "https://i.postimg.cc/cJFKPLrZ/F_BH_4.png",   /* 4     of Clubs    */
+  "5_C"  : "https://i.postimg.cc/bvmG4wsj/F_BH_5.png",   /* 5     of Clubs    */
+  "6_C"  : "https://i.postimg.cc/ydWJKCZR/F_BH_6.png",   /* 6     of Clubs    */
+  "7_C"  : "https://i.postimg.cc/85sFGg6m/F_BH_7.png",   /* 7     of Clubs    */
+  "8_C"  : "https://i.postimg.cc/k4DVCPbs/F_BH_8.png",   /* 8     of Clubs    */
+  "9_C"  : "https://i.postimg.cc/qRgtrH31/F_BH_9.png",   /* 9     of Clubs    */
+  "10_C" : "https://i.postimg.cc/9Mz42H7K/F_BH_10.png",  /* 10    of Clubs    */
+  "J_C"  : "https://i.postimg.cc/bJMZNVxB/F_BH_J.png",   /* Jack  of Clubs    */
+  "Q_C"  : "https://i.postimg.cc/d1XhtN2b/F_BH_Q.png",   /* Queen of Clubs    */
+  "K_C"  : "https://i.postimg.cc/vBj4H27d/F_BH_K.png",   /* King  of Clubs    */
+
 };
 
 /* ┌──────────────────────────────────────────────────┐
@@ -569,11 +602,14 @@ function copyCode(){const code=document.getElementById('code-val').textContent;i
 /* ══════════════════════════════════════════════════
    TIMER
    ══════════════════════════════════════════════════ */
-const CIRC=69.1; // 2π×11
+const CIRC=69.1;
+let timerProcessing=false; // منع double-fire بين التايمر والضغط
+
 function startTimer(pIdx){
   stopTimer();
   if(G.gMode!=='turns'||G.players.length===1) return;
   timerLeft=CONFIG.TURN_SECONDS;
+  timerProcessing=false;
   updateTimerUI();
   timerInterval=setInterval(()=>{
     timerLeft--;
@@ -587,15 +623,15 @@ function updateTimerUI(){
   const circle=document.getElementById('timer-circle');
   const num=document.getElementById('timer-num');
   if(!wrap||!circle||!num) return;
-  const pct=timerLeft/CONFIG.TURN_SECONDS;
+  const pct=Math.max(0,timerLeft/CONFIG.TURN_SECONDS);
   circle.style.strokeDashoffset=CIRC*(1-pct);
-  num.textContent=timerLeft;
+  num.textContent=Math.max(0,timerLeft);
   wrap.classList.toggle('urgent',timerLeft<=8);
 }
 function onTimerExpire(pIdx){
-  // وقت اللاعب خلص → ننهي دوره تلقائياً
   stopTimer();
-  if(G.ended||G.turn!==pIdx) return;
+  if(G.ended||G.turn!==pIdx||timerProcessing) return;
+  timerProcessing=true;
   showNotif('⏰ انتهى الوقت! انتقل الدور');
   const p=G.players[pIdx];
   p.hand=null;
@@ -778,7 +814,10 @@ function renderHalf(halfId,pIdx){
   // ── Hand + Deck ──
   const handArea=document.createElement('div');
   handArea.className='hand-area';
-  const deckOk=interact&&(G.gMode==='speed'||isMyTurn);
+  // الـ deck:
+  // - وضع السرعة: كل لاعب يقدر يضغطه (بشرط canInteract)
+  // - وضع الأدوار: بس اللاعب الذي دوره الحالي
+  const deckOk = interact && (G.gMode==='speed' ? true : isMyTurn);
   const deck=document.createElement('div');
   deck.className='deck-pile'+(deckOk?'':' deck-off');
   const bk=backImg();
@@ -971,22 +1010,26 @@ function onDeckClick(pIdx){
   if(G.ended) return;
   const p=G.players[pIdx];
   if(G.gMode==='turns'){
+    // الـ deck لازم يكون دور اللاعب ده بالظبط — مش بيتحرك في دور التاني
     if(G.turn!==pIdx) return;
+    if(timerProcessing) return; // التايمر بيعالج نهاية الدور، مش نتدخل
     if(p.hand){
-      // عنده كرت → ينهي دوره
-      p.hand=null;
+      // عنده كرت في إيده → ضغط الـ deck = ينهي دوره
+      timerProcessing=true;
       stopTimer();
+      p.hand=null;
       if(G.pMode==='online') syncDeck(pIdx);
       nextTurn();
     } else {
-      p.hand=randCard();p.drawCount++;
+      // ما عندوش كرت — ما المفروض يحصل ده في turns لأن nextTurn بيديه كرت
+      p.hand=randCard(); p.drawCount++;
       if(G.pMode==='online') syncDeck(pIdx);
       render();
     }
   } else {
-    // وضع السرعة
-    if(p.bonusCards>0){p.bonusCards--;} // الكرت الإضافي من قدرة الماس
-    p.hand=randCard();p.drawCount++;
+    // وضع السرعة — الـ deck شغال لأي لاعب
+    if(!canInteract(pIdx)) return;
+    p.hand=randCard(); p.drawCount++;
     if(G.pMode==='online') syncDeck(pIdx);
     render();
   }
