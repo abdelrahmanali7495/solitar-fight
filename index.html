@@ -24,6 +24,12 @@
 @media (min-width:401px) and (max-width:600px) { :root { --cw:48px;--ch:72px;--peek:11px;--hand-w:80px;--hand-h:120px; } }
 @media (min-width:768px) { :root { --cw:60px;--ch:92px;--peek:15px;--hand-w:95px;--hand-h:145px; } }
 
+/* وضع 6 أعمدة — بطاقات أكبر */
+body.mode-small { --cw:72px;--ch:108px;--peek:16px;--hand-w:100px;--hand-h:150px; }
+@media (max-width:400px) { body.mode-small { --cw:52px;--ch:78px;--peek:12px;--hand-w:80px;--hand-h:120px; } }
+@media (min-width:401px) and (max-width:600px) { body.mode-small { --cw:62px;--ch:94px;--peek:14px;--hand-w:92px;--hand-h:138px; } }
+@media (min-width:768px) { body.mode-small { --cw:80px;--ch:120px;--peek:18px;--hand-w:110px;--hand-h:165px; } }
+
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;touch-action:manipulation;}
 body{background:var(--darker);font-family:'Cairo',sans-serif;color:var(--text);
@@ -64,6 +70,19 @@ body{background:var(--darker);font-family:'Cairo',sans-serif;color:var(--text);
 .smbtn-t{background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.28);color:#4ade80}.smbtn-t:hover{background:rgba(39,174,96,.22)}
 .smbtn-s{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.28);color:#f87171}.smbtn-s:hover{background:rgba(231,76,60,.22)}
 hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
+
+/* ─── PRE-GAME SIZE SELECTION ─── */
+#size-screen{align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.size-box{background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99));border:1px solid rgba(255,215,0,.18);border-radius:16px;padding:28px 24px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.65);}
+.size-title{font-family:'Cinzel Decorative',serif;font-size:15px;color:var(--gold);text-align:center;margin-bottom:6px;}
+.size-sub{text-align:center;font-size:11px;color:var(--text-dim);margin-bottom:20px;letter-spacing:1px;}
+.size-opts{display:flex;gap:10px;margin-bottom:18px;}
+.size-opt{flex:1;padding:16px 10px;border:2px solid rgba(255,215,0,.18);border-radius:12px;cursor:pointer;background:rgba(0,0,0,.35);transition:all .22s;text-align:center;}
+.size-opt:hover{border-color:rgba(255,215,0,.55);background:rgba(255,215,0,.05);transform:translateY(-2px);}
+.size-opt.selected{border-color:var(--gold);background:rgba(255,215,0,.1);box-shadow:0 0 18px rgba(255,215,0,.2);}
+.size-opt-ico{font-size:28px;margin-bottom:6px;}
+.size-opt-name{font-family:'Cinzel Decorative',serif;font-size:12px;color:var(--gold);margin-bottom:4px;}
+.size-opt-desc{font-size:10px;color:var(--text-dim);line-height:1.5;}
 
 /* ─── ONLINE ─── */
 #online-screen{align-items:center;justify-content:center;overflow-y:auto;}
@@ -285,16 +304,16 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
       <div class="mbtn-t"><span>لاعب واحد</span><span class="sm">مارس اللعبة بمفردك</span></div>
     </button>
     <div id="sub-solo" class="submenu">
-      <button class="smbtn smbtn-t" onclick="startGame('solo','turns')">🔄 مود الأدوار</button>
-      <button class="smbtn smbtn-s" onclick="startGame('solo','speed')">⚡ مود السرعة</button>
+      <button class="smbtn smbtn-t" onclick="goSizeScreen('solo','turns')">🔄 مود الأدوار</button>
+      <button class="smbtn smbtn-s" onclick="goSizeScreen('solo','speed')">⚡ مود السرعة</button>
     </div>
     <button class="mbtn mbtn-local" onclick="toggleSub('sub-local')" style="margin-top:4px">
       <span class="mbtn-ico">👥</span>
       <div class="mbtn-t"><span>لاعبين – نفس الجهاز</span><span class="sm">العب مع صاحبك</span></div>
     </button>
     <div id="sub-local" class="submenu">
-      <button class="smbtn smbtn-t" onclick="startGame('local','turns')">🔄 مود الأدوار</button>
-      <button class="smbtn smbtn-s" onclick="startGame('local','speed')">⚡ مود السرعة</button>
+      <button class="smbtn smbtn-t" onclick="goSizeScreen('local','turns')">🔄 مود الأدوار</button>
+      <button class="smbtn smbtn-s" onclick="goSizeScreen('local','speed')">⚡ مود السرعة</button>
     </div>
     <hr class="div">
     <button class="mbtn mbtn-online" onclick="showOnline()">
@@ -319,6 +338,17 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
         <option value="turns">🔄 مود الأدوار</option>
         <option value="speed">⚡ مود السرعة</option>
       </select>
+      <label class="lbl">حجم الميدان</label>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <div class="size-opt selected" id="online-size-large" onclick="onlineSelectSize('large')" style="padding:10px 8px;flex:1;">
+          <div class="size-opt-ico" style="font-size:18px;">🗺️</div>
+          <div class="size-opt-name" style="font-size:10px;">كبير (8×10)</div>
+        </div>
+        <div class="size-opt" id="online-size-small" onclick="onlineSelectSize('small')" style="padding:10px 8px;flex:1;">
+          <div class="size-opt-ico" style="font-size:18px;">⚡</div>
+          <div class="size-opt-name" style="font-size:10px;">سريع (6×8)</div>
+        </div>
+      </div>
       <button class="abtn abtn-gold" onclick="createRoom()">إنشاء الغرفة</button>
       <div class="codebox" id="codebox">
         <div class="code-lbl">شارك الكود مع صاحبك</div>
@@ -375,6 +405,32 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
     <div class="wstats"><div class="sgrid" id="win-stats"></div></div>
     <button class="abtn abtn-gold" onclick="showMenu()">القائمة الرئيسية</button>
     <button class="abtn abtn-dim" onclick="restartGame()" style="margin-top:8px">العب مرة تانية</button>
+  </div>
+</div>
+
+<!-- ══════════════ SIZE SELECTION ══════════════ -->
+<div id="size-screen" class="screen">
+  <div class="bg-deco">
+    <span class="bg-suit">♠</span><span class="bg-suit">♥</span>
+    <span class="bg-suit">♦</span><span class="bg-suit">♣</span>
+  </div>
+  <div class="size-box">
+    <div class="size-title">⚙️ إعداد اللعبة</div>
+    <div class="size-sub">اختر حجم الميدان قبل البداية</div>
+    <div class="size-opts">
+      <div class="size-opt selected" id="size-opt-large" onclick="selectSize('large')">
+        <div class="size-opt-ico">🗺️</div>
+        <div class="size-opt-name">ميدان كبير</div>
+        <div class="size-opt-desc">8 أعمدة<br>10 بطاقات لكل عمود<br>تحدٍّ أكبر</div>
+      </div>
+      <div class="size-opt" id="size-opt-small" onclick="selectSize('small')">
+        <div class="size-opt-ico">⚡</div>
+        <div class="size-opt-name">ميدان سريع</div>
+        <div class="size-opt-desc">6 أعمدة<br>8 بطاقات لكل عمود<br>بطاقات أكبر</div>
+      </div>
+    </div>
+    <button class="abtn abtn-gold" onclick="confirmSizeAndStart()">🚀 ابدأ اللعبة!</button>
+    <button class="abtn abtn-dim" onclick="cancelSizeScreen()" style="margin-top:8px">← رجوع</button>
   </div>
 </div>
 
@@ -468,12 +524,12 @@ const CARD_IMAGES = {
 /* ┌──────────────────────────────────────────────────┐
    │  ظهر الكرت — ضع رابط صورة ظهر الكرت هنا        │
    └──────────────────────────────────────────────────┘ */
-const CARD_BACK_IMAGE = "https://i.postimg.cc/ZR9Fx5m4/4b5d068e_a859_4479_87e3_3ff50623671a.jpg";
+const CARD_BACK_IMAGE = "";
 
 /* ┌──────────────────────────────────────────────────┐
    │  خلفية الساحة — ضع رابط الصورة هنا             │
    └──────────────────────────────────────────────────┘ */
-const BOARD_BG_IMAGE = "https://i.postimg.cc/HxJ49kmC/f12ed935_ddae_4550_a061_1a6e06ae2daf.jpg";
+const BOARD_BG_IMAGE = "";
 
 /* ┌──────────────────────────────────────────────────┐
    │  إعدادات اللعبة — ابضط القيم هنا               │
@@ -506,7 +562,7 @@ const ABILITY_DEF = {
   },
   D: { threshold:3, suit:'♦', name:'الماس', color:'#fbbf24',
     options:[
-      { id:'dheal', ico:'✨', cls:'ab-btn-bonus', name:'+10 HP + كرت إضافي', desc:'تعافَ 10 HP واحصل على كرت زيادة' },
+      { id:'dheal', ico:'✨', cls:'ab-btn-bonus', name:'+10 HP + كرت للخصم', desc:'تعافَ 10 HP وأضف كرتاً إضافياً لأعمدة الخصم' },
     ]
   },
   C: { threshold:3, suit:'♣', name:'البستوني', color:'#4ade80',
@@ -547,13 +603,15 @@ function canPlay(h,t){const d=Math.abs(h.num-t.num);return d===1||d===12;}
 
 /* ── Player factory ── */
 function mkPlayer(name,id){
+  const cols=G.boardCols||8;
+  const cardsPerCol=G.cardsPerCol||10;
   const stacks=[];
-  for(let s=0;s<8;s++){const st=[];for(let c=0;c<10;c++)st.push(randCard());stacks.push(st);}
+  for(let s=0;s<cols;s++){const st=[];for(let c=0;c<cardsPerCol;c++)st.push(randCard());stacks.push(st);}
   return{
     id,name,stacks,hand:null,
     hp:CONFIG.PLAYER_HP, maxHp:CONFIG.PLAYER_HP,
     removed:0,drawCount:0,
-    turnSuitCount:{S:0,H:0,D:0,C:0},   // كروت الـ suit في الدور الحالي
+    turnSuitCount:{S:0,H:0,D:0,C:0},   // كروت الـ suit في الدور الحالي (أو منذ آخر سحب في السرعة)
     usedAbility:{S:false,H:false,D:false,C:false}, // هل استخدم القدرة هذا الدور؟
     frozenSlots:{},                      // {stackIdx: turnsLeft}
     bonusCards:0,                        // كروت إضافية من قدرة الماس
@@ -568,7 +626,7 @@ let timerInterval=null, timerLeft=0;
 
 /* ── Screens ── */
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function showMenu(){stopTimer();stopOnline();showScreen('menu-screen');}
+function showMenu(){stopTimer();stopOnline();document.body.classList.remove('mode-small');showScreen('menu-screen');}
 function showOnline(){
   document.getElementById('panel-create').classList.remove('on');
   document.getElementById('panel-join').classList.remove('on');
@@ -583,6 +641,7 @@ function showOnlinePanel(which){
   document.getElementById('panel-create').classList.toggle('on',which==='create');
   document.getElementById('panel-join').classList.toggle('on',which==='join');
   if(which==='join')setTimeout(()=>document.getElementById('cd0').focus(),100);
+  if(which==='create'){_selectedSize='large';onlineSelectSize('large');}
 }
 function backToOnlineChoice(){
   stopOnline();
@@ -594,6 +653,35 @@ function backToOnlineChoice(){
   document.getElementById('codebox').classList.remove('on');
 }
 function toggleSub(id){const el=document.getElementById(id),was=el.classList.contains('open');document.querySelectorAll('.submenu').forEach(s=>s.classList.remove('open'));if(!was)el.classList.add('open');}
+
+/* ── Size selection screen ── */
+let _pendingPMode=null,_pendingGMode=null,_pendingOnlineData=null,_selectedSize='large';
+function goSizeScreen(pMode,gMode,onlineData=null){
+  _pendingPMode=pMode; _pendingGMode=gMode; _pendingOnlineData=onlineData;
+  _selectedSize='large';
+  document.getElementById('size-opt-large').classList.add('selected');
+  document.getElementById('size-opt-small').classList.remove('selected');
+  showScreen('size-screen');
+}
+function selectSize(sz){
+  _selectedSize=sz;
+  document.getElementById('size-opt-large').classList.toggle('selected',sz==='large');
+  document.getElementById('size-opt-small').classList.toggle('selected',sz==='small');
+}
+function onlineSelectSize(sz){
+  _selectedSize=sz;
+  document.getElementById('online-size-large').classList.toggle('selected',sz==='large');
+  document.getElementById('online-size-small').classList.toggle('selected',sz==='small');
+}
+function confirmSizeAndStart(){
+  const cols=_selectedSize==='small'?6:8;
+  const perCol=_selectedSize==='small'?8:10;
+  document.body.classList.toggle('mode-small',_selectedSize==='small');
+  startGame(_pendingPMode,_pendingGMode,_pendingOnlineData,cols,perCol);
+}
+function cancelSizeScreen(){
+  if(_pendingPMode==='online'){showOnline();}else{showMenu();}
+}
 function codeDigitInput(idx){const el=document.getElementById('cd'+idx);el.value=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(-1);if(el.value&&idx<3)document.getElementById('cd'+(idx+1)).focus();}
 function codeDigitKey(idx,e){if(e.key==='Backspace'&&!document.getElementById('cd'+idx).value&&idx>0)document.getElementById('cd'+(idx-1)).focus();if(e.key==='Enter')joinRoom();}
 function getCodeFromDigits(){return[0,1,2,3].map(i=>document.getElementById('cd'+i).value).join('');}
@@ -644,9 +732,10 @@ function onTimerExpire(pIdx){
 /* ══════════════════════════════════════════════════
    START GAME
    ══════════════════════════════════════════════════ */
-function startGame(pMode,gMode,onlineData=null){
+function startGame(pMode,gMode,onlineData=null,boardCols=8,cardsPerCol=10){
   G={pMode,gMode,players:[],turn:0,started:Date.now(),ended:false,
-     myIdx:onlineData?onlineData.myIdx:0,online:onlineData};
+     myIdx:onlineData?onlineData.myIdx:0,online:onlineData,
+     boardCols,cardsPerCol};
   if(pMode==='solo'){
     G.players=[mkPlayer('أنت',0)];
   } else {
@@ -740,7 +829,7 @@ function renderHalf(halfId,pIdx){
   const row=document.createElement('div');
   row.className='stacks-row';
 
-  for(let si=0;si<8;si++){
+  for(let si=0;si<(G.boardCols||8);si++){
     const stack=p.stacks[si];
     const top=stack.length?stack[stack.length-1]:null;
     const cnt=stack.length;
@@ -769,9 +858,10 @@ function renderHalf(halfId,pIdx){
     } else {
       // الكرت الأخير face-up
       const img=cardImg(top);
-      // لو مجمود، لازم ينزله مرتين
-      const canPlayNow=interact&&isMyTurn&&p.hand&&canPlay(p.hand,top)&&!isFrozen;
-      const canPlayFrozen=interact&&isMyTurn&&p.hand&&canPlay(p.hand,top)&&isFrozen;
+      // في السرعة: كل لاعب يقدر يلعب في أي وقت (بشرط canInteract وعنده كرت في إيده)
+      const isPlayableTurn=G.gMode==='speed'?true:isMyTurn;
+      const canPlayNow=interact&&isPlayableTurn&&p.hand&&canPlay(p.hand,top)&&!isFrozen;
+      const canPlayFrozen=interact&&isPlayableTurn&&p.hand&&canPlay(p.hand,top)&&isFrozen;
       const playable=canPlayNow||canPlayFrozen;
       const tc=document.createElement('div');
       let cls='pile-card-up face-up '+top.sn;
@@ -891,7 +981,7 @@ function playCard(pIdx,si,isFrozenPlay){
   p.hand=top;
   p.removed++;
 
-  // تتبع الـ suit في الدور الحالي
+  // تتبع الـ suit — في الأدوار: عداد الدور. في السرعة: عداد منذ آخر سحب
   p.turnSuitCount[top.sc]=(p.turnSuitCount[top.sc]||0)+1;
 
   if(G.gMode==='speed'&&G.players.length>1){
@@ -972,9 +1062,14 @@ function applyAbility(pIdx,sc,optId){
       break;
     case 'dheal':
       p.hp=Math.min(p.maxHp,p.hp+10);
-      p.bonusCards++;
-      showDmg('+10✨','#fbbf24');
-      showNotif('✨ +10 HP + كرت إضافي!');
+      showDmg('+10💛','#fbbf24');
+      if(opp){
+        // إضافة كرت عشوائي إضافي لأول عمود غير فارغ عند الخصم
+        addExtraCardToOpponent(opp);
+        showNotif('✨ +10 HP لك + كرت إضافي على الخصم!');
+      } else {
+        showNotif('✨ +10 HP!');
+      }
       break;
     case 'cmix':
       p.hp=Math.min(p.maxHp,p.hp+10);
@@ -989,18 +1084,31 @@ function applyAbility(pIdx,sc,optId){
   render();
 }
 
+function addExtraCardToOpponent(opp){
+  // إضافة كرت عشوائي في عمود عشوائي عند الخصم
+  const cols=G.boardCols||8;
+  const nonEmpty=[];
+  for(let i=0;i<cols;i++){if(opp.stacks[i].length>0) nonEmpty.push(i);}
+  const target=nonEmpty.length>0?nonEmpty[ri(nonEmpty.length)]:ri(cols);
+  // نضيف الكرت قبل الكرت العلوي
+  const insertAt=Math.max(0,opp.stacks[target].length-1);
+  opp.stacks[target].splice(insertAt,0,randCard());
+}
+
 function shuffleMyStacks(p){
   // جمع كل الكروت وتوزيعها عشوائياً
+  const perCol=G.cardsPerCol||10;
   const all=[];
   p.stacks.forEach(st=>all.push(...st));
   for(let i=all.length-1;i>0;i--){const j=ri(i+1);[all[i],all[j]]=[all[j],all[i]];}
   let idx=0;
-  p.stacks.forEach(st=>{st.length=0;for(let i=0;i<10&&idx<all.length;i++)st.push(all[idx++]);});
+  p.stacks.forEach(st=>{st.length=0;for(let i=0;i<perCol&&idx<all.length;i++)st.push(all[idx++]);});
 }
 
 function freezeRandomSlots(p,count){
+  const cols=G.boardCols||8;
   const available=[];
-  for(let i=0;i<8;i++){if(p.stacks[i].length>0&&!(p.frozenSlots[i]>0))available.push(i);}
+  for(let i=0;i<cols;i++){if(p.stacks[i].length>0&&!(p.frozenSlots[i]>0))available.push(i);}
   for(let i=available.length-1;i>0;i--){const j=ri(i+1);[available[i],available[j]]=[available[j],available[i]];}
   available.slice(0,count).forEach(si=>{p.frozenSlots[si]=3;});
 }
@@ -1031,8 +1139,12 @@ function onDeckClick(pIdx){
       render();
     }
   } else {
+    // مود السرعة — سحب كرت جديد يريست عداد القدرات
     if(!canInteract(pIdx)) return;
     p.hand=randCard(); p.drawCount++;
+    // ريست عداد الـ suit والقدرات عند السحب
+    p.turnSuitCount={S:0,H:0,D:0,C:0};
+    p.usedAbility={S:false,H:false,D:false,C:false};
     if(G.pMode==='online') syncDeck(pIdx, -1, null);
     render();
   }
@@ -1105,7 +1217,7 @@ function endGame(wIdx,reason){
 }
 
 function quitGame(){if(confirm('تأكيد الخروج؟')){stopTimer();stopOnline();showMenu();}}
-function restartGame(){startGame(G.pMode,G.gMode,G.online);}
+function restartGame(){startGame(G.pMode,G.gMode,G.online,G.boardCols||8,G.cardsPerCol||10);}
 
 /* ══════════════════════════════════════════════════
    ABLY ONLINE
@@ -1116,6 +1228,8 @@ function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from(
 async function createRoom(){
   const name=document.getElementById('c-name').value.trim()||'لاعب 1';
   const mode=document.getElementById('c-mode').value;
+  const cols=_selectedSize==='small'?6:8;
+  const perCol=_selectedSize==='small'?8:10;
   try{
     setStatus('create','جاري الاتصال<span class="ldots"></span>','wait');
     abl=new Ably.Realtime({key:ABLY_KEY});
@@ -1127,8 +1241,8 @@ async function createRoom(){
     ach.subscribe('join',msg=>{
       const gn=msg.data.name;
       setStatus('create',`✅ انضم ${gn}! جاري البدء<span class="ldots"></span>`,'ok');
-      ach.publish('start',{mode,n1:name,n2:gn});
-      setTimeout(()=>startOnlineGame(mode,name,gn,0),800);
+      ach.publish('start',{mode,n1:name,n2:gn,cols,perCol});
+      setTimeout(()=>startOnlineGame(mode,name,gn,0,cols,perCol),800);
     });
   }catch(e){setStatus('create','❌ خطأ في الاتصال','err');}
 }
@@ -1141,14 +1255,15 @@ async function joinRoom(){
     setStatus('join','جاري الاتصال<span class="ldots"></span>','wait');
     abl=new Ably.Realtime({key:ABLY_KEY});
     ach=abl.channels.get('sf-'+code);
-    ach.subscribe('start',msg=>{const d=msg.data;setTimeout(()=>startOnlineGame(d.mode,d.n1,d.n2,1),500);});
+    ach.subscribe('start',msg=>{const d=msg.data;setTimeout(()=>startOnlineGame(d.mode,d.n1,d.n2,1,d.cols||8,d.perCol||10),500);});
     ach.publish('join',{name});
     setStatus('join','✅ تم الانضمام — في انتظار البداية<span class="ldots"></span>','wait');
   }catch(e){setStatus('join','❌ خطأ في الاتصال','err');}
 }
 
-function startOnlineGame(mode,n1,n2,myIdx){
-  startGame('online',mode,{myIdx,n1,n2});
+function startOnlineGame(mode,n1,n2,myIdx,cols=8,perCol=10){
+  document.body.classList.toggle('mode-small',cols===6);
+  startGame('online',mode,{myIdx,n1,n2},cols,perCol);
   if(ach){
     ach.unsubscribe('move');ach.unsubscribe('deck');ach.unsubscribe('ability');
     ach.subscribe('move',msg=>{if(msg.data.pIdx!==G.myIdx)applyRemoteMove(msg.data);});
@@ -1191,7 +1306,11 @@ function applyRemoteDeck(d){
       doNextTurn(d.nextTurnIdx, d.nextCard);
     }
   } else {
-    p.hand=d.nextCard||randCard(); p.drawCount++; render();
+    // مود السرعة — ريست عداد القدرات عند السحب
+    p.hand=d.nextCard||randCard(); p.drawCount++;
+    p.turnSuitCount={S:0,H:0,D:0,C:0};
+    p.usedAbility={S:false,H:false,D:false,C:false};
+    render();
   }
 }
 
