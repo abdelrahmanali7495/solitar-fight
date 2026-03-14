@@ -322,6 +322,10 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 .pile-card-up.playable:hover { transform:translateY(-4px); box-shadow:0 6px 18px rgba(255,215,0,.35); border-color:rgba(255,215,0,.8) !important; }
 .pile-card-up.playable:active { transform:translateY(-2px); }
 
+/* الكروت المتراكمة الـ clickable */
+.pile-card-clickable:hover { border-color:rgba(255,215,0,.7) !important; }
+.pile-card-clickable:active { opacity:.85; }
+
 /* Card inner */
 .card-inner { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; }
 .ci-tl { position:absolute; top:2px; right:3px; text-align:right; line-height:1.1; }
@@ -891,22 +895,7 @@ function renderHalf(halfId, pIdx){
       tc.textContent='✓';
       pile.appendChild(tc);
     } else {
-      const back=backImg();
-      for(let d=0;d<nPeek;d++){
-        const dc=document.createElement('div');
-        dc.className='pile-card-down';
-        dc.style.top=(d*pk)+'px';
-        dc.style.zIndex=String(d+1);
-        if(back){
-          dc.style.backgroundImage=`url('${back}')`;
-          dc.style.backgroundSize='cover';
-          dc.style.backgroundPosition='center';
-        } else {
-          dc.innerHTML='<div class="back-pattern"></div>';
-        }
-        pile.appendChild(dc);
-      }
-
+      // الكرت الأخير (face-up) في القاع
       const img=cardImg(top);
       const playable=interact&&isMyTurn&&p.hand&&canPlay(p.hand,top);
       const tc=document.createElement('div');
@@ -921,6 +910,33 @@ function renderHalf(halfId, pIdx){
       </div>`;
       if(playable){ const csi=si; tc.onclick=()=>playCard(pIdx,csi); }
       pile.appendChild(tc);
+
+      // الكروت المتراكمة فوقه — كلها clickable لو الكرت تحتها playable
+      const back=backImg();
+      for(let d=0;d<nPeek;d++){
+        const dc=document.createElement('div');
+        // d=0 أعمق كرت (أعلى البايل بصرياً)، d=nPeek-1 فوق الكرت الأخير مباشرة
+        dc.style.top=(d*pk)+'px';
+        dc.style.zIndex=String(d+1);
+        // كل الكروت الـ face-down clickable لو الـ stack قابل للعب
+        // لأن الضغط عليها = ضغط على العمود كله = لعب الكرت الأخير
+        if(playable){
+          dc.className='pile-card-down pile-card-clickable';
+          dc.style.cursor='pointer';
+          const csi=si;
+          dc.onclick=()=>playCard(pIdx,csi);
+        } else {
+          dc.className='pile-card-down';
+        }
+        if(back){
+          dc.style.backgroundImage=`url('${back}')`;
+          dc.style.backgroundSize='cover';
+          dc.style.backgroundPosition='center';
+        } else {
+          dc.innerHTML='<div class="back-pattern"></div>';
+        }
+        pile.appendChild(dc);
+      }
     }
 
     col.appendChild(pile);
@@ -942,14 +958,39 @@ function renderHalf(halfId, pIdx){
 
   const handEl=document.createElement('div');
   if(p.hand){
-    const img=cardImg(p.hand);
-    handEl.className='hand-card face-up '+p.hand.sn+(img?' has-image':'');
-    if(img) handEl.style.backgroundImage=`url('${img}')`;
-    handEl.innerHTML=`<div class="card-inner">
-      <div class="ci-tl"><span class="ci-val">${p.hand.val}</span><span class="ci-ssm">${p.hand.suit}</span></div>
-      <span class="ci-slg">${p.hand.suit}</span>
-      <div class="ci-br"><span class="ci-val">${p.hand.val}</span><span class="ci-ssm">${p.hand.suit}</span></div>
-    </div>`;
+    // في الأونلاين: كرت الخصم يظهر مقلوب (face-down) — اللاعب الثاني لا يرى قيمة كرت خصمه
+    const isOpponentInOnline = G.pMode==='online' && pIdx !== G.myIdx;
+    if(isOpponentInOnline){
+      // اعرض face-down بدل ما تكشف الكرت
+      handEl.className='hand-card';
+      handEl.style.cssText=`
+        width:var(--hand-w);height:var(--hand-h);border-radius:9px;
+        background:linear-gradient(155deg,#1a2a44,#0c1828);
+        border:2.5px solid rgba(255,215,0,.35);
+        display:flex;align-items:center;justify-content:center;
+        flex-shrink:0;position:relative;overflow:hidden;
+      `;
+      const bk=backImg();
+      if(bk){
+        handEl.style.backgroundImage=`url('${bk}')`;
+        handEl.style.backgroundSize='cover';
+        handEl.style.backgroundPosition='center';
+      } else {
+        handEl.innerHTML=`<div style="
+          position:absolute;inset:3px;border-radius:6px;
+          background:repeating-linear-gradient(45deg,rgba(100,150,255,.07) 0,rgba(100,150,255,.07) 1px,transparent 0,transparent 5px);
+        "></div><span style="font-size:clamp(22px,5vw,34px);opacity:.4;position:relative;">🂠</span>`;
+      }
+    } else {
+      const img=cardImg(p.hand);
+      handEl.className='hand-card face-up '+p.hand.sn+(img?' has-image':'');
+      if(img) handEl.style.backgroundImage=`url('${img}')`;
+      handEl.innerHTML=`<div class="card-inner">
+        <div class="ci-tl"><span class="ci-val">${p.hand.val}</span><span class="ci-ssm">${p.hand.suit}</span></div>
+        <span class="ci-slg">${p.hand.suit}</span>
+        <div class="ci-br"><span class="ci-val">${p.hand.val}</span><span class="ci-ssm">${p.hand.suit}</span></div>
+      </div>`;
+    }
   } else {
     handEl.className='hand-empty';
     handEl.textContent=isMyTurn?'✋':'🤚';
@@ -973,7 +1014,7 @@ function playCard(pIdx,si){
   if(!top||!canPlay(p.hand,top)) return;
 
   p.stacks[si].pop();
-  p.hand=top;
+  p.hand=top;   // الكرت اللي اتلعب من الـ stack أصبح في إيد اللاعب
   p.removed++;
 
   if(G.gMode==='speed'&&G.players.length>1){
@@ -985,6 +1026,7 @@ function playCard(pIdx,si){
 
   if(G.pMode==='online') syncMove(pIdx,si,top);
   if(totalCards(p)===0){ endGame(pIdx); return; }
+  // في وضع الأدوار: الدور لا ينتقل هنا — اللاعب لازم يضغط الـ deck لينهي دوره
   render();
 }
 
@@ -993,18 +1035,33 @@ function onDeckClick(pIdx){
   const p=G.players[pIdx];
   if(G.gMode==='turns'){
     if(G.turn!==pIdx) return;
-    if(p.hand){ p.hand=null; nextTurn(); }
-    else { p.hand=randCard(); p.drawCount++; render(); }
+    if(p.hand){
+      // عنده كرت في إيده → ضغط الـ deck = ينهي دوره
+      p.hand=null;
+      if(G.pMode==='online') syncDeck(pIdx);
+      nextTurn();
+    } else {
+      // ما عندوش كرت (مفروض ما يحصلش في turns لأن nextTurn بتدي كرت، لكن احتياط)
+      p.hand=randCard(); p.drawCount++;
+      if(G.pMode==='online') syncDeck(pIdx);
+      render();
+    }
   } else {
-    p.hand=randCard(); p.drawCount++; render();
+    // وضع السرعة: أي ضغط = سحب كرت جديد
+    p.hand=randCard(); p.drawCount++;
+    if(G.pMode==='online') syncDeck(pIdx);
+    render();
   }
-  if(G.pMode==='online') syncDeck(pIdx);
 }
 
 function nextTurn(){
-  if(G.players.length===1){ G.players[0].hand=randCard(); G.players[0].drawCount++; render(); return; }
+  if(G.players.length===1){
+    // سولو: اسحب كرت جديد تلقائياً
+    G.players[0].hand=randCard(); G.players[0].drawCount++; render(); return;
+  }
   G.turn=1-G.turn;
   const p=G.players[G.turn];
+  // عند بداية دور اللاعب: يجيله كرت جديد تلقائياً
   p.hand=randCard(); p.drawCount++;
   render();
 }
@@ -1097,21 +1154,31 @@ function syncDeck(pIdx){ if(ach) ach.publish('deck',{pIdx}); }
 
 function applyRemoteMove(d){
   const p=G.players[d.pIdx]; if(!p) return;
-  p.stacks[d.si].pop(); p.hand=d.newHand; p.removed++;
+  p.stacks[d.si].pop();
+  // المشكلة ٣: p.hand للخصم تبقى كرت حقيقي بس نعرفه محلياً فقط
+  // نستخدم الكرت الحقيقي لأغراض الـ speed damage، لكن في الرندر نخفيه
+  p.hand=d.newHand; p.removed++;
   if(G.gMode==='speed'){
     G.players[1-d.pIdx].hp=Math.max(0,G.players[1-d.pIdx].hp-d.newHand.num);
     if(checkSpeedWin()) return;
   }
   if(totalCards(p)===0){ endGame(d.pIdx); return; }
-  if(G.gMode==='turns') nextTurn();
+  // في وضع الأدوار: الخصم لعب كرت وأصبح في إيده كرت جديد (الكرت اللي لعبه)
+  // دوره لسه مستمر حتى يضغط الـ deck — لا نعمل nextTurn هنا
   render();
 }
 
 function applyRemoteDeck(pIdx){
   const p=G.players[pIdx]; if(!p) return;
   if(G.gMode==='turns'){
-    if(p.hand){ p.hand=null; nextTurn(); }
-    else { p.hand=randCard(); p.drawCount++; render(); }
+    if(p.hand){
+      // الخصم ضغط deck وعنده كرت → ينهي دوره
+      p.hand=null;
+      nextTurn();
+    } else {
+      // الخصم ضغط deck وما عندوش كرت → يسحب كرت جديد (بداية دوره)
+      p.hand=randCard(); p.drawCount++; render();
+    }
   } else {
     p.hand=randCard(); p.drawCount++; render();
   }
