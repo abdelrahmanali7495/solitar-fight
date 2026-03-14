@@ -2,11 +2,21 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Solitaire Fight ⚔️</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
 <style>
+/* ══════════════════════════════════════════════════════
+   ██████╗  ██████╗  ██████╗ ████████╗
+  ██╔══██╗██╔═══██╗██╔═══██╗╚══██╔══╝
+  ██████╔╝██║   ██║██║   ██║   ██║
+  ██╔══██╗██║   ██║██║   ██║   ██║
+  ██║  ██║╚██████╔╝╚██████╔╝   ██║
+   ╚═╝  ╚═╝ ╚═════╝  ╚═════╝   ╚═╝
+   CUSTOM IMAGES  —  ضع روابطك هنا
+   ══════════════════════════════════════════════════════ */
+
 :root {
   --gold: #FFD700;
   --gold-dark: #B8860B;
@@ -14,13 +24,52 @@
   --text: #e8e0d0;
   --text-dim: #6a6058;
   --glow-gold: 0 0 18px rgba(255,215,0,0.45);
-  /* card dimensions */
-  --cw: 56px;      /* card width */
-  --ch: 96px;      /* card height – standard playing card 1:1.71 ratio */
-  --peek: 16px;    /* how many px each hidden card peeks ABOVE the face-up card */
+
+  /* ┌─────────────────────────────────────────────────┐
+     │  حجم الكروت — تعديل تلقائي على الموبايل        │
+     └─────────────────────────────────────────────────┘ */
+  --cw: 56px;
+  --ch: 84px;
+  --peek: 13px;
+  --hand-w: 88px;
+  --hand-h: 132px;
 }
+
+/* موبايل صغير */
+@media (max-width: 400px) {
+  :root {
+    --cw: 40px;
+    --ch: 62px;
+    --peek: 10px;
+    --hand-w: 70px;
+    --hand-h: 108px;
+  }
+}
+
+/* موبايل متوسط */
+@media (min-width: 401px) and (max-width: 600px) {
+  :root {
+    --cw: 48px;
+    --ch: 72px;
+    --peek: 11px;
+    --hand-w: 80px;
+    --hand-h: 120px;
+  }
+}
+
+/* تابلت / ديسكتوب */
+@media (min-width: 768px) {
+  :root {
+    --cw: 60px;
+    --ch: 92px;
+    --peek: 15px;
+    --hand-w: 95px;
+    --hand-h: 145px;
+  }
+}
+
 * { margin:0; padding:0; box-sizing:border-box; }
-html,body { height:100%; overflow:hidden; }
+html,body { height:100%; overflow:hidden; touch-action:manipulation; }
 
 body {
   background: var(--darker);
@@ -31,7 +80,14 @@ body {
     radial-gradient(ellipse at 85% 85%, rgba(180,40,40,.13) 0%, transparent 55%);
 }
 
-.screen { display:none; width:100%; height:100%; }
+/* ─────── BACKGROUND IMAGE للساحة ─────── */
+.game-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background-size: cover; background-position: center;
+  pointer-events: none; opacity: 0.18;
+}
+
+.screen { display:none; width:100%; height:100%; position:relative; z-index:1; }
 .screen.active { display:flex; flex-direction:column; }
 
 /* ─────── MENU ─────── */
@@ -46,17 +102,17 @@ body {
 .bg-suit:nth-child(6){top:35%;right:2%;font-size:80px;animation-delay:5s}
 @keyframes floatS{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-22px) rotate(8deg)}}
 
-.logo-wrap { text-align:center; margin-bottom:38px; }
-.logo-main { font-family:'Cinzel Decorative',serif; font-size:clamp(22px,4.5vw,44px); color:var(--gold); text-shadow:var(--glow-gold),0 3px 8px rgba(0,0,0,.9); }
+.logo-wrap { text-align:center; margin-bottom:28px; }
+.logo-main { font-family:'Cinzel Decorative',serif; font-size:clamp(20px,4.5vw,44px); color:var(--gold); text-shadow:var(--glow-gold),0 3px 8px rgba(0,0,0,.9); }
 .logo-line { width:180px; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:11px auto; }
 .logo-sub { font-size:11px; color:var(--text-dim); letter-spacing:4px; text-transform:uppercase; }
 
-.menu-box { background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99)); border:1px solid rgba(255,215,0,.18); border-radius:16px; padding:30px 34px; width:100%; max-width:450px; box-shadow:0 24px 64px rgba(0,0,0,.65); }
-.sec-lbl { text-align:center; font-size:11px; color:var(--gold); letter-spacing:4px; text-transform:uppercase; margin-bottom:16px; opacity:.75; }
+.menu-box { background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99)); border:1px solid rgba(255,215,0,.18); border-radius:16px; padding:24px 28px; width:100%; max-width:420px; box-shadow:0 24px 64px rgba(0,0,0,.65); }
+.sec-lbl { text-align:center; font-size:11px; color:var(--gold); letter-spacing:4px; text-transform:uppercase; margin-bottom:14px; opacity:.75; }
 
-.mbtn { width:100%; padding:14px 17px; margin-bottom:9px; border:none; border-radius:10px; cursor:pointer; font-family:'Cairo',sans-serif; font-size:15px; font-weight:700; display:flex; align-items:center; gap:11px; transition:all .22s; position:relative; overflow:hidden; }
+.mbtn { width:100%; padding:13px 15px; margin-bottom:8px; border:none; border-radius:10px; cursor:pointer; font-family:'Cairo',sans-serif; font-size:15px; font-weight:700; display:flex; align-items:center; gap:11px; transition:all .22s; position:relative; overflow:hidden; }
 .mbtn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.06);transform:translateX(-100%);transition:transform .28s}
-.mbtn:hover::before{transform:translateX(0)} .mbtn:hover{transform:translateY(-2px)}
+.mbtn:hover::before,.mbtn:active::before{transform:translateX(0)} .mbtn:hover{transform:translateY(-2px)}
 .mbtn-solo{background:linear-gradient(135deg,#0e2e1a,#071510);border:1px solid rgba(39,174,96,.35);color:#4ade80}
 .mbtn-solo:hover{border-color:rgba(39,174,96,.75);box-shadow:0 0 18px rgba(39,174,96,.2)}
 .mbtn-local{background:linear-gradient(135deg,#101e38,#080f1e);border:1px solid rgba(41,128,185,.35);color:#60a5fa}
@@ -64,26 +120,35 @@ body {
 .mbtn-online{background:linear-gradient(135deg,#2e0e0e,#180707);border:1px solid rgba(200,50,50,.35);color:#f87171}
 .mbtn-online:hover{border-color:rgba(200,50,50,.75);box-shadow:0 0 18px rgba(200,50,50,.2)}
 .mbtn-ico{font-size:21px;flex-shrink:0} .mbtn-t{text-align:right} .mbtn-t span{display:block} .mbtn-t .sm{font-size:11px;opacity:.55;font-weight:400}
-.submenu{display:none;margin-top:3px;padding:11px;background:rgba(0,0,0,.35);border-radius:8px;border:1px solid rgba(255,215,0,.08)}
+.submenu{display:none;margin-top:3px;padding:10px;background:rgba(0,0,0,.35);border-radius:8px;border:1px solid rgba(255,215,0,.08)}
 .submenu.open{display:block}
 .smbtn{width:100%;padding:9px 12px;margin-bottom:7px;border:none;border-radius:7px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px;transition:all .2s}
 .smbtn:last-child{margin-bottom:0}
 .smbtn-t{background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.28);color:#4ade80} .smbtn-t:hover{background:rgba(39,174,96,.22)}
 .smbtn-s{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.28);color:#f87171} .smbtn-s:hover{background:rgba(231,76,60,.22)}
-hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
+hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 
-/* ─────── ONLINE SETUP ─────── */
+/* ─────── ONLINE SETUP (مبسّط) ─────── */
 #online-screen { align-items:center; justify-content:center; overflow-y:auto; }
-.setup-box { background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99)); border:1px solid rgba(255,215,0,.18); border-radius:16px; padding:30px; width:100%; max-width:420px; box-shadow:0 24px 64px rgba(0,0,0,.65); margin:20px; }
-.setup-title { font-family:'Cinzel Decorative',serif; font-size:17px; color:var(--gold); text-align:center; margin-bottom:20px; }
-.tabs{display:flex;gap:6px;margin-bottom:16px}
-.tab{flex:1;padding:8px;border:1px solid rgba(255,215,0,.18);border-radius:7px;background:transparent;color:var(--text-dim);cursor:pointer;font-family:'Cairo',sans-serif;font-size:12px;transition:all .2s}
-.tab.on{background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.4);color:var(--gold)}
-.tc{display:none}.tc.on{display:block}
-.lbl{display:block;font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;margin-top:11px}
+.setup-box { background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99)); border:1px solid rgba(255,215,0,.18); border-radius:16px; padding:26px 24px; width:100%; max-width:400px; box-shadow:0 24px 64px rgba(0,0,0,.65); margin:16px; }
+.setup-title { font-family:'Cinzel Decorative',serif; font-size:16px; color:var(--gold); text-align:center; margin-bottom:18px; }
+
+/* أزرار الأونلاين الرئيسية */
+.online-btns { display:flex; gap:8px; margin-bottom:14px; }
+.obtn { flex:1; padding:14px 8px; border:none; border-radius:10px; cursor:pointer; font-family:'Cairo',sans-serif; font-size:14px; font-weight:700; display:flex; flex-direction:column; align-items:center; gap:5px; transition:all .22s; }
+.obtn-ico { font-size:24px; }
+.obtn-create { background:linear-gradient(135deg,#0e2e1a,#071510); border:1px solid rgba(39,174,96,.4); color:#4ade80; }
+.obtn-create:hover { border-color:rgba(39,174,96,.8); box-shadow:0 0 18px rgba(39,174,96,.2); transform:translateY(-2px); }
+.obtn-join { background:linear-gradient(135deg,#101e38,#080f1e); border:1px solid rgba(41,128,185,.4); color:#60a5fa; }
+.obtn-join:hover { border-color:rgba(41,128,185,.8); box-shadow:0 0 18px rgba(41,128,185,.2); transform:translateY(-2px); }
+
+/* Panel الإنشاء / الانضمام */
+.opanel { display:none; }
+.opanel.on { display:block; }
+.lbl{display:block;font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;margin-top:10px}
 .inp{width:100%;padding:10px 13px;background:rgba(0,0,0,.45);border:1px solid rgba(255,215,0,.18);border-radius:7px;color:var(--text);font-family:'Cairo',sans-serif;font-size:14px;outline:none;transition:border-color .2s;text-align:right}
 .inp:focus{border-color:rgba(255,215,0,.5)} select.inp{cursor:pointer}
-.abtn{width:100%;padding:12px;border:none;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;transition:all .22s;margin-top:13px}
+.abtn{width:100%;padding:12px;border:none;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;transition:all .22s;margin-top:12px}
 .abtn-gold{background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:#0a0a0f}
 .abtn-gold:hover{transform:translateY(-2px);box-shadow:var(--glow-gold)}
 .abtn-dim{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--text-dim)}
@@ -95,18 +160,25 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
 .status.err{background:rgba(192,57,43,.18);border:1px solid rgba(192,57,43,.35);color:#f87171}
 .codebox{text-align:center;padding:13px;background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.2);border-radius:8px;margin:12px 0;display:none}
 .codebox.on{display:block}
-.code-val{font-family:'Cinzel Decorative',serif;font-size:28px;color:var(--gold);letter-spacing:7px}
+.code-val{font-family:'Cinzel Decorative',serif;font-size:32px;color:var(--gold);letter-spacing:9px;cursor:pointer;transition:opacity .2s}
+.code-val:hover{opacity:.7}
 .code-lbl{font-size:11px;color:var(--text-dim);margin-bottom:4px}
+.code-copy-hint{font-size:10px;color:var(--text-dim);margin-top:4px;opacity:.6}
+
+/* كود الانضمام — خانات كبيرة */
+.code-inputs { display:flex; gap:8px; justify-content:center; margin-top:8px; direction:ltr; }
+.code-digit { width:52px; height:62px; background:rgba(0,0,0,.5); border:2px solid rgba(255,215,0,.25); border-radius:10px; color:var(--gold); font-family:'Cinzel Decorative',serif; font-size:26px; text-align:center; outline:none; text-transform:uppercase; transition:border-color .2s; -webkit-appearance:none; }
+.code-digit:focus { border-color:rgba(255,215,0,.7); box-shadow:0 0 12px rgba(255,215,0,.2); }
 
 /* ─────── GAME SCREEN ─────── */
 #game-screen { overflow:hidden; }
 
-.ghead { display:flex; align-items:center; justify-content:space-between; padding:5px 12px; background:rgba(0,0,0,.65); border-bottom:1px solid rgba(255,215,0,.1); flex-shrink:0; gap:8px; height:36px; }
-.gtitle { font-family:'Cinzel Decorative',serif; font-size:12px; color:var(--gold); opacity:.8; }
-.mbadge { padding:2px 10px; border-radius:20px; font-size:10px; font-weight:700; letter-spacing:1px; }
+.ghead { display:flex; align-items:center; justify-content:space-between; padding:4px 10px; background:rgba(0,0,0,.72); border-bottom:1px solid rgba(255,215,0,.1); flex-shrink:0; gap:8px; height:34px; }
+.gtitle { font-family:'Cinzel Decorative',serif; font-size:11px; color:var(--gold); opacity:.8; }
+.mbadge { padding:2px 9px; border-radius:20px; font-size:10px; font-weight:700; letter-spacing:1px; }
 .mbadge.turns { background:rgba(39,174,96,.18); border:1px solid rgba(39,174,96,.38); color:#4ade80; }
 .mbadge.speed { background:rgba(231,76,60,.18); border:1px solid rgba(231,76,60,.38); color:#f87171; }
-.qbtn { padding:3px 11px; background:rgba(192,57,43,.18); border:1px solid rgba(192,57,43,.38); border-radius:6px; color:#f87171; cursor:pointer; font-family:'Cairo',sans-serif; font-size:11px; transition:all .2s; }
+.qbtn { padding:3px 10px; background:rgba(192,57,43,.18); border:1px solid rgba(192,57,43,.38); border-radius:6px; color:#f87171; cursor:pointer; font-family:'Cairo',sans-serif; font-size:11px; transition:all .2s; }
 .qbtn:hover { background:rgba(192,57,43,.35); }
 
 /* ── Split layout ── */
@@ -128,9 +200,9 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
   position: absolute;
   left: 50%; top: 50%;
   transform: translate(-50%,-50%);
-  font-size: 14px;
+  font-size: 13px;
   background: var(--darker);
-  padding: 0 6px;
+  padding: 0 5px;
   line-height: 1;
 }
 
@@ -140,45 +212,32 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6px 8px;
+  padding: 4px 6px;
   overflow: hidden;
   position: relative;
-  gap: 6px;
+  gap: 4px;
 }
 
-/* Opponent half is rotated 180° so they face toward us */
 .half.opponent { transform: rotate(180deg); }
-
-/* Active turn glow */
 .half.myturn { background: rgba(255,215,0,.025); }
 
 /* ── Player info bar ── */
-.pinfo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  flex-shrink: 0;
-}
-.pname { font-size: 12px; font-weight:700; color:var(--gold); display:flex; align-items:center; gap:5px; }
+.pinfo { display:flex; align-items:center; justify-content:space-between; width:100%; flex-shrink:0; }
+.pname { font-size:11px; font-weight:700; color:var(--gold); display:flex; align-items:center; gap:5px; }
 .pulse { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 7px var(--gold); animation:pulseA 1s infinite; display:none; }
 .myturn .pulse { display:block; }
 @keyframes pulseA{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
 .pstats { display:flex; align-items:center; gap:7px; }
 .hpbar-w { display:flex; align-items:center; gap:4px; }
-.hpbar { width:70px; height:5px; background:rgba(255,255,255,.1); border-radius:3px; overflow:hidden; }
+.hpbar { width:60px; height:5px; background:rgba(255,255,255,.1); border-radius:3px; overflow:hidden; }
 .hpfill { height:100%; background:linear-gradient(90deg,#c0392b,#e74c3c); border-radius:3px; transition:width .4s; }
-.hptxt { font-size:11px; color:#f87171; font-weight:700; min-width:26px; }
+.hptxt { font-size:10px; color:#f87171; font-weight:700; min-width:22px; }
 .cleft { font-size:10px; color:var(--text-dim); }
 
-/* ═══════════════════════════════════════════════
-   STACKS  —  vertical, like real solitaire
-   Each stack shows face-down cards peeking
-   downward, with the face-up TOP card at bottom.
-   ═══════════════════════════════════════════════ */
+/* ══ STACKS ══ */
 .stacks-row {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   align-items: flex-end;
   flex-shrink: 0;
   justify-content: center;
@@ -191,7 +250,7 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
   align-items: center;
   width: var(--cw);
   flex-shrink: 0;
-  gap: 3px;
+  gap: 2px;
 }
 
 .stack-count {
@@ -202,18 +261,11 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
   flex-shrink: 0;
 }
 
-/*
-  .stack-pile:
-  A relative container; inside it we absolutely position
-  all the face-down cards + the face-up top card.
-  Height = (nHidden * peek) + cardHeight
-*/
 .stack-pile {
   position: relative;
   width: 100%;
 }
 
-/* Face-down card in the pile */
 .pile-card-down {
   position: absolute;
   width: 100%;
@@ -223,7 +275,6 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
   overflow: hidden;
 }
 
-/* Default CSS back pattern */
 .pile-card-down .back-pattern {
   width: 100%; height: 100%;
   background: linear-gradient(155deg,#1a2a44,#0c1828);
@@ -240,19 +291,18 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
   );
 }
 
-/* Face-up top card — placed at the bottom of the pile */
 .pile-card-up {
   position: absolute;
   width: 100%;
   height: var(--ch);
-  border-radius: 6px;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   user-select: none;
-  transition: transform .18s, box-shadow .18s, border-color .18s;
+  transition: transform .15s, box-shadow .15s;
   overflow: hidden;
   cursor: default;
 }
@@ -265,52 +315,34 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
 .pile-card-up.face-up.diamonds { color: #b02020; }
 .pile-card-up.face-up.spades,
 .pile-card-up.face-up.clubs   { color: #111828; }
-
 .pile-card-up.has-image .card-inner { display:none; }
 .pile-card-up.has-image { background-size:cover; background-position:center; background-repeat:no-repeat; }
+.pile-card-up.empty-slot { background:rgba(255,255,255,.02); border:1.5px dashed rgba(255,255,255,.1); color:rgba(255,255,255,.15); font-size:11px; }
+.pile-card-up.playable { cursor:pointer; }
+.pile-card-up.playable:hover { transform:translateY(-4px); box-shadow:0 6px 18px rgba(255,215,0,.35); border-color:rgba(255,215,0,.8) !important; }
+.pile-card-up.playable:active { transform:translateY(-2px); }
 
-.pile-card-up.empty-slot {
-  background: rgba(255,255,255,.02);
-  border: 1.5px dashed rgba(255,255,255,.1);
-  color: rgba(255,255,255,.15);
-  font-size: 11px;
-}
-
-.pile-card-up.playable {
-  cursor: pointer;
-}
-
-/* Card inner layout */
-.card-inner {
-  width:100%; height:100%;
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  position:relative;
-}
-.ci-tl { position:absolute; top:3px; right:4px; text-align:right; line-height:1.1; }
-.ci-br { position:absolute; bottom:3px; left:4px; transform:rotate(180deg); text-align:right; line-height:1.1; }
-.ci-val  { font-size:clamp(9px,1.3vw,13px); font-weight:900; display:block; }
-.ci-ssm  { font-size:clamp(8px,1.1vw,11px); display:block; }
-.ci-slg  { font-size:clamp(18px,3vw,28px); line-height:1; }
+/* Card inner */
+.card-inner { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; }
+.ci-tl { position:absolute; top:2px; right:3px; text-align:right; line-height:1.1; }
+.ci-br { position:absolute; bottom:2px; left:3px; transform:rotate(180deg); text-align:right; line-height:1.1; }
+.ci-val  { font-size:clamp(8px,1.8vw,13px); font-weight:900; display:block; }
+.ci-ssm  { font-size:clamp(7px,1.5vw,11px); display:block; }
+.ci-slg  { font-size:clamp(14px,3.5vw,26px); line-height:1; }
 
 /* ─────── HAND AREA ─────── */
-/*
-  Big, clearly visible hand card + deck.
-  No overlap. Centered horizontally.
-*/
 .hand-area {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
-/* Big hand card */
 .hand-card {
-  width: 95px;
-  height: 145px;
-  border-radius: 11px;
+  width: var(--hand-w);
+  height: var(--hand-h);
+  border-radius: 9px;
   display: flex; flex-direction:column; align-items:center; justify-content:center;
   font-weight: 700;
   position: relative; overflow: hidden;
@@ -325,23 +357,22 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
 .hand-card.face-up.clubs   { color:#111828; }
 .hand-card.has-image .card-inner { display:none; }
 .hand-card.has-image { background-size:cover; background-position:center; }
-.hand-card .ci-val { font-size:17px; }
-.hand-card .ci-ssm { font-size:14px; }
-.hand-card .ci-slg { font-size:38px; }
+.hand-card .ci-val { font-size:clamp(14px,3vw,18px); }
+.hand-card .ci-ssm { font-size:clamp(11px,2.5vw,15px); }
+.hand-card .ci-slg { font-size:clamp(28px,6vw,40px); }
 
 .hand-empty {
-  width:95px; height:163px; border-radius:11px;
+  width:var(--hand-w); height:var(--hand-h); border-radius:9px;
   background:rgba(255,255,255,.03); border:2px dashed rgba(255,255,255,.12);
   display:flex; align-items:center; justify-content:center;
-  font-size:34px; color:rgba(255,255,255,.15);
+  font-size:clamp(24px,5vw,34px); color:rgba(255,255,255,.15);
   flex-shrink:0;
 }
 
-/* Big deck pile */
 .deck-pile {
-  width: 95px;
-  height: 163px;
-  border-radius: 11px;
+  width: var(--hand-w);
+  height: var(--hand-h);
+  border-radius: 9px;
   background: linear-gradient(135deg,#141e34,#0a1020);
   border: 2.5px solid rgba(255,215,0,.35);
   display: flex; align-items:center; justify-content:center;
@@ -354,8 +385,8 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
     transparent 0,transparent 5px
   );
 }
-.deck-pile:hover { border-color:rgba(255,215,0,.75); box-shadow:var(--glow-gold); transform:scale(1.05); }
-.deck-pile .dico { font-size:30px; opacity:.5; position:relative; }
+.deck-pile:hover,.deck-pile:active { border-color:rgba(255,215,0,.75); box-shadow:var(--glow-gold); transform:scale(1.05); }
+.deck-pile .dico { font-size:clamp(22px,4vw,30px); opacity:.5; position:relative; }
 .deck-pile.has-back-img { background-size:cover; background-position:center; }
 .deck-pile.has-back-img::before { display:none; }
 .deck-pile.has-back-img .dico { display:none; }
@@ -363,23 +394,27 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
 
 /* ─────── WIN ─────── */
 #win-screen { align-items:center; justify-content:center; background:radial-gradient(ellipse at center,rgba(255,215,0,.08) 0%,var(--darker) 70%); overflow-y:auto; }
-.win-wrap { text-align:center; padding:44px 36px; max-width:380px; width:100%; }
-.win-trophy { font-size:76px; animation:trophyPop .5s ease-out; }
+.win-wrap { text-align:center; padding:36px 28px; max-width:360px; width:100%; }
+.win-trophy { font-size:70px; animation:trophyPop .5s ease-out; }
 @keyframes trophyPop{0%{transform:scale(0) rotate(-20deg)}65%{transform:scale(1.2) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
-.win-title { font-family:'Cinzel Decorative',serif; font-size:clamp(20px,4vw,36px); color:var(--gold); text-shadow:var(--glow-gold); margin:16px 0 8px; }
-.win-sub { color:var(--text-dim); font-size:14px; margin-bottom:24px; }
-.wstats { background:rgba(255,215,0,.05); border:1px solid rgba(255,215,0,.15); border-radius:10px; padding:16px; margin-bottom:20px; }
+.win-title { font-family:'Cinzel Decorative',serif; font-size:clamp(18px,4vw,34px); color:var(--gold); text-shadow:var(--glow-gold); margin:14px 0 8px; }
+.win-sub { color:var(--text-dim); font-size:13px; margin-bottom:20px; }
+.wstats { background:rgba(255,215,0,.05); border:1px solid rgba(255,215,0,.15); border-radius:10px; padding:14px; margin-bottom:18px; }
 .sgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.sval { color:var(--gold); font-size:22px; font-weight:700; }
+.sval { color:var(--gold); font-size:20px; font-weight:700; }
 .slbl { color:var(--text-dim); font-size:11px; }
 
 /* damage pop */
-.dmg-pop { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Cinzel Decorative',serif; font-size:44px; color:#f87171; text-shadow:0 0 22px rgba(248,113,113,.85); pointer-events:none; z-index:1000; animation:dmgA .9s forwards; }
+.dmg-pop { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Cinzel Decorative',serif; font-size:clamp(30px,7vw,44px); color:#f87171; text-shadow:0 0 22px rgba(248,113,113,.85); pointer-events:none; z-index:1000; animation:dmgA .9s forwards; }
 @keyframes dmgA{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}25%{opacity:1;transform:translate(-50%,-72%) scale(1.25)}70%{opacity:1;transform:translate(-50%,-82%) scale(1)}100%{opacity:0;transform:translate(-50%,-110%) scale(.8)}}
 
 /* notif */
 .notif { position:fixed; top:16px; left:50%; transform:translateX(-50%); background:rgba(22,22,38,.97); border:1px solid rgba(255,215,0,.3); border-radius:8px; padding:10px 18px; font-size:13px; z-index:999; animation:notifA 3.2s forwards; white-space:nowrap; }
 @keyframes notifA{0%{opacity:0;transform:translateX(-50%) translateY(-16px)}14%{opacity:1;transform:translateX(-50%) translateY(0)}78%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+
+/* تحميل الكروت */
+.preload-bar { position:fixed; bottom:0; left:0; right:0; height:3px; background:rgba(255,215,0,.12); z-index:2000; }
+.preload-fill { height:100%; background:var(--gold); transition:width .3s; width:0%; }
 
 .ldots::after{content:'...';animation:ld 1.4s infinite}
 @keyframes ld{0%,100%{content:'.'}33%{content:'..'}66%{content:'...'}}
@@ -387,6 +422,12 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
 </style>
 </head>
 <body>
+
+<!-- خلفية الساحة — تظهر خلف اللعبة -->
+<div class="game-bg" id="game-bg-el"></div>
+
+<!-- شريط تحميل الصور -->
+<div class="preload-bar"><div class="preload-fill" id="preload-fill"></div></div>
 
 <!-- ═══════════ MENU ═══════════ -->
 <div id="menu-screen" class="screen active">
@@ -426,35 +467,60 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
   </div>
 </div>
 
-<!-- ═══════════ ONLINE SETUP ═══════════ -->
+<!-- ═══════════ ONLINE SETUP (مبسّط) ═══════════ -->
 <div id="online-screen" class="screen">
   <div class="setup-box">
     <div class="setup-title">🌐 اللعب الأونلاين</div>
-    <div class="tabs">
-      <button class="tab on" onclick="switchTab('create')">إنشاء غرفة</button>
-      <button class="tab" onclick="switchTab('join')">انضمام</button>
+
+    <!-- اختيار: إنشاء أو انضمام -->
+    <div class="online-btns" id="online-choice">
+      <button class="obtn obtn-create" onclick="showOnlinePanel('create')">
+        <span class="obtn-ico">➕</span>
+        <span>إنشاء غرفة</span>
+      </button>
+      <button class="obtn obtn-join" onclick="showOnlinePanel('join')">
+        <span class="obtn-ico">🔗</span>
+        <span>انضمام</span>
+      </button>
     </div>
-    <div id="tc-create" class="tc on">
-      <label class="lbl">اسمك</label><input class="inp" id="c-name" value="لاعب 1">
-      <label class="lbl">Ably API Key</label><input class="inp" id="c-key" placeholder="xxxx.xxxx:xxxxxxxxxx" dir="ltr">
+
+    <!-- Panel إنشاء غرفة -->
+    <div id="panel-create" class="opanel">
+      <label class="lbl">اسمك</label>
+      <input class="inp" id="c-name" value="لاعب 1">
       <label class="lbl">مود اللعبة</label>
       <select class="inp" id="c-mode">
         <option value="turns">🔄 مود الأدوار</option>
         <option value="speed">⚡ مود السرعة</option>
       </select>
-      <button class="abtn abtn-gold" onclick="createRoom()">إنشاء غرفة</button>
-      <div class="codebox" id="codebox"><div class="code-lbl">شارك الكود مع صاحبك</div><div class="code-val" id="code-val">----</div></div>
+      <button class="abtn abtn-gold" onclick="createRoom()">إنشاء الغرفة</button>
+      <div class="codebox" id="codebox">
+        <div class="code-lbl">شارك الكود مع صاحبك</div>
+        <div class="code-val" id="code-val" onclick="copyCode()" title="اضغط للنسخ">----</div>
+        <div class="code-copy-hint">اضغط على الكود لنسخه</div>
+      </div>
       <div class="status" id="st-create"></div>
+      <button class="abtn abtn-dim" onclick="backToOnlineChoice()" style="margin-top:8px">← رجوع</button>
     </div>
-    <div id="tc-join" class="tc">
-      <label class="lbl">اسمك</label><input class="inp" id="j-name" value="لاعب 2">
-      <label class="lbl">Ably API Key</label><input class="inp" id="j-key" placeholder="xxxx.xxxx:xxxxxxxxxx" dir="ltr">
+
+    <!-- Panel الانضمام -->
+    <div id="panel-join" class="opanel">
+      <label class="lbl">اسمك</label>
+      <input class="inp" id="j-name" value="لاعب 2">
       <label class="lbl">كود الغرفة</label>
-      <input class="inp" id="j-code" placeholder="أدخل الكود" dir="ltr" style="letter-spacing:5px;text-align:center;text-transform:uppercase">
-      <button class="abtn abtn-gold" onclick="joinRoom()">انضمام</button>
+      <div class="code-inputs">
+        <input class="code-digit" id="cd0" maxlength="1" oninput="codeDigitInput(0)" onkeydown="codeDigitKey(0,event)">
+        <input class="code-digit" id="cd1" maxlength="1" oninput="codeDigitInput(1)" onkeydown="codeDigitKey(1,event)">
+        <input class="code-digit" id="cd2" maxlength="1" oninput="codeDigitInput(2)" onkeydown="codeDigitKey(2,event)">
+        <input class="code-digit" id="cd3" maxlength="1" oninput="codeDigitInput(3)" onkeydown="codeDigitKey(3,event)">
+      </div>
+      <button class="abtn abtn-gold" onclick="joinRoom()" style="margin-top:14px">انضمام للغرفة</button>
       <div class="status" id="st-join"></div>
+      <button class="abtn abtn-dim" onclick="backToOnlineChoice()" style="margin-top:8px">← رجوع</button>
     </div>
-    <button class="abtn abtn-dim" onclick="showMenu()" style="margin-top:10px">← رجوع</button>
+
+    <!-- رجوع للقائمة الرئيسية -->
+    <button class="abtn abtn-dim" onclick="showMenu()" style="margin-top:8px;opacity:.6">↩ القائمة الرئيسية</button>
   </div>
 </div>
 
@@ -486,87 +552,132 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:14px 0}
 
 <script>
 /* ═══════════════════════════════════════════════════════════
-   CARD IMAGE MAP  —  ضع رابط صورة لكل كرت هنا
-   ═══════════════════════════════════════════════════════════
-   Format:  "VALUE_SUIT" : "https://..."
-   Values : A  2  3  4  5  6  7  8  9  10  J  Q  K
-   Suits  : S (♠ سباد)   H (♥ هارت)   D (♦ دايموند)   C (♣ كلوب)
+   ██╗███╗   ███╗ █████╗  ██████╗ ███████╗███████╗
+   ██║████╗ ████║██╔══██╗██╔════╝ ██╔════╝██╔════╝
+   ██║██╔████╔██║███████║██║  ███╗█████╗  ███████╗
+   ██║██║╚██╔╝██║██╔══██║██║   ██║██╔══╝  ╚════██║
+   ██║██║ ╚═╝ ██║██║  ██║╚██████╔╝███████╗███████║
+   ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
 
-   مثال:
-     "A_S"  : "https://example.com/cards/ace_spades.png",
-     "K_H"  : "https://example.com/cards/king_hearts.png",
+   ┌──────────────────────────────────────────────────────┐
+   │  1. صور الكروت — ضع رابط كل كرت هنا                │
+   │     Format: "VALUE_SUIT" : "https://..."             │
+   │     Values: A 2 3 4 5 6 7 8 9 10 J Q K             │
+   │     Suits:  S=♠  H=♥  D=♦  C=♣                     │
+   │  2. ظهر الكرت — CARD_BACK_IMAGE                     │
+   │  3. خلفية ساحة اللعب — BOARD_BG_IMAGE               │
+   └──────────────────────────────────────────────────────┘
+   ═══════════════════════════════════════════════════════ */
 
-   لو الكرت مش عنده صورة سيظهر بالتصميم الافتراضي.
-   ═══════════════════════════════════════════════════════════ */
 const CARD_IMAGES = {
 
   /* ♠  SPADES  ─────────────────────────────────── */
-  "A_S"  : "https://i.postimg.cc/MTh7HmVL/S_ice_A.png",   /* Ace   of Spades   */
-  "2_S"  : "https://i.postimg.cc/432bkgds/S_ice_2.png",   /* 2     of Spades   */
-  "3_S"  : "https://i.postimg.cc/cJkMySH4/S_ice_3.png",   /* 3     of Spades   */
-  "4_S"  : "https://i.postimg.cc/7LtM8k6D/i_S_ice_4.png",   /* 4     of Spades   */
-  "5_S"  : "https://i.postimg.cc/KYprS2zY/S_ice_5.png",   /* 5     of Spades   */
-  "6_S"  : "https://i.postimg.cc/R0pQ5BFH/S_ice_6.png",   /* 6     of Spades   */
-  "7_S"  : "https://i.postimg.cc/C1ZCwQBz/S_ice_7.png",   /* 7     of Spades   */
-  "8_S"  : "https://i.postimg.cc/50H5fRYY/S_ice_8.png",   /* 8     of Spades   */
-  "9_S"  : "https://i.postimg.cc/sXBP3NQW/S_ice_9.png",   /* 9     of Spades   */
-  "10_S" : "https://i.postimg.cc/QtBgjy9c/S_ice_10.png",   /* 10    of Spades   */
-  "J_S"  : "https://i.postimg.cc/tT1d9MZD/S_ice_J.png",   /* Jack  of Spades   */
-  "Q_S"  : "https://i.postimg.cc/Jny3R2D2/S_ice_Q.png",   /* Queen of Spades   */
-  "K_S"  : "https://i.postimg.cc/26PQy7hc/S_ice_K.png",   /* King  of Spades   */
+  "A_S"  : "https://i.postimg.cc/MTh7HmVL/S_ice_A.png",
+  "2_S"  : "https://i.postimg.cc/432bkgds/S_ice_2.png",
+  "3_S"  : "https://i.postimg.cc/cJkMySH4/S_ice_3.png",
+  "4_S"  : "https://i.postimg.cc/7LtM8k6D/i_S_ice_4.png",
+  "5_S"  : "https://i.postimg.cc/KYprS2zY/S_ice_5.png",
+  "6_S"  : "https://i.postimg.cc/R0pQ5BFH/S_ice_6.png",
+  "7_S"  : "https://i.postimg.cc/C1ZCwQBz/S_ice_7.png",
+  "8_S"  : "https://i.postimg.cc/50H5fRYY/S_ice_8.png",
+  "9_S"  : "https://i.postimg.cc/sXBP3NQW/S_ice_9.png",
+  "10_S" : "https://i.postimg.cc/QtBgjy9c/S_ice_10.png",
+  "J_S"  : "https://i.postimg.cc/tT1d9MZD/S_ice_J.png",
+  "Q_S"  : "https://i.postimg.cc/Jny3R2D2/S_ice_Q.png",
+  "K_S"  : "https://i.postimg.cc/26PQy7hc/S_ice_K.png",
 
   /* ♥  HEARTS  ─────────────────────────────────── */
-  "A_H"  : "https://i.postimg.cc/VL9qsM67/H_sun_A.png",   /* Ace   of Hearts   */
-  "2_H"  : "https://i.postimg.cc/jd6HqN5m/H_sun_2.png",   /* 2     of Hearts   */
-  "3_H"  : "https://i.postimg.cc/kXNQM84Z/H_sun_3.png",   /* 3     of Hearts   */
-  "4_H"  : "https://i.postimg.cc/hP8L4xjY/H_sun_4.png",   /* 4     of Hearts   */
-  "5_H"  : "https://i.postimg.cc/YqN62g0w/H_sun_5.png",   /* 5     of Hearts   */
-  "6_H"  : "https://i.postimg.cc/CxFjR1ny/H_sun_6.png",   /* 6     of Hearts   */
-  "7_H"  : "https://i.postimg.cc/kgnx24R3/H_sun_7.png",   /* 7     of Hearts   */
-  "8_H"  : "https://i.postimg.cc/W12Md3qj/H_sun_8.png",   /* 8     of Hearts   */
-  "9_H"  : "https://i.postimg.cc/g2YvxJLm/H_sun_9.png",   /* 9     of Hearts   */
-  "10_H" : "https://i.postimg.cc/qvk8NR6J/H_sun_10.png",   /* 10    of Hearts   */
-  "J_H"  : "https://i.postimg.cc/htS9XjQG/H_sun_J.png",   /* Jack  of Hearts   */
-  "Q_H"  : "https://i.postimg.cc/QdXpFtKT/H_sun_q.png",   /* Queen of Hearts   */
-  "K_H"  : "https://i.postimg.cc/3xKgkR0p/H_sun_k.png",   /* King  of Hearts   */
+  "A_H"  : "https://i.postimg.cc/VL9qsM67/H_sun_A.png",
+  "2_H"  : "https://i.postimg.cc/jd6HqN5m/H_sun_2.png",
+  "3_H"  : "https://i.postimg.cc/kXNQM84Z/H_sun_3.png",
+  "4_H"  : "https://i.postimg.cc/hP8L4xjY/H_sun_4.png",
+  "5_H"  : "https://i.postimg.cc/YqN62g0w/H_sun_5.png",
+  "6_H"  : "https://i.postimg.cc/CxFjR1ny/H_sun_6.png",
+  "7_H"  : "https://i.postimg.cc/kgnx24R3/H_sun_7.png",
+  "8_H"  : "https://i.postimg.cc/W12Md3qj/H_sun_8.png",
+  "9_H"  : "https://i.postimg.cc/g2YvxJLm/H_sun_9.png",
+  "10_H" : "https://i.postimg.cc/qvk8NR6J/H_sun_10.png",
+  "J_H"  : "https://i.postimg.cc/htS9XjQG/H_sun_J.png",
+  "Q_H"  : "https://i.postimg.cc/QdXpFtKT/H_sun_q.png",
+  "K_H"  : "https://i.postimg.cc/3xKgkR0p/H_sun_k.png",
 
   /* ♦  DIAMONDS  ───────────────────────────────── */
-  "A_D"  : "https://i.postimg.cc/SxNMyvHF/B_moon_1.png",   /* Ace   of Diamonds */
-  "2_D"  : "https://i.postimg.cc/xTPmV2p1/B_moon_2.png",   /* 2     of Diamonds */
-  "3_D"  : "https://i.postimg.cc/8zP610xp/B_moon_3.png",   /* 3     of Diamonds */
-  "4_D"  : "https://i.postimg.cc/tCz6GjvQ/B_moon_4.png",   /* 4     of Diamonds */
-  "5_D"  : "https://i.postimg.cc/65KZP30Y/B_moon_5.png",   /* 5     of Diamonds */
-  "6_D"  : "https://i.postimg.cc/rFT4HmJ0/B_moon_6.png",   /* 6     of Diamonds */
-  "7_D"  : "https://i.postimg.cc/gkph7JDx/B_moon_7.png",   /* 7     of Diamonds */
-  "8_D"  : "https://i.postimg.cc/X7W5PJ8v/B_moon_8.png",   /* 8     of Diamonds */
-  "9_D"  : "https://i.postimg.cc/wxLJFJht/B_moon_9.png",   /* 9     of Diamonds */
-  "10_D" : "https://i.postimg.cc/J0NknV1K/B_moon_10.png",   /* 10    of Diamonds */
-  "J_D"  : "https://i.postimg.cc/D0rXZk2B/B_moon_j.png",   /* Jack  of Diamonds */
-  "Q_D"  : "https://i.postimg.cc/3NXvR5K1/B_moon.png",   /* Queen of Diamonds */
-  "K_D"  : "https://i.postimg.cc/7h3268xN/B_moon_K.png",   /* King  of Diamonds */
+  "A_D"  : "https://i.postimg.cc/SxNMyvHF/B_moon_1.png",
+  "2_D"  : "https://i.postimg.cc/xTPmV2p1/B_moon_2.png",
+  "3_D"  : "https://i.postimg.cc/8zP610xp/B_moon_3.png",
+  "4_D"  : "https://i.postimg.cc/tCz6GjvQ/B_moon_4.png",
+  "5_D"  : "https://i.postimg.cc/65KZP30Y/B_moon_5.png",
+  "6_D"  : "https://i.postimg.cc/rFT4HmJ0/B_moon_6.png",
+  "7_D"  : "https://i.postimg.cc/gkph7JDx/B_moon_7.png",
+  "8_D"  : "https://i.postimg.cc/X7W5PJ8v/B_moon_8.png",
+  "9_D"  : "https://i.postimg.cc/wxLJFJht/B_moon_9.png",
+  "10_D" : "https://i.postimg.cc/J0NknV1K/B_moon_10.png",
+  "J_D"  : "https://i.postimg.cc/D0rXZk2B/B_moon_j.png",
+  "Q_D"  : "https://i.postimg.cc/3NXvR5K1/B_moon.png",
+  "K_D"  : "https://i.postimg.cc/7h3268xN/B_moon_K.png",
 
   /* ♣  CLUBS  ──────────────────────────────────── */
-  "A_C"  : "https://i.postimg.cc/PxcCrVbj/F_BH_A.png",   /* Ace   of Clubs    */
-  "2_C"  : "https://i.postimg.cc/250qgSVp/F_BH_2.png",   /* 2     of Clubs    */
-  "3_C"  : "https://i.postimg.cc/vm01CZcy/F_BH_3.png",   /* 3     of Clubs    */
-  "4_C"  : "https://i.postimg.cc/cJFKPLrZ/F_BH_4.png",   /* 4     of Clubs    */
-  "5_C"  : "https://i.postimg.cc/bvmG4wsj/F_BH_5.png",   /* 5     of Clubs    */
-  "6_C"  : "https://i.postimg.cc/ydWJKCZR/F_BH_6.png",   /* 6     of Clubs    */
-  "7_C"  : "https://i.postimg.cc/85sFGg6m/F_BH_7.png",   /* 7     of Clubs    */
-  "8_C"  : "https://i.postimg.cc/k4DVCPbs/F_BH_8.png",   /* 8     of Clubs    */
-  "9_C"  : "https://i.postimg.cc/qRgtrH31/F_BH_9.png",   /* 9     of Clubs    */
-  "10_C" : "https://i.postimg.cc/9Mz42H7K/F_BH_10.png",   /* 10    of Clubs    */
-  "J_C"  : "https://i.postimg.cc/bJMZNVxB/F_BH_J.png",   /* Jack  of Clubs    */
-  "Q_C"  : "https://i.postimg.cc/d1XhtN2b/F_BH_Q.png",   /* Queen of Clubs    */
-  "K_C"  : "https://i.postimg.cc/vBj4H27d/F_BH_K.png",   /* King  of Clubs    */
+  "A_C"  : "https://i.postimg.cc/PxcCrVbj/F_BH_A.png",
+  "2_C"  : "https://i.postimg.cc/250qgSVp/F_BH_2.png",
+  "3_C"  : "https://i.postimg.cc/vm01CZcy/F_BH_3.png",
+  "4_C"  : "https://i.postimg.cc/cJFKPLrZ/F_BH_4.png",
+  "5_C"  : "https://i.postimg.cc/bvmG4wsj/F_BH_5.png",
+  "6_C"  : "https://i.postimg.cc/ydWJKCZR/F_BH_6.png",
+  "7_C"  : "https://i.postimg.cc/85sFGg6m/F_BH_7.png",
+  "8_C"  : "https://i.postimg.cc/k4DVCPbs/F_BH_8.png",
+  "9_C"  : "https://i.postimg.cc/qRgtrH31/F_BH_9.png",
+  "10_C" : "https://i.postimg.cc/9Mz42H7K/F_BH_10.png",
+  "J_C"  : "https://i.postimg.cc/bJMZNVxB/F_BH_J.png",
+  "Q_C"  : "https://i.postimg.cc/d1XhtN2b/F_BH_Q.png",
+  "K_C"  : "https://i.postimg.cc/vBj4H27d/F_BH_K.png",
 
 };
 
-/* ── ظهر الكرت (الوجه المقلوب) ──────────────────────────── */
-const CARD_BACK_IMAGE = "";   /* https://... رابط صورة ظهر الكرت */
+/* ══════════════════════════════════════════════════════
+   ظهر الكرت — ضع رابط صورة ظهر الكرت هنا
+   ══════════════════════════════════════════════════════ */
+const CARD_BACK_IMAGE = "";
+/* مثال: const CARD_BACK_IMAGE = "https://i.postimg.cc/xxxx/back.png"; */
+
+/* ══════════════════════════════════════════════════════
+   خلفية ساحة اللعب — ضع رابط الصورة هنا
+   ══════════════════════════════════════════════════════ */
+const BOARD_BG_IMAGE = "";
+/* مثال: const BOARD_BG_IMAGE = "https://i.postimg.cc/xxxx/board.png"; */
+
+/* ══════════════════════════════════════════════════════
+   Ably API Key — مدمج في الكود (لا يظهر للمستخدم)
+   ══════════════════════════════════════════════════════ */
+const ABLY_KEY = "UcDcBw.YJJl6g:LDwkET05nlae7VeirAz44uL8hE16cLZ8MyrSFwCnolk";
 
 /* ═══════════════════════════════════════════════════════════ */
 
+/* ── تطبيق خلفية الساحة ── */
+(function(){
+  if(BOARD_BG_IMAGE && BOARD_BG_IMAGE.trim()){
+    document.getElementById('game-bg-el').style.backgroundImage = `url('${BOARD_BG_IMAGE.trim()}')`;
+  }
+})();
+
+/* ── Preload الصور للتسريع ── */
+(function preloadImages(){
+  const urls = Object.values(CARD_IMAGES).filter(u=>u&&u.trim());
+  if(CARD_BACK_IMAGE && CARD_BACK_IMAGE.trim()) urls.push(CARD_BACK_IMAGE.trim());
+  if(!urls.length) return;
+  let loaded=0;
+  const fill=document.getElementById('preload-fill');
+  urls.forEach(url=>{
+    const img=new Image();
+    img.onload=img.onerror=()=>{
+      loaded++;
+      fill.style.width=(loaded/urls.length*100)+'%';
+      if(loaded===urls.length) setTimeout(()=>fill.parentElement.style.opacity='0',600);
+    };
+    img.src=url;
+  });
+})();
+
+/* ── Card utils ── */
 const SUITS  = ['♠','♥','♦','♣'];
 const SNAMES = ['spades','hearts','diamonds','clubs'];
 const SCODES = ['S','H','D','C'];
@@ -585,16 +696,11 @@ function cardImg(c){
   if(!v||typeof v!=='string') return null;
   const t=v.trim();
   if(t.length===0) return null;
-  // accept data: URIs and http(s):// URLs
   if(t.startsWith('data:')||t.startsWith('http')||t.startsWith('//')||t.startsWith('/')) return t;
   return null;
 }
 function backImg(){ const v=CARD_BACK_IMAGE; return (v&&v.trim().length>0)?v.trim():null; }
-
-function canPlay(h,t){
-  const d=Math.abs(h.num-t.num);
-  return d===1||d===12;  // ±1 with A↔K wrap
-}
+function canPlay(h,t){ const d=Math.abs(h.num-t.num); return d===1||d===12; }
 
 /* ── Player state ── */
 function mkPlayer(name,id){
@@ -615,16 +721,63 @@ let G={};
 /* ── Screens ── */
 function showScreen(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 function showMenu(){ stopOnline(); showScreen('menu-screen'); }
-function showOnline(){ showScreen('online-screen'); }
+function showOnline(){
+  // Reset panels
+  document.getElementById('panel-create').classList.remove('on');
+  document.getElementById('panel-join').classList.remove('on');
+  document.getElementById('online-choice').style.display='flex';
+  document.getElementById('st-create').className='status';
+  document.getElementById('st-join').className='status';
+  document.getElementById('codebox').classList.remove('on');
+  showScreen('online-screen');
+}
+function showOnlinePanel(which){
+  document.getElementById('online-choice').style.display='none';
+  document.getElementById('panel-create').classList.toggle('on', which==='create');
+  document.getElementById('panel-join').classList.toggle('on', which==='join');
+  if(which==='join') setTimeout(()=>document.getElementById('cd0').focus(), 100);
+}
+function backToOnlineChoice(){
+  stopOnline();
+  document.getElementById('panel-create').classList.remove('on');
+  document.getElementById('panel-join').classList.remove('on');
+  document.getElementById('online-choice').style.display='flex';
+  document.getElementById('st-create').className='status';
+  document.getElementById('st-join').className='status';
+  document.getElementById('codebox').classList.remove('on');
+}
 function toggleSub(id){
   const el=document.getElementById(id), was=el.classList.contains('open');
   document.querySelectorAll('.submenu').forEach(s=>s.classList.remove('open'));
   if(!was) el.classList.add('open');
 }
-function switchTab(t){
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',(i===0&&t==='create')||(i===1&&t==='join')));
-  document.getElementById('tc-create').classList.toggle('on',t==='create');
-  document.getElementById('tc-join').classList.toggle('on',t==='join');
+
+/* ── كود digits input logic ── */
+function codeDigitInput(idx){
+  const el=document.getElementById('cd'+idx);
+  el.value=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(-1);
+  if(el.value && idx<3) document.getElementById('cd'+(idx+1)).focus();
+}
+function codeDigitKey(idx,e){
+  if(e.key==='Backspace'&&!document.getElementById('cd'+idx).value&&idx>0){
+    document.getElementById('cd'+(idx-1)).focus();
+  }
+  if(e.key==='Enter') joinRoom();
+}
+function getCodeFromDigits(){
+  return [0,1,2,3].map(i=>document.getElementById('cd'+i).value).join('');
+}
+function clearCodeDigits(){
+  [0,1,2,3].forEach(i=>{ document.getElementById('cd'+i).value=''; });
+}
+function copyCode(){
+  const code=document.getElementById('code-val').textContent;
+  if(code==='----') return;
+  navigator.clipboard && navigator.clipboard.writeText(code).then(()=>{
+    const el=document.querySelector('.code-copy-hint');
+    el.textContent='✅ تم النسخ!';
+    setTimeout(()=>el.textContent='اضغط على الكود لنسخه',2000);
+  });
 }
 
 /* ── Start ── */
@@ -702,14 +855,11 @@ function renderHalf(halfId, pIdx){
     </div>`;
   half.appendChild(info);
 
-  // ── Compute card geometry ──
-  // Read CSS vars (fallback to defaults)
   const cs=getComputedStyle(document.documentElement);
   const cw=parseInt(cs.getPropertyValue('--cw'))||52;
   const ch=parseInt(cs.getPropertyValue('--ch'))||73;
-  const pk=parseInt(cs.getPropertyValue('--peek'))||16;
+  const pk=parseInt(cs.getPropertyValue('--peek'))||13;
 
-  // ── Stacks row ──
   const row=document.createElement('div');
   row.className='stacks-row';
 
@@ -717,9 +867,6 @@ function renderHalf(halfId, pIdx){
     const stack=p.stacks[si];
     const top=stack.length?stack[stack.length-1]:null;
     const cnt=stack.length;
-    // TOP card (face-up) sits at y=0 fully visible.
-    // Behind it, hidden cards each peek `pk` pixels downward.
-    // pile grows downward: pileH = ch + nPeek*pk
     const nPeek=Math.min(Math.max(0,cnt-1),9);
     const pileH=cnt===0?ch:ch+nPeek*pk;
 
@@ -737,7 +884,6 @@ function renderHalf(halfId, pIdx){
     pile.style.width=cw+'px';
 
     if(cnt===0){
-      // Empty slot – face-up card placeholder at bottom
       const tc=document.createElement('div');
       tc.className='pile-card-up empty-slot';
       tc.style.top=(nPeek*pk)+'px';
@@ -745,19 +891,10 @@ function renderHalf(halfId, pIdx){
       tc.textContent='✓';
       pile.appendChild(tc);
     } else {
-      // LAYOUT: face-up card sits at the BOTTOM (y = nPeek*pk), fully visible.
-      // Hidden cards stack ABOVE it, each peeking `pk` px out from under the next.
-      //   deepest hidden card  -> y = 0            (topmost visually)
-      //   card just above face-up -> y = (nPeek-1)*pk
-      //   face-up card         -> y = nPeek*pk     (bottom, full height visible)
-
-      // 1. Hidden / face-down cards (behind, sticking up above face-up card)
       const back=backImg();
       for(let d=0;d<nPeek;d++){
         const dc=document.createElement('div');
         dc.className='pile-card-down';
-        // d=0 is deepest (top of pile visually) -> y=0
-        // d=nPeek-1 is just above face-up card  -> y=(nPeek-1)*pk
         dc.style.top=(d*pk)+'px';
         dc.style.zIndex=String(d+1);
         if(back){
@@ -770,7 +907,6 @@ function renderHalf(halfId, pIdx){
         pile.appendChild(dc);
       }
 
-      // 2. Face-up card at the BOTTOM – fully visible, highest z-index
       const img=cardImg(top);
       const playable=interact&&isMyTurn&&p.hand&&canPlay(p.hand,top);
       const tc=document.createElement('div');
@@ -792,11 +928,9 @@ function renderHalf(halfId, pIdx){
   }
   half.appendChild(row);
 
-  // ── Hand + Deck ──
   const handArea=document.createElement('div');
   handArea.className='hand-area';
 
-  // Deck
   const deckOk=interact&&(G.gMode==='speed'||isMyTurn);
   const deck=document.createElement('div');
   deck.className='deck-pile'+(deckOk?'':' deck-off');
@@ -806,7 +940,6 @@ function renderHalf(halfId, pIdx){
   if(deckOk) deck.onclick=()=>onDeckClick(pIdx);
   handArea.appendChild(deck);
 
-  // Hand card
   const handEl=document.createElement('div');
   if(p.hand){
     const img=cardImg(p.hand);
@@ -906,53 +1039,56 @@ function endGame(wIdx){
 function quitGame(){ if(confirm('تأكيد الخروج؟')){ stopOnline(); showMenu(); } }
 function restartGame(){ startGame(G.pMode,G.gMode,G.online); }
 
-/* ── Ably Online ── */
+/* ══ Ably Online ══ */
 let abl=null,ach=null;
 function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:4},()=>c[ri(c.length)]).join(''); }
 
 async function createRoom(){
-  const key=document.getElementById('c-key').value.trim();
   const name=document.getElementById('c-name').value.trim()||'لاعب 1';
   const mode=document.getElementById('c-mode').value;
-  if(!key){ setStatus('create','أدخل Ably API Key','err'); return; }
   try{
     setStatus('create','جاري الاتصال<span class="ldots"></span>','wait');
-    abl=new Ably.Realtime({key});
+    abl=new Ably.Realtime({ key: ABLY_KEY });
     const code=genCode();
     document.getElementById('code-val').textContent=code;
     document.getElementById('codebox').classList.add('on');
     ach=abl.channels.get('sf-'+code);
-    setStatus('create',`✅ كود الغرفة: <b>${code}</b><br>في انتظار اللاعب التاني<span class="ldots"></span>`,'wait');
+    setStatus('create',`في انتظار اللاعب التاني<span class="ldots"></span>`,'wait');
     ach.subscribe('join',msg=>{
       const gn=msg.data.name;
       setStatus('create',`✅ انضم ${gn}! جاري البدء<span class="ldots"></span>`,'ok');
       ach.publish('start',{mode,n1:name,n2:gn});
       setTimeout(()=>startOnlineGame(mode,name,gn,0),800);
     });
-  }catch(e){ setStatus('create','❌ خطأ: '+e.message,'err'); }
+  }catch(e){ setStatus('create','❌ خطأ في الاتصال','err'); }
 }
 
 async function joinRoom(){
-  const key=document.getElementById('j-key').value.trim();
   const name=document.getElementById('j-name').value.trim()||'لاعب 2';
-  const code=document.getElementById('j-code').value.trim().toUpperCase();
-  if(!key){ setStatus('join','أدخل Ably API Key','err'); return; }
-  if(!code){ setStatus('join','أدخل كود الغرفة','err'); return; }
+  const code=getCodeFromDigits().toUpperCase();
+  if(code.length<4){ setStatus('join','أدخل الكود كامل (4 أحرف)','err'); return; }
   try{
     setStatus('join','جاري الاتصال<span class="ldots"></span>','wait');
-    abl=new Ably.Realtime({key});
+    abl=new Ably.Realtime({ key: ABLY_KEY });
     ach=abl.channels.get('sf-'+code);
     ach.subscribe('start',msg=>{ const d=msg.data; setTimeout(()=>startOnlineGame(d.mode,d.n1,d.n2,1),500); });
     ach.publish('join',{name});
     setStatus('join','✅ تم الانضمام — في انتظار البداية<span class="ldots"></span>','wait');
-  }catch(e){ setStatus('join','❌ خطأ: '+e.message,'err'); }
+  }catch(e){ setStatus('join','❌ خطأ في الاتصال','err'); }
 }
 
 function startOnlineGame(mode,n1,n2,myIdx){
   startGame('online',mode,{myIdx,n1,n2});
   if(ach){
-    ach.subscribe('move',msg=>{ if(msg.data.pIdx!==G.myIdx) applyRemoteMove(msg.data); });
-    ach.subscribe('deck',msg=>{ if(msg.data.pIdx!==G.myIdx) applyRemoteDeck(msg.data.pIdx); });
+    /* إزالة subscriptions القديمة أولاً لتجنب التكرار */
+    ach.unsubscribe('move');
+    ach.unsubscribe('deck');
+    ach.subscribe('move',msg=>{
+      if(msg.data.pIdx!==G.myIdx) applyRemoteMove(msg.data);
+    });
+    ach.subscribe('deck',msg=>{
+      if(msg.data.pIdx!==G.myIdx) applyRemoteDeck(msg.data.pIdx);
+    });
   }
 }
 
@@ -962,7 +1098,10 @@ function syncDeck(pIdx){ if(ach) ach.publish('deck',{pIdx}); }
 function applyRemoteMove(d){
   const p=G.players[d.pIdx]; if(!p) return;
   p.stacks[d.si].pop(); p.hand=d.newHand; p.removed++;
-  if(G.gMode==='speed'){ G.players[1-d.pIdx].hp=Math.max(0,G.players[1-d.pIdx].hp-d.newHand.num); if(checkSpeedWin()) return; }
+  if(G.gMode==='speed'){
+    G.players[1-d.pIdx].hp=Math.max(0,G.players[1-d.pIdx].hp-d.newHand.num);
+    if(checkSpeedWin()) return;
+  }
   if(totalCards(p)===0){ endGame(d.pIdx); return; }
   if(G.gMode==='turns') nextTurn();
   render();
@@ -970,11 +1109,18 @@ function applyRemoteMove(d){
 
 function applyRemoteDeck(pIdx){
   const p=G.players[pIdx]; if(!p) return;
-  if(p.hand){ p.hand=null; if(G.gMode==='turns') nextTurn(); }
-  else { p.hand=randCard(); p.drawCount++; render(); }
+  if(G.gMode==='turns'){
+    if(p.hand){ p.hand=null; nextTurn(); }
+    else { p.hand=randCard(); p.drawCount++; render(); }
+  } else {
+    p.hand=randCard(); p.drawCount++; render();
+  }
 }
 
-function stopOnline(){ if(ach){ach.unsubscribe();ach=null;} if(abl){abl.close();abl=null;} }
+function stopOnline(){
+  if(ach){ ach.unsubscribe(); ach=null; }
+  if(abl){ abl.close(); abl=null; }
+}
 function setStatus(w,msg,cls){ const el=document.getElementById('st-'+w); el.innerHTML=msg; el.className='status on '+cls; }
 </script>
 </body>
