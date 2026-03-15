@@ -24,11 +24,18 @@
 @media (min-width:401px) and (max-width:600px) { :root { --cw:48px;--ch:72px;--peek:11px;--hand-w:80px;--hand-h:120px; } }
 @media (min-width:768px) { :root { --cw:60px;--ch:92px;--peek:15px;--hand-w:95px;--hand-h:145px; } }
 
-/* وضع 6 أعمدة — بطاقات أعرض وأقصر */
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  ⚡ FAST FIELD — CARD SIZE SETTINGS (ميدان سريع)       ║
+   ║  عدّل القيم هنا لضبط حجم الكروت في وضع 6 أعمدة        ║
+   ║  --cw  = عرض الكرت   --ch  = ارتفاع الكرت             ║
+   ║  --peek = المسافة بين الكروت المتراكمة                  ║
+   ║  --hand-w / --hand-h = كرت اليد                        ║
+   ╚══════════════════════════════════════════════════════════╝ */
 body.mode-small { --cw:76px;--ch:112px;--peek:10px;--hand-w:106px;--hand-h:158px; }
 @media (max-width:400px) { body.mode-small { --cw:54px;--ch:80px;--peek:8px;--hand-w:82px;--hand-h:122px; } }
 @media (min-width:401px) and (max-width:600px) { body.mode-small { --cw:64px;--ch:96px;--peek:9px;--hand-w:96px;--hand-h:142px; } }
 @media (min-width:768px) { body.mode-small { --cw:86px;--ch:128px;--peek:11px;--hand-w:116px;--hand-h:172px; } }
+/* ══════════════════════════════════════════════════════════ */
 
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;touch-action:manipulation;}
@@ -166,7 +173,7 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 
 /* Suit progress badges */
 .suit-prog{display:flex;gap:3px;align-items:center;}
-.sp-badge{font-size:9px;padding:1px 4px;border-radius:4px;font-weight:700;border:1px solid;opacity:.7;}
+.sp-badge{font-size:11px;padding:1px 5px;border-radius:4px;font-weight:700;border:1px solid;opacity:.7;line-height:1.4;}
 .sp-badge.active{opacity:1;animation:spPulse .8s ease-in-out infinite alternate;}
 @keyframes spPulse{from{box-shadow:none}to{box-shadow:0 0 6px currentColor;}}
 .sp-s{color:#a8c4f0;border-color:#a8c4f0;background:rgba(100,150,255,.12);}
@@ -257,17 +264,24 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 .ab-ico{font-size:18px;flex-shrink:0;}
 .ab-txt{flex:1;}.ab-txt .ab-name{font-size:13px;font-weight:700;}.ab-txt .ab-desc{font-size:10px;opacity:.65;margin-top:1px;}
 
-/* ─── WIN ─── */
+/* ─── WIN / LOSE ─── */
 #win-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(255,215,0,.08) 0%,var(--darker) 70%);overflow-y:auto;}
+#lose-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(180,30,30,.1) 0%,var(--darker) 70%);overflow-y:auto;}
 .win-wrap{text-align:center;padding:36px 28px;max-width:360px;width:100%;}
 .win-trophy{font-size:70px;animation:trophyPop .5s ease-out;}
+.lose-icon{font-size:70px;animation:loseShake .5s ease-out;}
 @keyframes trophyPop{0%{transform:scale(0) rotate(-20deg)}65%{transform:scale(1.2) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes loseShake{0%{transform:scale(0)}40%{transform:scale(1.1) rotate(-5deg)}60%{transform:scale(.95) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
 .win-title{font-family:'Cinzel Decorative',serif;font-size:clamp(18px,4vw,34px);color:var(--gold);text-shadow:var(--glow-gold);margin:14px 0 8px;}
+.lose-title{font-family:'Cinzel Decorative',serif;font-size:clamp(18px,4vw,30px);color:#f87171;text-shadow:0 0 18px rgba(248,113,113,.45);margin:14px 0 8px;}
 .win-sub{color:var(--text-dim);font-size:13px;margin-bottom:20px;}
 .wstats{background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.15);border-radius:10px;padding:14px;margin-bottom:18px;}
+.lstats{background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);border-radius:10px;padding:14px;margin-bottom:18px;}
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .sval{color:var(--gold);font-size:20px;font-weight:700;}
 .slbl{color:var(--text-dim);font-size:11px;}
+.lval{color:#f87171;font-size:20px;font-weight:700;}
+.end-btns{display:flex;flex-direction:column;gap:8px;}
 
 /* effects */
 .dmg-pop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Cinzel Decorative',serif;font-size:clamp(28px,6vw,42px);pointer-events:none;z-index:1000;animation:dmgA .9s forwards;}
@@ -403,8 +417,25 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
     <div id="win-title" class="win-title">فزت!</div>
     <div id="win-sub" class="win-sub"></div>
     <div class="wstats"><div class="sgrid" id="win-stats"></div></div>
-    <button class="abtn abtn-gold" onclick="showMenu()">القائمة الرئيسية</button>
-    <button class="abtn abtn-dim" onclick="restartGame()" style="margin-top:8px">العب مرة تانية</button>
+    <div class="end-btns">
+      <button class="abtn abtn-dim" onclick="restartGame()">🔄 العب مرة تانية</button>
+      <button class="abtn abtn-gold" onclick="showMenu()">🏠 القائمة الرئيسية</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ LOSE ══════════════ -->
+<div id="lose-screen" class="screen">
+  <div class="win-wrap">
+    <div class="lose-icon">💀</div>
+    <div id="lose-title" class="lose-title">خسرت!</div>
+    <div id="lose-sub" class="win-sub"></div>
+    <div class="lstats"><div class="sgrid" id="lose-stats"></div></div>
+    <div class="end-btns">
+      <button class="abtn abtn-dim" onclick="restartGame()">🔄 العب مرة تانية</button>
+      <button class="abtn" style="background:linear-gradient(135deg,#2e0e0e,#180707);border:1px solid rgba(200,50,50,.45);color:#f87171;padding:12px;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;" onclick="showOnline()">🌐 غرفة جديدة</button>
+      <button class="abtn abtn-gold" onclick="showMenu()">🏠 القائمة الرئيسية</button>
+    </div>
   </div>
 </div>
 
@@ -546,7 +577,7 @@ const ABLY_KEY = "UcDcBw.YJJl6g:LDwkET05nlae7VeirAz44uL8hE16cLZ8MyrSFwCnolk";
    threshold = عدد الكروت المطلوبة من نفس الـ suit في دور واحد
 */
 const ABILITY_DEF = {
-  S: { threshold:5, suit:'♠', name:'السيوف', color:'#a8c4f0',
+  S: { threshold:5, suit:'❄️', name:'السيوف', color:'#a8c4f0',
     options:[
       { id:'heal',  ico:'💚', cls:'ab-btn-heal',    name:'+25 HP لنفسك',         desc:'تعافَ 25 نقطة حياة' },
       { id:'dmg',   ico:'💔', cls:'ab-btn-dmg',     name:'-25 HP من الخصم',      desc:'اخصم 25 من حياة المنافس' },
@@ -555,17 +586,17 @@ const ABILITY_DEF = {
       { id:'freeze',ico:'❄️', cls:'ab-btn-freeze',  name:'تجميد 3 كروت للخصم',  desc:'3 كروت عشوائية مجمودة لـ3 أدوار' },
     ]
   },
-  H: { threshold:3, suit:'♥', name:'القلوب', color:'#f87171',
+  H: { threshold:3, suit:'☀️', name:'القلوب', color:'#f87171',
     options:[
       { id:'hdmg', ico:'🔥', cls:'ab-btn-dmg', name:'-20 HP من الخصم', desc:'اخصم 20 نقطة من حياة المنافس' },
     ]
   },
-  D: { threshold:3, suit:'♦', name:'الماس', color:'#fbbf24',
+  D: { threshold:3, suit:'🌙', name:'الماس', color:'#fbbf24',
     options:[
       { id:'dheal', ico:'✨', cls:'ab-btn-bonus', name:'+10 HP + كرت للخصم', desc:'تعافَ 10 HP وأضف كرتاً إضافياً لأعمدة الخصم' },
     ]
   },
-  C: { threshold:3, suit:'♣', name:'البستوني', color:'#4ade80',
+  C: { threshold:3, suit:'⚫', name:'البستوني', color:'#4ade80',
     options:[
       { id:'cmix', ico:'⚡', cls:'ab-btn-mixed', name:'+10 HP /-10 من الخصم', desc:'تعافَ 10 واخصم 10 من الخصم' },
     ]
@@ -1218,19 +1249,58 @@ function endGame(wIdx,reason){
   const w=G.players[wIdx];
   const secs=Math.floor((Date.now()-G.started)/1000);
   const m=Math.floor(secs/60),s=secs%60;
-  document.getElementById('win-title').textContent=G.players.length>1?`🏆 ${w.name} فاز!`:'🏆 أنهيت!';
   const reasons={cards:'نزّل كل الكروت!',hp:'أنهى نقاط حياة الخصم!'};
-  document.getElementById('win-sub').textContent=reasons[reason]||'';
-  document.getElementById('win-stats').innerHTML=`
-    <div style="text-align:center"><div class="sval">${w.removed}</div><div class="slbl">كرت نزّلها</div></div>
-    <div style="text-align:center"><div class="sval">${w.hp}</div><div class="slbl">HP متبقي</div></div>
-    <div style="text-align:center"><div class="sval">${m}:${String(s).padStart(2,'0')}</div><div class="slbl">وقت اللعبة</div></div>
-    <div style="text-align:center"><div class="sval">${w.drawCount}</div><div class="slbl">كرت سحبها</div></div>`;
-  showScreen('win-screen');
+  const reasonTxt=reasons[reason]||'';
+
+  // لاعب واحد — شاشة الفوز فقط
+  if(G.players.length===1){
+    document.getElementById('win-title').textContent='🏆 أنهيت!';
+    document.getElementById('win-sub').textContent=reasonTxt;
+    document.getElementById('win-stats').innerHTML=`
+      <div style="text-align:center"><div class="sval">${w.removed}</div><div class="slbl">كرت نزّلها</div></div>
+      <div style="text-align:center"><div class="sval">${w.hp}</div><div class="slbl">HP متبقي</div></div>
+      <div style="text-align:center"><div class="sval">${m}:${String(s).padStart(2,'0')}</div><div class="slbl">وقت اللعبة</div></div>
+      <div style="text-align:center"><div class="sval">${w.drawCount}</div><div class="slbl">كرت سحبها</div></div>`;
+    showScreen('win-screen');
+    return;
+  }
+
+  // لعبة متعددة — نحدد هل اللاعب الحالي فايز أو خاسر
+  // في الـ online: myIdx هو اللاعب الحالي
+  // في local / solo: نعرض الشاشتين حسب الفايز
+  const loserIdx=1-wIdx;
+  const loser=G.players[loserIdx];
+
+  // الشاشة اللي بتتعرض على جهاز اللاعب الحالي
+  const isCurrentPlayerWinner = (G.pMode==='online') ? G.myIdx===wIdx : true;
+
+  if(isCurrentPlayerWinner){
+    document.getElementById('win-title').textContent=`🏆 ${w.name} فاز!`;
+    document.getElementById('win-sub').textContent=reasonTxt;
+    document.getElementById('win-stats').innerHTML=`
+      <div style="text-align:center"><div class="sval">${w.removed}</div><div class="slbl">كرت نزّلها</div></div>
+      <div style="text-align:center"><div class="sval">${w.hp}</div><div class="slbl">HP متبقي</div></div>
+      <div style="text-align:center"><div class="sval">${m}:${String(s).padStart(2,'0')}</div><div class="slbl">وقت اللعبة</div></div>
+      <div style="text-align:center"><div class="sval">${w.drawCount}</div><div class="slbl">كرت سحبها</div></div>`;
+    showScreen('win-screen');
+  } else {
+    // اللاعب الحالي خسر
+    document.getElementById('lose-title').textContent=`💀 ${w.name} كسب!`;
+    document.getElementById('lose-sub').textContent=`للأسف خسرت — ${reasonTxt}`;
+    document.getElementById('lose-stats').innerHTML=`
+      <div style="text-align:center"><div class="lval">${loser.removed}</div><div class="slbl">كرت نزّلتها</div></div>
+      <div style="text-align:center"><div class="lval">${loser.hp}</div><div class="slbl">HP تبقّى</div></div>
+      <div style="text-align:center"><div class="lval">${m}:${String(s).padStart(2,'0')}</div><div class="slbl">وقت اللعبة</div></div>
+      <div style="text-align:center"><div class="lval">${loser.drawCount}</div><div class="slbl">كرت سحبتها</div></div>`;
+    showScreen('lose-screen');
+  }
 }
 
 function quitGame(){if(confirm('تأكيد الخروج؟')){stopTimer();stopOnline();showMenu();}}
-function restartGame(){startGame(G.pMode,G.gMode,G.online,G.boardCols||8,G.cardsPerCol||10);}
+function restartGame(){
+  stopOnline();
+  startGame(G.pMode,G.gMode,null,G.boardCols||8,G.cardsPerCol||10);
+}
 
 /* ══════════════════════════════════════════════════
    ABLY ONLINE
