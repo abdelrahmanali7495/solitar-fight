@@ -24,11 +24,11 @@
 @media (min-width:401px) and (max-width:600px) { :root { --cw:48px;--ch:72px;--peek:11px;--hand-w:80px;--hand-h:120px; } }
 @media (min-width:768px) { :root { --cw:60px;--ch:92px;--peek:15px;--hand-w:95px;--hand-h:145px; } }
 
-/* وضع 6 أعمدة — بطاقات أكبر */
-body.mode-small { --cw:72px;--ch:108px;--peek:16px;--hand-w:100px;--hand-h:150px; }
-@media (max-width:400px) { body.mode-small { --cw:52px;--ch:78px;--peek:12px;--hand-w:80px;--hand-h:120px; } }
-@media (min-width:401px) and (max-width:600px) { body.mode-small { --cw:62px;--ch:94px;--peek:14px;--hand-w:92px;--hand-h:138px; } }
-@media (min-width:768px) { body.mode-small { --cw:80px;--ch:120px;--peek:18px;--hand-w:110px;--hand-h:165px; } }
+/* وضع 6 أعمدة — بطاقات أعرض وأقصر */
+body.mode-small { --cw:76px;--ch:112px;--peek:10px;--hand-w:106px;--hand-h:158px; }
+@media (max-width:400px) { body.mode-small { --cw:54px;--ch:80px;--peek:8px;--hand-w:82px;--hand-h:122px; } }
+@media (min-width:401px) and (max-width:600px) { body.mode-small { --cw:64px;--ch:96px;--peek:9px;--hand-w:96px;--hand-h:142px; } }
+@media (min-width:768px) { body.mode-small { --cw:86px;--ch:128px;--peek:11px;--hand-w:116px;--hand-h:172px; } }
 
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;touch-action:manipulation;}
@@ -835,7 +835,8 @@ function renderHalf(halfId,pIdx){
     const cnt=stack.length;
     const frozenTurns=p.frozenSlots[si]||0;
     const isFrozen=frozenTurns>0;
-    const nPeek=Math.min(Math.max(0,cnt-1),9);
+    const maxPeek=(G.boardCols||8)<=6?5:9;
+    const nPeek=Math.min(Math.max(0,cnt-1),maxPeek);
     const pileH=cnt===0?ch:ch+nPeek*pk;
 
     const col=document.createElement('div');
@@ -1003,8 +1004,10 @@ function checkAbilities(pIdx){
   const p=G.players[pIdx];
   Object.entries(ABILITY_DEF).forEach(([sc,def])=>{
     const cnt=p.turnSuitCount[sc]||0;
-    if(cnt>=def.threshold&&!p.usedAbility[sc]){
-      // استحق القدرة!
+    if(cnt>=def.threshold&&!p.usedAbility[sc]&&!p._pendingAbility){
+      // استحق القدرة — نضع lock فوراً قبل ما نفتح الـ modal
+      p._pendingAbility=sc;
+      p.usedAbility[sc]=true; // نحجز مكانها فوراً لمنع أي تكرار
       showAbilityModal(pIdx,sc,def);
     }
   });
@@ -1037,7 +1040,11 @@ function showAbilityModal(pIdx,sc,def){
 function applyAbility(pIdx,sc,optId){
   const p=G.players[pIdx];
   const opp=G.players.length>1?G.players[1-pIdx]:null;
+  // نتأكد إنها ما تتطبقش أكتر من مرة (قد تجي من remote وهي اتعملت بالفعل)
+  if(p._appliedAbility&&p._appliedAbility===sc+'_'+optId) return;
+  p._appliedAbility=sc+'_'+optId;
   p.usedAbility[sc]=true;
+  p._pendingAbility=null;
 
   switch(optId){
     case 'heal':
@@ -1145,6 +1152,8 @@ function onDeckClick(pIdx){
     // ريست عداد الـ suit والقدرات عند السحب
     p.turnSuitCount={S:0,H:0,D:0,C:0};
     p.usedAbility={S:false,H:false,D:false,C:false};
+    p._appliedAbility=null;
+    p._pendingAbility=null;
     if(G.pMode==='online') syncDeck(pIdx, -1, null);
     render();
   }
@@ -1159,6 +1168,8 @@ function doNextTurn(nextTurnIdx, nextCard){
   p.turnSuitCount={S:0,H:0,D:0,C:0};
   p.usedAbility={S:false,H:false,D:false,C:false};
   p._frozenHits={};
+  p._appliedAbility=null;
+  p._pendingAbility=null;
   p.hand=nextCard; p.drawCount++;
   render();
   startTimer(G.turn);
@@ -1195,6 +1206,8 @@ function showDmg(txt,color){
 }
 
 function showNotif(txt){
+  // إزالة أي إشعار موجود بنفس النص لمنع التراكم
+  document.querySelectorAll('.notif').forEach(el=>{if(el.textContent===txt)el.remove();});
   const el=document.createElement('div');
   el.className='notif';el.textContent=txt;
   document.body.appendChild(el);setTimeout(()=>el.remove(),3200);
@@ -1315,6 +1328,10 @@ function applyRemoteDeck(d){
 }
 
 function applyRemoteAbility(d){
+  const p=G.players[d.pIdx];
+  if(!p) return;
+  // لو القدرة دي اتطبقت بالفعل من remote، تجاهل
+  if(p._appliedAbility===d.sc+'_'+d.optId) return;
   applyAbility(d.pIdx,d.sc,d.optId);
 }
 
