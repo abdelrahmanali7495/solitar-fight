@@ -1075,7 +1075,7 @@ function showAbilityModal(pIdx,sc,def){
   overlay.style.display='flex';
 }
 
-function applyAbility(pIdx,sc,optId){
+function applyAbility(pIdx,sc,optId,extra){
   const p=G.players[pIdx];
   const opp=G.players.length>1?G.players[1-pIdx]:null;
   // نتأكد إنها ما تتطبقش أكتر من مرة (قد تجي من remote وهي اتعملت بالفعل)
@@ -1084,6 +1084,7 @@ function applyAbility(pIdx,sc,optId){
   p.usedAbility[sc]=true;
   p._pendingAbility=null;
 
+  let syncExtra=null;
   switch(optId){
     case 'heal':
       p.hp=Math.min(p.maxHp,p.hp+25);
@@ -1109,8 +1110,10 @@ function applyAbility(pIdx,sc,optId){
       p.hp=Math.min(p.maxHp,p.hp+10);
       showDmg('+10💛','#fbbf24');
       if(opp){
-        // إضافة كرت عشوائي إضافي لأول عمود غير فارغ عند الخصم
-        addExtraCardToOpponent(opp);
+        // الكرت الإضافي: لو جاي من remote استخدمه، لو محلي ولّده وابعته
+        const extraCard=extra&&extra.card?extra.card:randCard();
+        syncExtra={card:extraCard};
+        addExtraCardToOpponent(opp,extraCard);
         showNotif('✨ +10 HP لك + كرت إضافي على الخصم!');
       } else {
         showNotif('✨ +10 HP!');
@@ -1124,20 +1127,20 @@ function applyAbility(pIdx,sc,optId){
       break;
   }
 
-  if(G.pMode==='online') syncAbility(pIdx,sc,optId);
+  if(G.pMode==='online') syncAbility(pIdx,sc,optId,syncExtra);
   if(opp&&checkHPWin()) return;
   render();
 }
 
-function addExtraCardToOpponent(opp){
-  // إضافة كرت عشوائي في عمود عشوائي عند الخصم
+function addExtraCardToOpponent(opp,card){
+  // إضافة كرت محدد في عمود عشوائي عند الخصم
   const cols=G.boardCols||8;
   const nonEmpty=[];
   for(let i=0;i<cols;i++){if(opp.stacks[i].length>0) nonEmpty.push(i);}
   const target=nonEmpty.length>0?nonEmpty[ri(nonEmpty.length)]:ri(cols);
   // نضيف الكرت قبل الكرت العلوي
   const insertAt=Math.max(0,opp.stacks[target].length-1);
-  opp.stacks[target].splice(insertAt,0,randCard());
+  opp.stacks[target].splice(insertAt,0,card||randCard());
 }
 
 function shuffleMyStacks(p){
@@ -1179,20 +1182,22 @@ function onDeckClick(pIdx){
       }
       doNextTurn(nextTurnIdx, nextCard);
     } else {
-      p.hand=randCard(); p.drawCount++;
-      if(G.pMode==='online') syncDeck(pIdx, -1, null);
+      const newCard=randCard();
+      p.hand=newCard; p.drawCount++;
+      if(G.pMode==='online') syncDeck(pIdx, -1, newCard);
       render();
     }
   } else {
     // مود السرعة — سحب كرت جديد يريست عداد القدرات
     if(!canInteract(pIdx)) return;
-    p.hand=randCard(); p.drawCount++;
+    const newCard=randCard();
+    p.hand=newCard; p.drawCount++;
     // ريست عداد الـ suit والقدرات عند السحب
     p.turnSuitCount={S:0,H:0,D:0,C:0};
     p.usedAbility={S:false,H:false,D:false,C:false};
     p._appliedAbility=null;
     p._pendingAbility=null;
-    if(G.pMode==='online') syncDeck(pIdx, -1, null);
+    if(G.pMode==='online') syncDeck(pIdx, -1, newCard);
     render();
   }
 }
@@ -1373,7 +1378,7 @@ function startOnlineGame(mode,n1,n2,myIdx,cols=8,perCol=10,stacks1,stacks2){
 
 function syncMove(pIdx,si,newHand){if(ach)ach.publish('move',{pIdx,si,newHand});}
 function syncDeck(pIdx,nextTurnIdx,nextCard){if(ach)ach.publish('deck',{pIdx,nextTurnIdx,nextCard});}
-function syncAbility(pIdx,sc,optId){if(ach)ach.publish('ability',{pIdx,sc,optId});}
+function syncAbility(pIdx,sc,optId,extra){if(ach)ach.publish('ability',{pIdx,sc,optId,extra});}
 
 function applyRemoteMove(d){
   const p=G.players[d.pIdx];if(!p)return;
@@ -1398,7 +1403,7 @@ function applyRemoteDeck(d){
   if(G.gMode==='turns'){
     if(d.nextTurnIdx===-1||d.nextTurnIdx===undefined){
       // مجرد سحب كرت مش نهاية دور
-      p.hand=d.nextCard||randCard(); p.drawCount++; render();
+      p.hand=d.nextCard; p.drawCount++; render();
     } else {
       // نهاية دور — نطبق مباشرة بنفس القيم اللي جاءت
       p.hand=null;
@@ -1406,7 +1411,7 @@ function applyRemoteDeck(d){
     }
   } else {
     // مود السرعة — ريست عداد القدرات عند السحب
-    p.hand=d.nextCard||randCard(); p.drawCount++;
+    p.hand=d.nextCard; p.drawCount++;
     p.turnSuitCount={S:0,H:0,D:0,C:0};
     p.usedAbility={S:false,H:false,D:false,C:false};
     render();
@@ -1418,7 +1423,7 @@ function applyRemoteAbility(d){
   if(!p) return;
   // لو القدرة دي اتطبقت بالفعل من remote، تجاهل
   if(p._appliedAbility===d.sc+'_'+d.optId) return;
-  applyAbility(d.pIdx,d.sc,d.optId);
+  applyAbility(d.pIdx,d.sc,d.optId,d.extra);
 }
 
 function stopOnline(){if(ach){ach.unsubscribe();ach=null;}if(abl){abl.close();abl=null;}}
