@@ -633,11 +633,16 @@ function backImg(){const v=CARD_BACK_IMAGE;return(v&&v.trim().length>0)?v.trim()
 function canPlay(h,t){const d=Math.abs(h.num-t.num);return d===1||d===12;}
 
 /* ── Player factory ── */
-function mkPlayer(name,id){
+function mkPlayer(name,id,preStacks){
   const cols=G.boardCols||8;
   const cardsPerCol=G.cardsPerCol||10;
-  const stacks=[];
-  for(let s=0;s<cols;s++){const st=[];for(let c=0;c<cardsPerCol;c++)st.push(randCard());stacks.push(st);}
+  let stacks;
+  if(preStacks){
+    stacks=preStacks;
+  } else {
+    stacks=[];
+    for(let s=0;s<cols;s++){const st=[];for(let c=0;c<cardsPerCol;c++)st.push(randCard());stacks.push(st);}
+  }
   return{
     id,name,stacks,hand:null,
     hp:CONFIG.PLAYER_HP, maxHp:CONFIG.PLAYER_HP,
@@ -772,7 +777,9 @@ function startGame(pMode,gMode,onlineData=null,boardCols=8,cardsPerCol=10){
   } else {
     const n1=onlineData?onlineData.n1:'لاعب 1';
     const n2=onlineData?onlineData.n2:'لاعب 2';
-    G.players=[mkPlayer(n1,0),mkPlayer(n2,1)];
+    const s1=onlineData&&onlineData.stacks1?onlineData.stacks1:null;
+    const s2=onlineData&&onlineData.stacks2?onlineData.stacks2:null;
+    G.players=[mkPlayer(n1,0,s1),mkPlayer(n2,1,s2)];
   }
   if(gMode==='turns'){
     G.players[0].hand=randCard();G.players[0].drawCount++;
@@ -1308,6 +1315,12 @@ function restartGame(){
 let abl=null,ach=null;
 function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:4},()=>c[ri(c.length)]).join('');}
 
+function genStacks(cols,perCol){
+  const stacks=[];
+  for(let s=0;s<cols;s++){const st=[];for(let c=0;c<perCol;c++)st.push(randCard());stacks.push(st);}
+  return stacks;
+}
+
 async function createRoom(){
   const name=document.getElementById('c-name').value.trim()||'لاعب 1';
   const mode=document.getElementById('c-mode').value;
@@ -1324,8 +1337,11 @@ async function createRoom(){
     ach.subscribe('join',msg=>{
       const gn=msg.data.name;
       setStatus('create',`✅ انضم ${gn}! جاري البدء<span class="ldots"></span>`,'ok');
-      ach.publish('start',{mode,n1:name,n2:gn,cols,perCol});
-      setTimeout(()=>startOnlineGame(mode,name,gn,0,cols,perCol),800);
+      // توليد الـ stacks للاعبَين هنا مرة واحدة فقط
+      const stacks1=genStacks(cols,perCol);
+      const stacks2=genStacks(cols,perCol);
+      ach.publish('start',{mode,n1:name,n2:gn,cols,perCol,stacks1,stacks2});
+      setTimeout(()=>startOnlineGame(mode,name,gn,0,cols,perCol,stacks1,stacks2),800);
     });
   }catch(e){setStatus('create','❌ خطأ في الاتصال','err');}
 }
@@ -1338,15 +1354,15 @@ async function joinRoom(){
     setStatus('join','جاري الاتصال<span class="ldots"></span>','wait');
     abl=new Ably.Realtime({key:ABLY_KEY});
     ach=abl.channels.get('sf-'+code);
-    ach.subscribe('start',msg=>{const d=msg.data;setTimeout(()=>startOnlineGame(d.mode,d.n1,d.n2,1,d.cols||8,d.perCol||10),500);});
+    ach.subscribe('start',msg=>{const d=msg.data;setTimeout(()=>startOnlineGame(d.mode,d.n1,d.n2,1,d.cols||8,d.perCol||10,d.stacks1,d.stacks2),500);});
     ach.publish('join',{name});
     setStatus('join','✅ تم الانضمام — في انتظار البداية<span class="ldots"></span>','wait');
   }catch(e){setStatus('join','❌ خطأ في الاتصال','err');}
 }
 
-function startOnlineGame(mode,n1,n2,myIdx,cols=8,perCol=10){
+function startOnlineGame(mode,n1,n2,myIdx,cols=8,perCol=10,stacks1,stacks2){
   document.body.classList.toggle('mode-small',cols===6);
-  startGame('online',mode,{myIdx,n1,n2},cols,perCol);
+  startGame('online',mode,{myIdx,n1,n2,stacks1,stacks2},cols,perCol);
   if(ach){
     ach.unsubscribe('move');ach.unsubscribe('deck');ach.unsubscribe('ability');
     ach.subscribe('move',msg=>{if(msg.data.pIdx!==G.myIdx)applyRemoteMove(msg.data);});
