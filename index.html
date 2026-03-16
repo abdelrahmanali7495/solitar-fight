@@ -34,7 +34,7 @@
 body.mode-small { --cw:76px;--ch:112px;--peek:10px;--hand-w:106px;--hand-h:158px; }
 @media (max-width:400px) { body.mode-small { --cw:54px;--ch:80px;--peek:8px;--hand-w:82px;--hand-h:122px; } }
 @media (min-width:401px) and (max-width:600px) { body.mode-small { --cw:64px;--ch:96px;--peek:9px;--hand-w:96px;--hand-h:142px; } }
-@media (min-width:768px) { body.mode-small { --cw:86px;--ch:128px;--peek:11px;--hand-w:116px;--hand-h:172px; } }
+@media (min-width:768px) { body.mode-small { --cw:100px;--ch:128px;--peek:11px;--hand-w:116px;--hand-h:172px; } }
 /* ══════════════════════════════════════════════════════════ */
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -184,7 +184,7 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 .cleft{font-size:10px;color:var(--text-dim);}
 
 /* ─── STACKS ─── */
-.stacks-row{display:flex;gap:4px;align-items:flex-end;flex-shrink:0;justify-content:center;width:100%;}
+.stacks-row{display:flex;gap:4px;align-items:flex-end;flex-shrink:0;justify-content:center;width:100%;position:relative;z-index:1;}
 .stack-col{display:flex;flex-direction:column;align-items:center;width:var(--cw);flex-shrink:0;gap:2px;}
 .stack-count{font-size:9px;color:var(--text-dim);min-height:11px;text-align:center;flex-shrink:0;}
 .stack-pile{position:relative;width:100%;}
@@ -205,7 +205,7 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 .pile-card-up.face-up.hearts,.pile-card-up.face-up.diamonds{color:#b02020;}
 .pile-card-up.face-up.spades,.pile-card-up.face-up.clubs{color:#111828;}
 .pile-card-up.has-image .card-inner{display:none;}
-.pile-card-up.has-image{background-size:cover;background-position:center;background-repeat:no-repeat;}
+.pile-card-up.has-image{background-size:100% 100%;background-position:center;background-repeat:no-repeat;}
 .pile-card-up.empty-slot{background:rgba(255,255,255,.02);border:1.5px dashed rgba(255,255,255,.1);color:rgba(255,255,255,.15);font-size:11px;}
 .pile-card-up.playable{cursor:pointer;}
 .pile-card-up.playable:hover{transform:translateY(-4px);box-shadow:0 6px 18px rgba(255,215,0,.35);border-color:rgba(255,215,0,.8)!important;}
@@ -221,7 +221,7 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 .ci-slg{font-size:clamp(14px,3.5vw,26px);line-height:1;}
 
 /* ─── HAND ─── */
-.hand-area{display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0;}
+.hand-area{display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0;position:relative;z-index:10;}
 .hand-card{width:var(--hand-w);height:var(--hand-h);border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;position:relative;overflow:hidden;border:2.5px solid var(--gold);box-shadow:var(--glow-gold),0 6px 18px rgba(0,0,0,.6);flex-shrink:0;}
 .hand-card.face-up{background:linear-gradient(155deg,#f9f5ea,#ece7d4);}
 .hand-card.face-up.hearts,.hand-card.face-up.diamonds{color:#b02020;}
@@ -241,30 +241,109 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 .deck-pile.has-back-img .dico{display:none;}
 .deck-off{opacity:.35;pointer-events:none;}
 
-/* ─── ABILITY MODAL ─── */
-.ability-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
-.ability-box{background:linear-gradient(145deg,rgba(18,18,32,.98),rgba(8,8,20,.99));border:1px solid rgba(255,215,0,.3);border-radius:18px;padding:22px 20px;width:calc(100% - 32px);max-width:380px;box-shadow:0 30px 80px rgba(0,0,0,.8);}
-.ab-title{font-family:'Cinzel Decorative',serif;font-size:14px;color:var(--gold);text-align:center;margin-bottom:4px;}
-.ab-sub{text-align:center;font-size:12px;color:var(--text-dim);margin-bottom:16px;}
-.ab-suit-icon{font-size:32px;text-align:center;margin-bottom:8px;}
-.ab-btn{width:100%;padding:12px 14px;margin-bottom:8px;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:10px;transition:all .2s;text-align:right;}
-.ab-btn:last-child{margin-bottom:0;}
-.ab-btn-heal{background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.4);color:#4ade80;}
-.ab-btn-heal:hover{background:rgba(39,174,96,.28);box-shadow:0 0 14px rgba(39,174,96,.2);}
-.ab-btn-dmg{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.4);color:#f87171;}
-.ab-btn-dmg:hover{background:rgba(231,76,60,.28);box-shadow:0 0 14px rgba(231,76,60,.2);}
-.ab-btn-shuffle{background:rgba(147,51,234,.15);border:1px solid rgba(147,51,234,.4);color:#c084fc;}
-.ab-btn-shuffle:hover{background:rgba(147,51,234,.28);box-shadow:0 0 14px rgba(147,51,234,.2);}
-.ab-btn-freeze{background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.4);color:#60a5fa;}
-.ab-btn-freeze:hover{background:rgba(59,130,246,.28);box-shadow:0 0 14px rgba(59,130,246,.2);}
-.ab-btn-bonus{background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);color:#fbbf24;}
-.ab-btn-bonus:hover{background:rgba(251,191,36,.22);}
-.ab-btn-mixed{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#86efac;}
-.ab-btn-mixed:hover{background:rgba(74,222,128,.2);}
-.ab-ico{font-size:18px;flex-shrink:0;}
-.ab-txt{flex:1;}.ab-txt .ab-name{font-size:13px;font-weight:700;}.ab-txt .ab-desc{font-size:10px;opacity:.65;margin-top:1px;}
+/* ─── ABILITY POINTS BADGES ─── */
+.suit-prog{display:flex;gap:3px;align-items:center;}
+.sp-badge{font-size:11px;padding:2px 6px;border-radius:5px;font-weight:700;border:1px solid;line-height:1.4;cursor:pointer;transition:all .18s;position:relative;user-select:none;}
+.sp-badge:hover{transform:scale(1.12);filter:brightness(1.25);}
+.sp-badge.maxed{animation:spPulseMax .7s ease-in-out infinite alternate;}
+@keyframes spPulseMax{from{box-shadow:none;filter:brightness(1)}to{box-shadow:0 0 10px currentColor;filter:brightness(1.35);}}
+.sp-badge.empty{opacity:.38;cursor:default;pointer-events:none;}
+.sp-badge.empty:hover{transform:none;filter:none;}
+.sp-s{color:#a8c4f0;border-color:#a8c4f0;background:rgba(100,150,255,.12);}
+.sp-h{color:#f87171;border-color:#f87171;background:rgba(248,113,113,.12);}
+.sp-d{color:#fbbf24;border-color:#fbbf24;background:rgba(251,191,36,.12);}
+.sp-c{color:#4ade80;border-color:#4ade80;background:rgba(74,222,128,.12);}
 
-/* ─── WIN / LOSE ─── */
+/* ─── ABILITY MODAL ─── */
+.ability-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.ability-box{background:linear-gradient(145deg,rgba(14,14,28,.99),rgba(6,6,16,.99));border:1px solid rgba(255,215,0,.25);border-radius:20px;padding:20px 16px 16px;width:calc(100% - 24px);max-width:400px;box-shadow:0 30px 90px rgba(0,0,0,.9);overflow-y:auto;max-height:92vh;}
+.ab-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.ab-suit-icon{font-size:30px;flex-shrink:0;}
+.ab-header-txt{flex:1;}
+.ab-title{font-family:'Cinzel Decorative',serif;font-size:13px;color:var(--gold);}
+.ab-sub{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.ab-points-bar{display:flex;align-items:center;gap:6px;margin-bottom:14px;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:8px;border:1px solid rgba(255,255,255,.07);}
+.ab-pts-label{font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;}
+.ab-pts-val{font-family:'Cinzel Decorative',serif;font-size:16px;color:var(--gold);margin-right:auto;}
+.ab-pts-max{font-size:10px;color:var(--text-dim);}
+.ab-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.ab-card{border-radius:12px;padding:10px 7px;cursor:pointer;transition:all .22s;text-align:center;position:relative;overflow:hidden;border:2px solid transparent;}
+.ab-card:hover{transform:translateY(-3px);}
+.ab-card.disabled{opacity:.35;cursor:not-allowed;pointer-events:none;}
+.ab-card-img{width:100%;aspect-ratio:2/3;border-radius:8px;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:6px;overflow:hidden;position:relative;}
+.ab-card-img img{width:100%;height:100%;object-fit:cover;border-radius:6px;}
+.ab-card-name{font-family:'Cinzel Decorative',serif;font-size:8.5px;color:var(--gold);margin-bottom:3px;line-height:1.3;}
+.ab-card-desc{font-size:9px;color:var(--text-dim);line-height:1.4;margin-bottom:4px;}
+.ab-card-cost{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:10px;font-size:9px;font-weight:700;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.12);}
+/* suit-specific card styles */
+.ab-card-s{background:linear-gradient(160deg,rgba(10,22,50,.95),rgba(5,12,30,.98));border-color:rgba(100,150,255,.25);}
+.ab-card-s:hover{border-color:rgba(100,150,255,.7);box-shadow:0 6px 20px rgba(100,150,255,.2);}
+.ab-card-s .ab-card-cost{color:#a8c4f0;border-color:rgba(100,150,255,.3);}
+.ab-card-h{background:linear-gradient(160deg,rgba(50,10,10,.95),rgba(30,5,5,.98));border-color:rgba(248,113,113,.25);}
+.ab-card-h:hover{border-color:rgba(248,113,113,.7);box-shadow:0 6px 20px rgba(248,113,113,.2);}
+.ab-card-h .ab-card-cost{color:#f87171;border-color:rgba(248,113,113,.3);}
+.ab-card-d{background:linear-gradient(160deg,rgba(40,30,0,.95),rgba(22,16,0,.98));border-color:rgba(251,191,36,.25);}
+.ab-card-d:hover{border-color:rgba(251,191,36,.7);box-shadow:0 6px 20px rgba(251,191,36,.2);}
+.ab-card-d .ab-card-cost{color:#fbbf24;border-color:rgba(251,191,36,.3);}
+.ab-card-c{background:linear-gradient(160deg,rgba(5,25,10,.95),rgba(3,14,6,.98));border-color:rgba(74,222,128,.25);}
+.ab-card-c:hover{border-color:rgba(74,222,128,.7);box-shadow:0 6px 20px rgba(74,222,128,.2);}
+.ab-card-c .ab-card-cost{color:#4ade80;border-color:rgba(74,222,128,.3);}
+/* close button */
+.ab-close{width:100%;padding:9px;border:none;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:var(--text-dim);font-family:'Cairo',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
+.ab-close:hover{background:rgba(255,255,255,.1);}
+/* target selection modal */
+.ab-target-box{background:linear-gradient(145deg,rgba(14,14,28,.99),rgba(6,6,16,.99));border:1px solid rgba(255,215,0,.25);border-radius:16px;padding:18px 16px;width:calc(100% - 24px);max-width:320px;box-shadow:0 30px 90px rgba(0,0,0,.9);}
+.ab-target-title{font-family:'Cinzel Decorative',serif;font-size:13px;color:var(--gold);text-align:center;margin-bottom:12px;}
+.ab-target-btns{display:flex;gap:8px;}
+.ab-tgt{flex:1;padding:12px 8px;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .2s;}
+.ab-tgt-self{background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.35);color:#4ade80;}
+.ab-tgt-self:hover{background:rgba(74,222,128,.25);}
+.ab-tgt-opp{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.35);color:#f87171;}
+.ab-tgt-opp:hover{background:rgba(248,113,113,.25);}
+/* swap selection */
+.ab-swap-area{margin-top:8px;}
+.ab-swap-label{font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;text-align:center;}
+.ab-swap-cards{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;}
+.ab-swap-card{padding:5px 8px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;transition:all .18s;border:1px solid;}
+.ab-swap-card:hover{transform:scale(1.08);}
+.ab-swap-card.selected{outline:2px solid var(--gold);outline-offset:2px;}
+/* trap badge on cards */
+.pile-card-down.trapped{border-color:rgba(220,50,50,.5)!important;}
+.pile-card-down.trapped::after{content:'💣';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;opacity:.7;}
+/* board pick mode highlight */
+.pile-card-up.bpm-target{cursor:crosshair!important;animation:bpmPulse .6s ease-in-out infinite alternate;}
+@keyframes bpmPulse{from{box-shadow:0 0 0 2px rgba(255,215,0,.5)}to{box-shadow:0 0 12px 3px rgba(255,215,0,.9);border-color:var(--gold)!important;}}
+/* cancel board pick on ESC / tap outside */
+.bpm-cancel-bar{position:fixed;bottom:0;left:0;right:0;padding:10px;background:rgba(248,113,113,.12);border-top:1px solid rgba(248,113,113,.3);z-index:400;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;color:#f87171;cursor:pointer;}
+/* trap — invisible, same as normal hidden card */
+.pile-card-down.trapped{border-color:rgba(255,215,0,.2)!important;}
+.pile-card-down.trapped::after{display:none;}content:'😵 مُقيَّد';position:absolute;inset:0;background:rgba(100,0,200,.18);border:2px solid rgba(150,50,255,.4);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Cinzel Decorative',serif;font-size:14px;color:#c084fc;z-index:50;pointer-events:none;backdrop-filter:blur(1px);}
+/* boost notification */
+@keyframes boostPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}30%{opacity:1;transform:translate(-50%,-72%) scale(1.2)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-110%) scale(.8)}}
+.boost-pop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(20px,4vw,30px);pointer-events:none;z-index:1001;animation:boostPop 1.1s forwards;text-shadow:0 0 18px currentColor;}
+
+/* ─── SETTINGS SCREEN ─── */
+#settings-screen{align-items:center;justify-content:flex-start;overflow-y:auto;}
+.settings-box{background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99));border:1px solid rgba(255,215,0,.18);border-radius:16px;padding:20px 18px;width:100%;max-width:480px;box-shadow:0 24px 64px rgba(0,0,0,.65);margin:16px;}
+.settings-title{font-family:'Cinzel Decorative',serif;font-size:15px;color:var(--gold);text-align:center;margin-bottom:4px;}
+.settings-sub{text-align:center;font-size:11px;color:var(--text-dim);margin-bottom:16px;}
+.sset-section{margin-bottom:14px;}
+.sset-section-lbl{font-size:10px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;opacity:.75;border-bottom:1px solid rgba(255,215,0,.1);padding-bottom:4px;}
+.sset-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:8px;}
+.sset-lbl{font-size:12px;color:var(--text);flex:1;}
+.sset-lbl .sset-hint{display:block;font-size:9px;color:var(--text-dim);margin-top:1px;}
+.sset-inp{width:70px;padding:5px 8px;background:rgba(0,0,0,.45);border:1px solid rgba(255,215,0,.2);border-radius:6px;color:var(--gold);font-family:'Cinzel Decorative',serif;font-size:13px;text-align:center;outline:none;}
+.sset-inp:focus{border-color:rgba(255,215,0,.55);}
+.sset-toggle{display:flex;gap:0;border:1px solid rgba(255,215,0,.2);border-radius:6px;overflow:hidden;}
+.sset-toggle button{padding:4px 10px;border:none;background:transparent;color:var(--text-dim);font-family:'Cairo',sans-serif;font-size:11px;cursor:pointer;transition:all .15s;}
+.sset-toggle button.active{background:rgba(255,215,0,.15);color:var(--gold);}
+.sset-ab-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}
+.sset-ab-item{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:7px 8px;}
+.sset-ab-name{font-size:10px;color:var(--text-dim);margin-bottom:5px;}
+.sset-ab-fields{display:flex;gap:6px;align-items:center;}
+.sset-ab-fields label{font-size:9px;color:var(--text-dim);white-space:nowrap;}
+.sset-ab-inp{width:44px;padding:3px 5px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:var(--text);font-size:11px;text-align:center;outline:none;}
+.sset-ab-inp:focus{border-color:rgba(255,215,0,.4);}
 #win-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(255,215,0,.08) 0%,var(--darker) 70%);overflow-y:auto;}
 #lose-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(180,30,30,.1) 0%,var(--darker) 70%);overflow-y:auto;}
 .win-wrap{text-align:center;padding:36px 28px;max-width:360px;width:100%;}
@@ -461,17 +540,207 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
       </div>
     </div>
     <button class="abtn abtn-gold" onclick="confirmSizeAndStart()">🚀 ابدأ اللعبة!</button>
+    <button class="abtn" style="background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);color:var(--gold);padding:12px;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;width:100%;margin-top:8px;" onclick="showSettings()">⚙️ إعدادات اللعبة</button>
     <button class="abtn abtn-dim" onclick="cancelSizeScreen()" style="margin-top:8px">← رجوع</button>
+  </div>
+</div>
+
+<!-- ══════════════ SETTINGS SCREEN ══════════════ -->
+<div id="settings-screen" class="screen">
+  <div class="settings-box">
+    <div class="settings-title">⚙️ إعدادات اللعبة</div>
+    <div class="settings-sub">تُطبَّق هذه الإعدادات على الجلسة القادمة</div>
+
+    <!-- إعدادات عامة -->
+    <div class="sset-section">
+      <div class="sset-section-lbl">⚡ الإعدادات العامة</div>
+      <div class="sset-row">
+        <div class="sset-lbl">نقاط الصحة الابتدائية<span class="sset-hint">HP لكل لاعب عند البداية</span></div>
+        <input class="sset-inp" id="cfg-hp" type="number" min="10" max="999" value="100">
+      </div>
+      <div class="sset-row">
+        <div class="sset-lbl">وقت الدور (ثانية)<span class="sset-hint">مؤقت كل دور في مود الأدوار</span></div>
+        <input class="sset-inp" id="cfg-timer" type="number" min="5" max="300" value="30">
+      </div>
+      <div class="sset-row">
+        <div class="sset-lbl">الحد الأقصى لنقاط القدرة<span class="sset-hint">أقصى نقاط لكل نوع بطاقة</span></div>
+        <input class="sset-inp" id="cfg-maxpts" type="number" min="1" max="99" value="10">
+      </div>
+      <div class="sset-row">
+        <div class="sset-lbl">احتساب نقاط القدرة عند السحب<span class="sset-hint">الكرت المسحوب من الديك يضيف نقطة</span></div>
+        <div class="sset-toggle" id="cfg-draw-pts-toggle">
+          <button class="active" onclick="setToggle('cfg-draw-pts-toggle',0)">تفعيل</button>
+          <button onclick="setToggle('cfg-draw-pts-toggle',1)">إيقاف</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- قدرات السيوف -->
+    <div class="sset-section">
+      <div class="sset-section-lbl">❄️ السيوف — الأعاصير الثلجية</div>
+      <div class="sset-ab-grid">
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">🌪️ إعصار</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-blizzard" type="number" min="1" max="99" value="5">
+          </div>
+        </div>
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">🧊 صقيع</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-frost" type="number" min="1" max="99" value="5">
+            <label>أدوار</label><input class="sset-ab-inp" id="ab-val-frost" type="number" min="1" max="20" value="3">
+          </div>
+        </div>
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">⚡ برق</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-lightning" type="number" min="1" max="99" value="7">
+            <label>عدد</label><input class="sset-ab-inp" id="ab-val-lightning" type="number" min="1" max="8" value="3">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- قدرات القلوب -->
+    <div class="sset-section">
+      <div class="sset-section-lbl">☀️ القلوب — شمس</div>
+      <div class="sset-ab-grid">
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">🔥 شمس حارقة</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-burning_sun" type="number" min="1" max="99" value="3">
+          </div>
+        </div>
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">☄️ ضربة شمس</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-sun_strike" type="number" min="1" max="99" value="3">
+            <label>ضرر</label><input class="sset-ab-inp" id="ab-val-sun_strike" type="number" min="1" max="999" value="15">
+          </div>
+        </div>
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">✨ نشاط</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-vitality" type="number" min="1" max="99" value="9">
+            <label>شحن</label><input class="sset-ab-inp" id="ab-val-vitality" type="number" min="1" max="20" value="3">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- قدرات الماس -->
+    <div class="sset-section">
+      <div class="sset-section-lbl">🌙 الماس — قمر</div>
+      <div class="sset-ab-grid">
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">👁️ أرى كل شيء</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-all_seeing" type="number" min="1" max="99" value="4">
+            <label>HP+</label><input class="sset-ab-inp" id="ab-val-all_seeing" type="number" min="1" max="999" value="10">
+          </div>
+        </div>
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">🔄 هذه ملكي</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-mine" type="number" min="1" max="99" value="5">
+          </div>
+        </div>
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">🔒 المتحكم</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-controller" type="number" min="1" max="99" value="9">
+            <label>أدوار</label><input class="sset-ab-inp" id="ab-val-controller" type="number" min="1" max="20" value="3">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- قدرات البستوني -->
+    <div class="sset-section">
+      <div class="sset-section-lbl">⚫ البستوني — الثقب الأسود</div>
+      <div class="sset-ab-grid">
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">🌑 يمتص كل شيء</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-absorb" type="number" min="1" max="99" value="4">
+            <label>سرقة</label><input class="sset-ab-inp" id="ab-val-absorb" type="number" min="1" max="999" value="10">
+          </div>
+        </div>
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">➕ لم ننتهي بعد</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-not_over" type="number" min="1" max="99" value="6">
+          </div>
+        </div>
+        <div class="sset-ab-item">
+          <div class="sset-ab-name">💣 النهاية</div>
+          <div class="sset-ab-fields">
+            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-finale" type="number" min="1" max="99" value="9">
+            <label>فخ HP</label><input class="sset-ab-inp" id="ab-val-finale" type="number" min="1" max="999" value="30">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="abtn abtn-gold" onclick="applySettings()" style="margin-top:6px">✅ حفظ الإعدادات</button>
+    <button class="abtn abtn-dim" onclick="cancelSettings()" style="margin-top:8px">← رجوع</button>
   </div>
 </div>
 
 <!-- ══════════════ ABILITY MODAL ══════════════ -->
 <div class="ability-overlay" id="ability-overlay" style="display:none;">
   <div class="ability-box" id="ability-box">
-    <div class="ab-suit-icon" id="ab-suit-icon">♠</div>
-    <div class="ab-title" id="ab-title">قدرة خاصة!</div>
-    <div class="ab-sub" id="ab-sub">اختر قدرتك</div>
-    <div id="ab-buttons"></div>
+    <div class="ab-header">
+      <div class="ab-suit-icon" id="ab-suit-icon">♠</div>
+      <div class="ab-header-txt">
+        <div class="ab-title" id="ab-title">قدرات الأعاصير الثلجية</div>
+        <div class="ab-sub" id="ab-sub">اختر قدرة لتفعيلها</div>
+      </div>
+    </div>
+    <div class="ab-points-bar">
+      <span class="ab-pts-label">النقاط المتاحة</span>
+      <span class="ab-pts-val" id="ab-pts-val">0</span>
+      <span class="ab-pts-max" id="ab-pts-max">/ 10</span>
+    </div>
+    <div class="ab-cards-grid" id="ab-cards-grid"></div>
+    <button class="ab-close" onclick="closeAbilityModal()">← إغلاق</button>
+  </div>
+</div>
+<!-- ══════════════ TARGET MODAL ══════════════ -->
+<div class="ability-overlay" id="target-overlay" style="display:none;">
+  <div class="ab-target-box">
+    <div class="ab-target-title" id="target-title">اختر الهدف</div>
+    <div class="ab-target-btns">
+      <button class="ab-tgt ab-tgt-self" id="target-self-btn"><span style="font-size:22px">🛡️</span><span>نفسي</span></button>
+      <button class="ab-tgt ab-tgt-opp" id="target-opp-btn"><span style="font-size:22px">⚔️</span><span>الخصم</span></button>
+    </div>
+  </div>
+</div>
+<!-- ══════════════ BOMB SELECT MODAL ══════════════ -->
+<div class="ability-overlay" id="bomb-overlay" style="display:none;">
+  <div class="ab-target-box" style="max-width:380px;">
+    <div class="ab-target-title">💣 النهاية — اختر نوع التفجير</div>
+    <div class="ab-target-btns" style="flex-direction:column;gap:8px;">
+      <button class="ab-tgt" style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.4);color:#f87171;width:100%;flex-direction:row;justify-content:flex-start;gap:10px;padding:12px 14px;" id="bomb-self-btn">
+        <span style="font-size:20px">💥</span>
+        <div style="text-align:right"><div style="font-weight:700">تفجير أرضك</div><div style="font-size:10px;opacity:.65">اختر بطاقة — تدمر هي + يمينها + يسارها</div></div>
+      </button>
+      <button class="ab-tgt" style="background:rgba(147,51,234,.12);border:1px solid rgba(147,51,234,.4);color:#c084fc;width:100%;flex-direction:row;justify-content:flex-start;gap:10px;padding:12px 14px;" id="bomb-trap-btn">
+        <span style="font-size:20px">🕸️</span>
+        <div style="text-align:right"><div style="font-weight:700">فخ مخفي</div><div style="font-size:10px;opacity:.65">فخ عشوائي في كروت الخصم المخفية — ينفجر عند كشفها</div></div>
+      </button>
+    </div>
+    <button class="ab-close" onclick="closeBombModal()" style="margin-top:10px">← رجوع</button>
+  </div>
+</div>
+<!-- ══════════════ BOMB PICK MODAL ══════════════ -->
+<div class="ability-overlay" id="bombpick-overlay" style="display:none;">
+  <div class="ab-target-box" style="max-width:380px;">
+    <div class="ab-target-title">💥 اختر البطاقة للتفجير</div>
+    <div class="ab-swap-label" style="text-align:center;font-size:10px;color:var(--text-dim);margin-bottom:8px;">ستُدمَّر هي + البطاقة على يمينها + البطاقة على يسارها</div>
+    <div class="ab-swap-cards" id="bombpick-cards-list"></div>
+    <button class="ab-close" onclick="closeBombPickModal()" style="margin-top:10px">← رجوع</button>
   </div>
 </div>
 
@@ -563,42 +832,206 @@ const CARD_BACK_IMAGE = "";
 const BOARD_BG_IMAGE = "";
 
 /* ┌──────────────────────────────────────────────────┐
-   │  إعدادات اللعبة — ابضط القيم هنا               │
+   │  إعدادات اللعبة — القيم الافتراضية              │
    └──────────────────────────────────────────────────┘ */
-const CONFIG = {
-  TURN_SECONDS : 30,    // وقت كل دور بالثواني
-  PLAYER_HP    : 100,   // نقاط حياة كل لاعب
+const CONFIG_DEFAULTS = {
+  TURN_SECONDS    : 30,
+  PLAYER_HP       : 100,
+  MAX_AB_POINTS   : 10,
+  DRAW_GIVES_POINT: true,   // الكرت المسحوب يضيف نقطة قدرة
 };
+// القيم الحية — تتغيّر من شاشة الإعدادات
+let CONFIG = Object.assign({}, CONFIG_DEFAULTS);
+
+// قيم تأثيرات القدرات — قابلة للتعديل
+const AB_VALUES_DEFAULTS = {
+  frost_turns    : 3,
+  lightning_count: 3,
+  sun_strike_dmg : 15,
+  vitality_pts   : 3,
+  all_seeing_heal: 10,
+  controller_turns: 3,
+  absorb_drain   : 10,
+  finale_trap_dmg: 30,
+};
+let AB_VALUES = Object.assign({}, AB_VALUES_DEFAULTS);
+
+/* ── Settings helpers ── */
+function setToggle(id, activeIdx){
+  const btns=document.getElementById(id).querySelectorAll('button');
+  btns.forEach((b,i)=>b.classList.toggle('active',i===activeIdx));
+}
+function getToggle(id){
+  const btns=document.getElementById(id).querySelectorAll('button');
+  for(let i=0;i<btns.length;i++) if(btns[i].classList.contains('active')) return i;
+  return 0;
+}
+function getNum(id, fallback){
+  const v=parseFloat(document.getElementById(id)?.value);
+  return isNaN(v)?fallback:v;
+}
+function showSettings(){
+  // تعبئة الحقول بالقيم الحالية
+  document.getElementById('cfg-hp').value       = CONFIG.PLAYER_HP;
+  document.getElementById('cfg-timer').value    = CONFIG.TURN_SECONDS;
+  document.getElementById('cfg-maxpts').value   = CONFIG.MAX_AB_POINTS;
+  setToggle('cfg-draw-pts-toggle', CONFIG.DRAW_GIVES_POINT?0:1);
+  // قيم تأثيرات القدرات
+  const mapC={blizzard:5,frost:5,lightning:7,burning_sun:3,sun_strike:3,vitality:9,all_seeing:4,mine:5,controller:9,absorb:4,not_over:6,finale:9};
+  Object.entries(mapC).forEach(([id,def])=>{
+    const el=document.getElementById('ab-cost-'+id);
+    if(!el) return;
+    // ابحث عن التكلفة الحالية في ABILITY_DEF
+    for(const sc of Object.values(ABILITY_DEF)){
+      const ab=sc.abilities.find(a=>a.id===id);
+      if(ab){el.value=ab.cost;break;}
+    }
+  });
+  const mapV={'frost':AB_VALUES.frost_turns,'lightning':AB_VALUES.lightning_count,
+    'sun_strike':AB_VALUES.sun_strike_dmg,'vitality':AB_VALUES.vitality_pts,
+    'all_seeing':AB_VALUES.all_seeing_heal,'controller':AB_VALUES.controller_turns,
+    'absorb':AB_VALUES.absorb_drain,'finale':AB_VALUES.finale_trap_dmg};
+  Object.entries(mapV).forEach(([id,val])=>{
+    const el=document.getElementById('ab-val-'+id);
+    if(el) el.value=val;
+  });
+  _settingsFrom='size';
+  showScreen('settings-screen');
+}
+let _settingsFrom='size';
+function applySettings(){
+  CONFIG.PLAYER_HP       = Math.max(1, getNum('cfg-hp',100));
+  CONFIG.TURN_SECONDS    = Math.max(5, getNum('cfg-timer',30));
+  CONFIG.MAX_AB_POINTS   = Math.max(1, getNum('cfg-maxpts',10));
+  CONFIG.DRAW_GIVES_POINT= getToggle('cfg-draw-pts-toggle')===0;
+  // تكاليف القدرات
+  const abIds=['blizzard','frost','lightning','burning_sun','sun_strike','vitality','all_seeing','mine','controller','absorb','not_over','finale'];
+  abIds.forEach(id=>{
+    const el=document.getElementById('ab-cost-'+id);
+    if(!el) return;
+    const cost=Math.max(1,parseInt(el.value)||1);
+    for(const sc of Object.values(ABILITY_DEF)){
+      const ab=sc.abilities.find(a=>a.id===id);
+      if(ab){ab.cost=cost;break;}
+    }
+  });
+  AB_VALUES.frost_turns     = Math.max(1,getNum('ab-val-frost',3));
+  AB_VALUES.lightning_count = Math.max(1,getNum('ab-val-lightning',3));
+  AB_VALUES.sun_strike_dmg  = Math.max(1,getNum('ab-val-sun_strike',15));
+  AB_VALUES.vitality_pts    = Math.max(1,getNum('ab-val-vitality',3));
+  AB_VALUES.all_seeing_heal = Math.max(1,getNum('ab-val-all_seeing',10));
+  AB_VALUES.controller_turns= Math.max(1,getNum('ab-val-controller',3));
+  AB_VALUES.absorb_drain    = Math.max(1,getNum('ab-val-absorb',10));
+  AB_VALUES.finale_trap_dmg = Math.max(1,getNum('ab-val-finale',30));
+  showNotif('✅ تم حفظ الإعدادات!');
+  cancelSettings();
+}
+function cancelSettings(){
+  if(_settingsFrom==='size') showScreen('size-screen');
+  else showMenu();
+}
 
 /* ═════════════════════════════════════════════════════ */
 const ABLY_KEY = "UcDcBw.YJJl6g:LDwkET05nlae7VeirAz44uL8hE16cLZ8MyrSFwCnolk";
 
-/* ── Abilities definition ──
-   threshold = عدد الكروت المطلوبة من نفس الـ suit في دور واحد
-*/
+/* ══════════════════════════════════════════════════════
+   ABILITY DEFINITIONS — النظام الجديد
+   كل كرت ينزله اللاعب يضيف نقطة واحدة للـ suit بتاعه
+   النقاط بتتراكم لحد MAX_AB_POINTS ثم تتوقف
+   اللاعب يضغط على الـ badge عشان يفتح الموديل ويختار
+   ══════════════════════════════════════════════════════ */
 const ABILITY_DEF = {
-  S: { threshold:5, suit:'❄️', name:'السيوف', color:'#a8c4f0',
-    options:[
-      { id:'heal',  ico:'💚', cls:'ab-btn-heal',    name:'+25 HP لنفسك',         desc:'تعافَ 25 نقطة حياة' },
-      { id:'dmg',   ico:'💔', cls:'ab-btn-dmg',     name:'-25 HP من الخصم',      desc:'اخصم 25 من حياة المنافس' },
-      { id:'shuf',  ico:'🔀', cls:'ab-btn-shuffle', name:'لخبط كروتك',           desc:'اعد ترتيب كروتك عشوائياً' },
-      { id:'shufO', ico:'💫', cls:'ab-btn-shuffle', name:'لخبط كروت المنافس',    desc:'اعد ترتيب كروت خصمك' },
-      { id:'freeze',ico:'❄️', cls:'ab-btn-freeze',  name:'تجميد 3 كروت للخصم',  desc:'3 كروت عشوائية مجمودة لـ3 أدوار' },
+  S: {
+    suit:'❄️', name:'الأعاصير الثلجية', color:'#a8c4f0',
+    abilities:[
+      {
+        id:'blizzard', name:'إعصار', ico:'🌪️',
+        desc:'يغيّر كل كروت الصف الأمامي عشوائياً — اختر نفسك أو الخصم',
+        cost:5,
+        /* صورة الكرت — ضع الرابط هنا */
+        img:'',
+      },
+      {
+        id:'frost', name:'صقيع', ico:'🧊',
+        desc:'يجمد 2 كروت عشوائية للخصم لـ 3 أدوار أو ضربتين',
+        cost:5,
+        img:'',
+      },
+      {
+        id:'lightning', name:'برق', ico:'⚡',
+        desc:'يدمر 3 كروت عشوائية من صفك الأمامي',
+        cost:7,
+        img:'',
+      },
     ]
   },
-  H: { threshold:3, suit:'☀️', name:'القلوب', color:'#f87171',
-    options:[
-      { id:'hdmg', ico:'🔥', cls:'ab-btn-dmg', name:'-20 HP من الخصم', desc:'اخصم 20 نقطة من حياة المنافس' },
+  H: {
+    suit:'☀️', name:'شمس', color:'#f87171',
+    abilities:[
+      {
+        id:'burning_sun', name:'شمس حارقة', ico:'🔥',
+        desc:'احرق بطاقة من اختيارك (اختر العمود)',
+        cost:3,
+        img:'',
+      },
+      {
+        id:'sun_strike', name:'ضربة شمس', ico:'☄️',
+        desc:'يخسر الخصم 15 نقطة حياة',
+        cost:3,
+        img:'',
+      },
+      {
+        id:'vitality', name:'نشاط', ico:'✨',
+        desc:'اكسب 3 نقاط قدرة لأي suit من اختيارك',
+        cost:9,
+        img:'',
+      },
     ]
   },
-  D: { threshold:3, suit:'🌙', name:'الماس', color:'#fbbf24',
-    options:[
-      { id:'dheal', ico:'✨', cls:'ab-btn-bonus', name:'+10 HP + كرت للخصم', desc:'تعافَ 10 HP وأضف كرتاً إضافياً لأعمدة الخصم' },
+  D: {
+    suit:'🌙', name:'قمر', color:'#fbbf24',
+    abilities:[
+      {
+        id:'all_seeing', name:'أرى كل شيء', ico:'👁️',
+        desc:'+10 HP لك + كرت إضافي على أرض الخصم',
+        cost:4,
+        img:'',
+      },
+      {
+        id:'mine', name:'هذه ملكي', ico:'🔄',
+        desc:'بادِل بطاقة من أرضك مع بطاقة من أرض الخصم',
+        cost:5,
+        img:'',
+      },
+      {
+        id:'controller', name:'المتحكم', ico:'🔒',
+        desc:'يمنع الخصم من اللعب لـ 3 أدوار متتالية',
+        cost:9,
+        img:'',
+      },
     ]
   },
-  C: { threshold:3, suit:'⚫', name:'البستوني', color:'#4ade80',
-    options:[
-      { id:'cmix', ico:'⚡', cls:'ab-btn-mixed', name:'+10 HP /-10 من الخصم', desc:'تعافَ 10 واخصم 10 من الخصم' },
+  C: {
+    suit:'⚫', name:'الثقب الأسود', color:'#4ade80',
+    abilities:[
+      {
+        id:'absorb', name:'يمتص كل شيء', ico:'🌑',
+        desc:'يخصم 10 من الخصم ويضيفها لك',
+        cost:4,
+        img:'',
+      },
+      {
+        id:'not_over', name:'لم ننتهي بعد', ico:'➕',
+        desc:'أضف بطاقتين جديدتين إلى أرض الخصم',
+        cost:6,
+        img:'',
+      },
+      {
+        id:'finale', name:'النهاية', ico:'💣',
+        desc:'فجّر 3 بطاقات من أرضك أو ازرع فخاً في كروت الخصم المخفية',
+        cost:9,
+        img:'',
+      },
     ]
   },
 };
@@ -647,10 +1080,12 @@ function mkPlayer(name,id,preStacks){
     id,name,stacks,hand:null,
     hp:CONFIG.PLAYER_HP, maxHp:CONFIG.PLAYER_HP,
     removed:0,drawCount:0,
-    turnSuitCount:{S:0,H:0,D:0,C:0},   // كروت الـ suit في الدور الحالي (أو منذ آخر سحب في السرعة)
-    usedAbility:{S:false,H:false,D:false,C:false}, // هل استخدم القدرة هذا الدور؟
-    frozenSlots:{},                      // {stackIdx: turnsLeft}
-    bonusCards:0,                        // كروت إضافية من قدرة الماس
+    // نظام النقاط الجديد — كل كرت ينزله يضيف نقطة
+    abilityPoints:{S:0,H:0,D:0,C:0},
+    frozenSlots:{},     // {stackIdx: turnsLeft}
+    trappedSlots:{},    // {stackIdx: true} — فخ البستوني
+    bonusCards:0,
+    stunTurns:0,        // عدد الأدوار اللي فيها اللاعب مقيّد
   };
 }
 function totalCards(p){return p.stacks.reduce((a,s)=>a+s.length,0);}
@@ -801,20 +1236,40 @@ function startGame(pMode,gMode,onlineData=null,boardCols=8,cardsPerCol=10){
    RENDER
    ══════════════════════════════════════════════════ */
 function render(){
+  // إزالة شريط الإلغاء القديم
+  const oldBar=document.getElementById('bpm-cancel-bar');
+  if(oldBar) oldBar.remove();
+
   if(G.players.length===1){
     document.getElementById('half-top').innerHTML='';
-    document.getElementById('half-top').classList.remove('myturn');
+    document.getElementById('half-top').classList.remove('myturn','stunned');
     renderHalf('half-bot',0);
-    document.getElementById('half-bot').classList.toggle('myturn',G.gMode==='turns');
+    const hb=document.getElementById('half-bot');
+    hb.classList.toggle('myturn',G.gMode==='turns');
+    hb.classList.toggle('stunned',G.players[0].stunTurns>0);
   } else if(G.pMode==='local'){
     renderHalf('half-top',1);renderHalf('half-bot',0);
     document.getElementById('half-top').classList.toggle('myturn',G.turn===1);
+    document.getElementById('half-top').classList.toggle('stunned',G.players[1].stunTurns>0);
     document.getElementById('half-bot').classList.toggle('myturn',G.turn===0);
+    document.getElementById('half-bot').classList.toggle('stunned',G.players[0].stunTurns>0);
   } else {
     const opp=1-G.myIdx;
     renderHalf('half-top',opp);renderHalf('half-bot',G.myIdx);
     document.getElementById('half-top').classList.toggle('myturn',G.turn===opp);
+    document.getElementById('half-top').classList.toggle('stunned',G.players[opp].stunTurns>0);
     document.getElementById('half-bot').classList.toggle('myturn',G.turn===G.myIdx);
+    document.getElementById('half-bot').classList.toggle('stunned',G.players[G.myIdx].stunTurns>0);
+  }
+
+  // شريط إلغاء board pick mode
+  if(_boardPickMode){
+    const bar=document.createElement('div');
+    bar.id='bpm-cancel-bar';
+    bar.className='bpm-cancel-bar';
+    bar.innerHTML='✕ إلغاء اختيار البطاقة';
+    bar.onclick=cancelBoardPickMode;
+    document.getElementById('game-screen').appendChild(bar);
   }
 }
 
@@ -834,29 +1289,41 @@ function renderHalf(halfId,pIdx){
   const hpColor=hpPct>50?'#4ade80':hpPct>25?'#fbbf24':'#f87171';
   const hpTextColor=hpPct>50?'#4ade80':hpPct>25?'#fbbf24':'#f87171';
 
-  // Suit progress badges (show only in turns mode)
-  let suitBadges='';
-  if(G.gMode==='turns'||G.gMode==='speed'){
-    Object.entries(ABILITY_DEF).forEach(([sc,def])=>{
-      const cnt=p.turnSuitCount[sc]||0;
-      const done=p.usedAbility[sc];
-      const active=cnt>=def.threshold&&!done;
-      suitBadges+=`<span class="sp-badge sp-${sc.toLowerCase()}${active?' active':''}" title="${def.name}: ${cnt}/${def.threshold}">${def.suit}${cnt}</span>`;
-    });
-  }
+  // Ability point badges — قابلة للضغط
+  const suitProgEl=document.createElement('div');
+  suitProgEl.className='suit-prog';
+  const maxPts=CONFIG.MAX_AB_POINTS;
+  const myInteract=canInteract(pIdx);
+  Object.entries(ABILITY_DEF).forEach(([sc,def])=>{
+    const pts=p.abilityPoints[sc]||0;
+    const isEmpty=pts===0;
+    const isMaxed=pts>=maxPts;
+    const badge=document.createElement('span');
+    badge.className=`sp-badge sp-${sc.toLowerCase()}${isMaxed?' maxed':''}${isEmpty?' empty':''}`;
+    badge.title=`${def.name}: ${pts}/${maxPts} — اضغط لفتح القدرات`;
+    badge.innerHTML=`${def.suit}<b>${pts}</b>`;
+    if(!isEmpty&&myInteract){
+      badge.onclick=(e)=>{e.stopPropagation();openAbilityModal(pIdx,sc);};
+    }
+    suitProgEl.appendChild(badge);
+  });
+
+  // stun indicator
+  const stunEl=p.stunTurns>0?`<span style="font-size:10px;color:#c084fc;margin-right:4px;">😵×${p.stunTurns}</span>`:'';
 
   info.innerHTML=`
     <div class="pname">
       <div class="pulse" style="${isMyTurn?'display:block':''}"></div>
-      ${p.name}
+      ${stunEl}${p.name}
     </div>
     <div class="pstats">
-      <div class="suit-prog">${suitBadges}</div>
       <div class="hpbar-w">
         <div class="hpbar"><div class="hpfill" style="width:${hpPct}%;background:${hpColor};"></div></div>
         <span class="hptxt" style="color:${hpTextColor};">${p.hp}</span>
       </div>
     </div>`;
+  // نضيف الـ suit badges يدوياً
+  info.querySelector('.pstats').prepend(suitProgEl);
   half.appendChild(info);
 
   const cs=getComputedStyle(document.documentElement);
@@ -897,16 +1364,23 @@ function renderHalf(halfId,pIdx){
     } else {
       // الكرت الأخير face-up
       const img=cardImg(top);
-      // في السرعة: كل لاعب يقدر يلعب في أي وقت (بشرط canInteract وعنده كرت في إيده)
       const isPlayableTurn=G.gMode==='speed'?true:isMyTurn;
-      const canPlayNow=interact&&isPlayableTurn&&p.hand&&canPlay(p.hand,top)&&!isFrozen;
-      const canPlayFrozen=interact&&isPlayableTurn&&p.hand&&canPlay(p.hand,top)&&isFrozen;
-      const playable=canPlayNow||canPlayFrozen;
+      const isStunned=p.stunTurns>0;
+      const canPlayNow=interact&&isPlayableTurn&&p.hand&&canPlay(p.hand,top)&&!isFrozen&&!isStunned;
+      const canPlayFrozen=interact&&isPlayableTurn&&p.hand&&canPlay(p.hand,top)&&isFrozen&&!isStunned;
+
+      // Board pick mode
+      const bpm=_boardPickMode;
+      const isBPMSelf = bpm&&(bpm.mode==='burning_sun_pick'||bpm.mode==='mine_pick_self'||bpm.mode==='finale_pick')&&pIdx===bpm.pIdx;
+      const isBPMOpp  = bpm&&bpm.mode==='mine_pick_opp'&&pIdx!==(bpm.pIdx);
+      const isBPMTarget= (isBPMSelf||isBPMOpp)&&stack.length>0;
+
       const tc=document.createElement('div');
       let cls='pile-card-up face-up '+top.sn;
       if(img) cls+=' has-image';
-      if(canPlayNow) cls+=' playable';
+      if(canPlayNow&&!bpm) cls+=' playable';
       if(isFrozen) cls+=' frozen-top';
+      if(isBPMTarget) cls+=' bpm-target';
       tc.className=cls;
       tc.style.top=(nPeek*pk)+'px';tc.style.zIndex=String(nPeek+2);
       if(img) tc.style.backgroundImage=`url('${img}')`;
@@ -915,17 +1389,27 @@ function renderHalf(halfId,pIdx){
         <span class="ci-slg">${top.suit}</span>
         <div class="ci-br"><span class="ci-val">${top.val}</span><span class="ci-ssm">${top.suit}</span></div>
       </div>${isFrozen?`<span class="freeze-badge">❄️${frozenTurns}</span>`:''}`;
-      if(canPlayNow){const csi=si;tc.onclick=()=>playCard(pIdx,csi,false);}
-      else if(canPlayFrozen){const csi=si;tc.onclick=()=>playCard(pIdx,csi,true);}
+      if(isBPMTarget){
+        const csi=si,cpIdx=pIdx;
+        tc.onclick=(e)=>{e.stopPropagation();onBoardPickClick(cpIdx,csi);};
+      } else if(canPlayNow){
+        const csi=si;tc.onclick=()=>playCard(pIdx,csi,false);
+      } else if(canPlayFrozen){
+        const csi=si;tc.onclick=()=>playCard(pIdx,csi,true);
+      }
       pile.appendChild(tc);
 
       // الكروت المتراكمة
       const back=backImg();
+      const isTrapped=p.trappedSlots&&p.trappedSlots[si];
       for(let d=0;d<nPeek;d++){
         const dc=document.createElement('div');
         dc.style.top=(d*pk)+'px';dc.style.zIndex=String(d+1);
         let dcCls='pile-card-down';
         if(isFrozen) dcCls+=' frozen';
+        // الفخ يظهر فقط للاعب نفسه (مش للخصم)
+        const showTrap=isTrapped&&canInteract(pIdx)&&d===0;
+        if(showTrap) dcCls+=' trapped';
         if(canPlayNow){dcCls+=' pile-card-clickable';dc.style.cursor='pointer';const csi=si;dc.onclick=()=>playCard(pIdx,csi,false);}
         dc.className=dcCls;
         if(isFrozen){
@@ -989,6 +1473,10 @@ function canInteract(pIdx){
   return true;
 }
 
+function isPlayerStunned(pIdx){
+  return G.players[pIdx]&&G.players[pIdx].stunTurns>0;
+}
+
 /* ══════════════════════════════════════════════════
    CORE GAME LOGIC
    ══════════════════════════════════════════════════ */
@@ -997,20 +1485,19 @@ function playCard(pIdx,si,isFrozenPlay){
   const p=G.players[pIdx];
   if(!p.hand) return;
   if(G.gMode==='turns'&&G.turn!==pIdx) return;
+  // مقيّد؟
+  if(p.stunTurns>0){showNotif('😵 أنت مقيّد — لا تستطيع اللعب!');return;}
   const top=topOf(p,si);
   if(!top||!canPlay(p.hand,top)) return;
 
   const frozenTurns=p.frozenSlots[si]||0;
   if(frozenTurns>0){
-    // الكرت مجمود — لازم ينزله مرتين
     if(!p._frozenHits) p._frozenHits={};
     if(!p._frozenHits[si]){
-      // المرة الأولى: يضغط بس مش بيشيل الكرت
       p._frozenHits[si]=true;
       showNotif('❄️ الكرت مجمود — اضغط مرة تانية!');
       render(); return;
     } else {
-      // المرة التانية: يشيل الكرت ويزيل التجميد
       delete p._frozenHits[si];
       delete p.frozenSlots[si];
     }
@@ -1020,8 +1507,23 @@ function playCard(pIdx,si,isFrozenPlay){
   p.hand=top;
   p.removed++;
 
-  // تتبع الـ suit — في الأدوار: عداد الدور. في السرعة: عداد منذ آخر سحب
-  p.turnSuitCount[top.sc]=(p.turnSuitCount[top.sc]||0)+1;
+  // ── إضافة نقطة قدرة للـ suit المنزّل ──
+  const maxPts=CONFIG.MAX_AB_POINTS;
+  if((p.abilityPoints[top.sc]||0)<maxPts){
+    p.abilityPoints[top.sc]=(p.abilityPoints[top.sc]||0)+1;
+  }
+
+  // ── فحص الفخ: إذا الكرت المنزّل كان تحته فخ ──
+  // (الكرت المنزّل هو top وكان في الصف الأمامي — الفخ على الكروت المخفية تحته)
+  // نتحقق: هل الـ stack بعد pop فيه كرت والذي يبقى في top جديد هو محفوظ كفخ؟
+  if(p.trappedSlots&&p.trappedSlots[si]){
+    // الفخ انفجر!
+    delete p.trappedSlots[si];
+    p.hp=Math.max(0,p.hp-30);
+    showDmg('-30💣','#f87171');
+    showNotif('💣 انفجر الفخ! خسرت 30 نقطة حياة!');
+    if(checkHPWin()) return;
+  }
 
   if(G.gMode==='speed'&&G.players.length>1){
     const opp=1-pIdx,dmg=top.num;
@@ -1033,132 +1535,449 @@ function playCard(pIdx,si,isFrozenPlay){
   if(G.pMode==='online') syncMove(pIdx,si,top);
   if(totalCards(p)===0){endGame(pIdx,'cards');return;}
 
-  // فحص القدرات الخاصة
-  checkAbilities(pIdx);
   render();
 }
 
-function checkAbilities(pIdx){
-  const p=G.players[pIdx];
-  Object.entries(ABILITY_DEF).forEach(([sc,def])=>{
-    const cnt=p.turnSuitCount[sc]||0;
-    if(cnt>=def.threshold&&!p.usedAbility[sc]&&!p._pendingAbility){
-      // استحق القدرة — نضع lock فوراً قبل ما نفتح الـ modal
-      p._pendingAbility=sc;
-      p.usedAbility[sc]=true; // نحجز مكانها فوراً لمنع أي تكرار
-      showAbilityModal(pIdx,sc,def);
-    }
-  });
-}
-
 /* ══════════════════════════════════════════════════
-   ABILITY MODAL
+   ABILITY SYSTEM — النظام الجديد
    ══════════════════════════════════════════════════ */
-function showAbilityModal(pIdx,sc,def){
-  const overlay=document.getElementById('ability-overlay');
-  const btnsEl=document.getElementById('ab-buttons');
+
+/* المتغيرات المؤقتة للـ modals */
+let _abilityPIdx=null, _abilitySC=null;
+let _swapStep=0, _swapMyCard=null; // لقدرة "هذه ملكي"
+let _pendingAbilityId=null;
+
+function openAbilityModal(pIdx,sc){
+  if(!canInteract(pIdx)) return;
+  // في وضع الأدوار: القدرات متاحة في دورك فقط
+  if(G.gMode==='turns' && G.players.length>1 && G.turn!==pIdx){
+    showNotif('⏳ القدرات متاحة في دورك فقط!');
+    return;
+  }
+  const p=G.players[pIdx];
+  const def=ABILITY_DEF[sc];
+  const pts=p.abilityPoints[sc]||0;
+  const maxPts=CONFIG.MAX_AB_POINTS;
+  _abilityPIdx=pIdx; _abilitySC=sc;
+
   document.getElementById('ab-suit-icon').textContent=def.suit;
   document.getElementById('ab-suit-icon').style.color=def.color;
-  document.getElementById('ab-title').textContent=`قدرة ${def.name}!`;
-  document.getElementById('ab-sub').textContent=`نزّلت ${def.threshold} كروت ${def.suit} — اختار قدرتك`;
-  btnsEl.innerHTML='';
-  def.options.forEach(opt=>{
-    const btn=document.createElement('button');
-    btn.className=`ab-btn ${opt.cls}`;
-    btn.innerHTML=`<span class="ab-ico">${opt.ico}</span><div class="ab-txt"><div class="ab-name">${opt.name}</div><div class="ab-desc">${opt.desc}</div></div>`;
-    btn.onclick=()=>{
-      overlay.style.display='none';
-      applyAbility(pIdx,sc,opt.id);
-    };
-    btnsEl.appendChild(btn);
+  document.getElementById('ab-title').textContent=def.name;
+  document.getElementById('ab-sub').textContent='اختر قدرة لتفعيلها من أرصدتك';
+  document.getElementById('ab-pts-val').textContent=pts;
+  document.getElementById('ab-pts-max').textContent=`/ ${maxPts}`;
+
+  const grid=document.getElementById('ab-cards-grid');
+  grid.innerHTML='';
+  def.abilities.forEach(ab=>{
+    const canAfford=pts>=ab.cost;
+    const card=document.createElement('div');
+    card.className=`ab-card ab-card-${sc.toLowerCase()}${!canAfford?' disabled':''}`;
+    card.innerHTML=`
+      <div class="ab-card-img">
+        ${ab.img?`<img src="${ab.img}" alt="${ab.name}" onerror="this.parentNode.innerHTML='<span>${ab.ico}</span>'">`:`<span>${ab.ico}</span>`}
+      </div>
+      <div class="ab-card-name">${ab.name}</div>
+      <div class="ab-card-desc">${ab.desc}</div>
+      <div class="ab-card-cost">${ab.ico} ${ab.cost} نقطة</div>`;
+    if(canAfford){
+      card.onclick=()=>{
+        _pendingAbilityId=ab.id;
+        triggerAbility(pIdx,sc,ab);
+      };
+    }
+    grid.appendChild(card);
   });
-  overlay.style.display='flex';
+
+  document.getElementById('ability-overlay').style.display='flex';
 }
 
-function applyAbility(pIdx,sc,optId,extra){
+function closeAbilityModal(){
+  document.getElementById('ability-overlay').style.display='none';
+  _abilityPIdx=null; _abilitySC=null; _pendingAbilityId=null;
+}
+
+/* تفعيل القدرة — بعض القدرات تحتاج تحديد هدف أو اختيار إضافي */
+function triggerAbility(pIdx,sc,ab){
+  closeAbilityModal();
+  const opp=G.players.length>1?G.players[1-pIdx]:null;
+
+  if(ab.id==='blizzard'){
+    if(!opp){
+      execAbility(pIdx,sc,'blizzard',ab.cost,{target:'self'});
+    } else {
+      openTargetModal('🌪️ اختر هدف الإعصار',
+        ()=>execAbility(pIdx,sc,'blizzard',ab.cost,{target:'self'}),
+        ()=>execAbility(pIdx,sc,'blizzard',ab.cost,{target:'opp'})
+      );
+    }
+    return;
+  }
+  if(ab.id==='burning_sun'){
+    // اختيار من الأرض مباشرة
+    enterBoardPickMode(pIdx, sc, ab, 'burning_sun_pick');
+    return;
+  }
+  if(ab.id==='mine'){
+    if(!opp){showNotif('⚠️ هذه القدرة تتطلب خصماً!');return;}
+    enterBoardPickMode(pIdx, sc, ab, 'mine_pick_self');
+    return;
+  }
+  if(ab.id==='vitality'){
+    openVitalityPicker(pIdx,sc,ab);
+    return;
+  }
+  if(ab.id==='finale'){
+    openBombModal(pIdx,sc,ab);
+    return;
+  }
+  execAbility(pIdx,sc,ab.id,ab.cost,{});
+}
+
+function execAbility(pIdx,sc,abId,cost,extra){
   const p=G.players[pIdx];
   const opp=G.players.length>1?G.players[1-pIdx]:null;
-  // نتأكد إنها ما تتطبقش أكتر من مرة (قد تجي من remote وهي اتعملت بالفعل)
-  if(p._appliedAbility&&p._appliedAbility===sc+'_'+optId) return;
-  p._appliedAbility=sc+'_'+optId;
-  p.usedAbility[sc]=true;
-  p._pendingAbility=null;
+  p.abilityPoints[sc]=Math.max(0,(p.abilityPoints[sc]||0)-cost);
 
-  let syncExtra=null;
-  switch(optId){
-    case 'heal':
-      p.hp=Math.min(p.maxHp,p.hp+25);
-      showDmg('+25💚','#4ade80');
-      showNotif('💚 شفيت 25 نقطة!');
+  let syncExtra=Object.assign({},extra,{abId,cost});
+
+  switch(abId){
+    /* ─── SPADES ─── */
+    case 'blizzard':{
+      const target=extra.target==='opp'?opp:p;
+      if(!target) break;
+      const cols=G.boardCols||8;
+      // إذا جاءت order من remote استخدمها، غير كده ولّدها
+      const newCards=extra.order||Array.from({length:cols},()=>randCard());
+      for(let i=0;i<cols;i++){
+        if(target.stacks[i]&&target.stacks[i].length>0)
+          target.stacks[i][target.stacks[i].length-1]=newCards[i];
+      }
+      if(!extra.order) syncExtra.order=newCards;
+      showNotif(extra.target==='opp'?'🌪️ إعصار اجتاح أرض الخصم!':'🌪️ إعصار اجتاح أرضك!');
       break;
-    case 'dmg':
-      if(opp){opp.hp=Math.max(0,opp.hp-25);showDmg('-25💔','#f87171');showNotif('💔 خصمت 25 من الخصم!');}
+    }
+    case 'frost':{
+      if(!opp) break;
+      const turns=AB_VALUES.frost_turns;
+      const slots=extra.slots||null;
+      const result=freezeRandomSlots(opp,2,slots,turns);
+      if(!extra.slots) syncExtra.slots=result;
+      showNotif(`🧊 صقيع — جمّدت 2 كروت للخصم لـ ${turns} أدوار!`);
       break;
-    case 'shuf':
-      shuffleMyStacks(p);showNotif('🔀 تم تلخبط كروتك!');
+    }
+    case 'lightning':{
+      const cnt=AB_VALUES.lightning_count;
+      const removed=destroyRandomTopCards(p,cnt,extra.slots||null);
+      if(!extra.slots) syncExtra.slots=removed;
+      showNotif(`⚡ برق — دمّرت ${removed.length} بطاقات من أرضك!`);
+      if(totalCards(p)===0){endGame(1-pIdx,'cards');return;}
       break;
-    case 'shufO':
-      if(opp){shuffleMyStacks(opp);showNotif('💫 تم تلخبط كروت الخصم!');}
-      break;
-    case 'freeze':
-      if(opp){freezeRandomSlots(opp,3);showNotif('❄️ تم تجميد 3 كروت!');}
-      break;
-    case 'hdmg':
-      if(opp){opp.hp=Math.max(0,opp.hp-20);showDmg('-20🔥','#f87171');showNotif('🔥 خصمت 20 من الخصم!');}
-      break;
-    case 'dheal':
-      p.hp=Math.min(p.maxHp,p.hp+10);
-      showDmg('+10💛','#fbbf24');
-      if(opp){
-        // الكرت الإضافي: لو جاي من remote استخدمه، لو محلي ولّده وابعته
-        const extraCard=extra&&extra.card?extra.card:randCard();
-        syncExtra={card:extraCard};
-        addExtraCardToOpponent(opp,extraCard);
-        showNotif('✨ +10 HP لك + كرت إضافي على الخصم!');
-      } else {
-        showNotif('✨ +10 HP!');
+    }
+    /* ─── HEARTS ─── */
+    case 'burning_sun':{
+      const si=extra.si;
+      if(si===undefined||si===null) break;
+      if(p.stacks[si]&&p.stacks[si].length>0){
+        // الحرق لا يُفجّر الفخ
+        p.stacks[si].pop();
+        showNotif('🔥 شمس حارقة — أحرقت بطاقة!');
+        if(totalCards(p)===0){endGame(pIdx,'cards');return;}
       }
       break;
-    case 'cmix':
-      p.hp=Math.min(p.maxHp,p.hp+10);
-      if(opp){opp.hp=Math.max(0,opp.hp-10);}
-      showDmg('⚡','#86efac');
-      showNotif('⚡ +10 لك / -10 للخصم!');
+    }
+    case 'sun_strike':{
+      if(!opp) break;
+      const dmg=AB_VALUES.sun_strike_dmg;
+      opp.hp=Math.max(0,opp.hp-dmg);
+      showDmg(`-${dmg}☄️`,'#f87171');
+      showNotif(`☄️ ضربة شمس — الخصم خسر ${dmg} HP!`);
+      if(checkHPWin()) return;
       break;
+    }
+    case 'vitality':{
+      const targetSC=extra.targetSC;
+      if(!targetSC) break;
+      const maxPts=CONFIG.MAX_AB_POINTS;
+      const gain=AB_VALUES.vitality_pts;
+      p.abilityPoints[targetSC]=Math.min(maxPts,(p.abilityPoints[targetSC]||0)+gain);
+      showBoost(`+${gain} ${ABILITY_DEF[targetSC].suit}`,'#fbbf24');
+      showNotif(`✨ نشاط — كسبت ${gain} نقاط ${ABILITY_DEF[targetSC].name}!`);
+      break;
+    }
+    /* ─── DIAMONDS ─── */
+    case 'all_seeing':{
+      const heal=AB_VALUES.all_seeing_heal;
+      p.hp=Math.min(p.maxHp,p.hp+heal);
+      showBoost(`+${heal}💛`,'#fbbf24');
+      if(opp){
+        const extraCard=extra.card||randCard();
+        syncExtra.card=extraCard;
+        addExtraCardToOpponent(opp,extraCard);
+        showNotif(`👁️ أرى كل شيء — +${heal} HP لك + كرت على أرض الخصم!`);
+      } else {
+        showNotif(`👁️ +${heal} HP!`);
+      }
+      break;
+    }
+    case 'mine':{
+      const mi=extra.myIdx, oi=extra.oppIdx;
+      if(mi===undefined||oi===undefined||!opp) break;
+      const myCard=p.stacks[mi]&&p.stacks[mi].length>0?p.stacks[mi].pop():null;
+      const oppCard=opp.stacks[oi]&&opp.stacks[oi].length>0?opp.stacks[oi].pop():null;
+      if(myCard) opp.stacks[oi].push(myCard);
+      if(oppCard) p.stacks[mi].push(oppCard);
+      showNotif('🔄 هذه ملكي — تم تبادل البطاقتين!');
+      break;
+    }
+    case 'controller':{
+      if(!opp) break;
+      const turns=AB_VALUES.controller_turns;
+      opp.stunTurns=(opp.stunTurns||0)+turns;
+      showNotif(`🔒 المتحكم — الخصم مقيّد لـ ${turns} أدوار!`);
+      break;
+    }
+    /* ─── CLUBS ─── */
+    case 'absorb':{
+      if(!opp) break;
+      const drain=Math.min(AB_VALUES.absorb_drain,opp.hp);
+      opp.hp=Math.max(0,opp.hp-drain);
+      p.hp=Math.min(p.maxHp,p.hp+drain);
+      showDmg(`🌑-${drain}/+${drain}`,'#4ade80');
+      showNotif(`🌑 يمتص كل شيء — سرقت ${drain} HP!`);
+      if(checkHPWin()) return;
+      break;
+    }
+    case 'not_over':{
+      if(!opp) break;
+      const c1=extra.cards&&extra.cards[0]?extra.cards[0]:randCard();
+      const c2=extra.cards&&extra.cards[1]?extra.cards[1]:randCard();
+      syncExtra.cards=[c1,c2];
+      addExtraCardToOpponent(opp,c1);
+      addExtraCardToOpponent(opp,c2);
+      showNotif('➕ لم ننتهي بعد — أضفت بطاقتين للخصم!');
+      break;
+    }
+    case 'finale':{
+      if(extra.type==='self'){
+        const si=extra.si;
+        if(si===undefined) break;
+        const cols=G.boardCols||8;
+        const targets=[si-1,si,si+1].filter(i=>i>=0&&i<cols&&p.stacks[i]&&p.stacks[i].length>0);
+        // التفجير لا يُفجّر الفخ
+        targets.forEach(i=>{
+          if(p.trappedSlots&&p.trappedSlots[i]) delete p.trappedSlots[i];
+          p.stacks[i].pop();
+        });
+        showDmg('💥','#f87171');
+        showNotif(`💥 النهاية — دمّرت ${targets.length} بطاقات!`);
+        if(totalCards(p)===0){endGame(1-pIdx,'cards');return;}
+      } else if(extra.type==='trap'){
+        if(!opp) break;
+        const slot=extra.slot!==undefined?extra.slot:placeTrap(opp);
+        syncExtra.slot=slot;
+        if(slot!==null){
+          if(!opp.trappedSlots) opp.trappedSlots={};
+          opp.trappedSlots[slot]=true;
+          showNotif('🕸️ النهاية — وضعت فخاً خفياً في أرض الخصم!');
+        } else {
+          showNotif('⚠️ لا توجد كروت مخفية كافية للفخ!');
+          // أعد النقاط لو مش في مكان للفخ
+          p.abilityPoints[sc]=Math.min(CONFIG.MAX_AB_POINTS,(p.abilityPoints[sc]||0)+cost);
+        }
+      }
+      break;
+    }
   }
 
-  if(G.pMode==='online') syncAbility(pIdx,sc,optId,syncExtra);
+  if(G.pMode==='online') syncAbility(pIdx,sc,abId,syncExtra);
   if(opp&&checkHPWin()) return;
   render();
 }
 
+/* ── Ability helpers ── */
+function blizzardTopRow(target,preOrder){
+  const cols=G.boardCols||8;
+  const newCards=preOrder||Array.from({length:cols},()=>randCard());
+  for(let i=0;i<cols;i++){
+    if(target.stacks[i]&&target.stacks[i].length>0){
+      target.stacks[i][target.stacks[i].length-1]=newCards[i];
+    }
+  }
+  return newCards;
+}
+
+function destroyRandomTopCards(p,count,preSlots){
+  const cols=G.boardCols||8;
+  let slots;
+  if(preSlots){
+    slots=preSlots;
+  } else {
+    const available=[];
+    for(let i=0;i<cols;i++){if(p.stacks[i].length>0) available.push(i);}
+    for(let i=available.length-1;i>0;i--){const j=ri(i+1);[available[i],available[j]]=[available[j],available[i]];}
+    slots=available.slice(0,count);
+  }
+  slots.forEach(i=>{if(p.stacks[i]&&p.stacks[i].length>0) p.stacks[i].pop();});
+  return slots;
+}
+
+function placeTrap(opp){
+  const cols=G.boardCols||8;
+  // نضع الفخ على كرت مخفي (مش الكرت الأمامي) في عمود فيه أكتر من كرت
+  const available=[];
+  for(let i=0;i<cols;i++){
+    if(opp.stacks[i].length>1&&!(opp.trappedSlots&&opp.trappedSlots[i])) available.push(i);
+  }
+  if(!available.length) return null;
+  return available[ri(available.length)];
+}
+
+/* ══════════════════════════════════════════════════
+   BOARD PICK MODE — اختيار الكروت من الأرض مباشرة
+   ══════════════════════════════════════════════════ */
+let _boardPickMode=null; // null أو {pIdx,sc,ab,mode,step,myPickedSi}
+
+function enterBoardPickMode(pIdx,sc,ab,mode){
+  _boardPickMode={pIdx,sc,ab,mode,step:1,myPickedSi:null};
+  const msgs={
+    'burning_sun_pick':'🔥 اختر بطاقة من أرضك لحرقها',
+    'mine_pick_self'  :'🔄 اختر بطاقة من أرضك للتبادل',
+    'mine_pick_opp'   :'🔄 الآن اختر بطاقة من أرض الخصم',
+    'finale_pick'     :'💥 اختر البطاقة المركزية للتفجير',
+  };
+  showNotif(msgs[mode]||'اختر بطاقة من الأرض');
+  render(); // إعادة الرسم عشان تظهر highlight على الكروت القابلة للاختيار
+}
+
+function cancelBoardPickMode(){
+  if(!_boardPickMode) return;
+  // إعادة النقاط لو ألغى
+  const {pIdx,sc,ab}=_boardPickMode;
+  G.players[pIdx].abilityPoints[sc]=Math.min(CONFIG.MAX_AB_POINTS,
+    (G.players[pIdx].abilityPoints[sc]||0)+ab.cost);
+  _boardPickMode=null;
+  showNotif('↩ تم إلغاء القدرة');
+  render();
+}
+
+// يُستدعى من renderHalf عند الضغط على كرت أثناء board pick mode
+function onBoardPickClick(pIdx, si){
+  if(!_boardPickMode) return;
+  const {pIdx:bPIdx,sc,ab,mode}=_boardPickMode;
+  if(pIdx!==bPIdx && mode!=='mine_pick_opp') return; // مش دورك
+  const p=G.players[bPIdx];
+  const opp=G.players.length>1?G.players[1-bPIdx]:null;
+
+  if(mode==='burning_sun_pick'){
+    if(pIdx!==bPIdx) return;
+    _boardPickMode=null;
+    execAbility(bPIdx,sc,'burning_sun',0,{si}); // cost اتخصم مسبقاً
+    return;
+  }
+  if(mode==='mine_pick_self'){
+    if(pIdx!==bPIdx) return;
+    _boardPickMode.myPickedSi=si;
+    _boardPickMode.mode='mine_pick_opp';
+    showNotif('🔄 الآن اختر بطاقة من أرض الخصم للتبادل');
+    render();
+    return;
+  }
+  if(mode==='mine_pick_opp'){
+    if(pIdx===bPIdx) return; // يجب يختار من أرض الخصم
+    const myIdx=_boardPickMode.myPickedSi;
+    _boardPickMode=null;
+    execAbility(bPIdx,sc,'mine',0,{myIdx,oppIdx:si});
+    return;
+  }
+  if(mode==='finale_pick'){
+    if(pIdx!==bPIdx) return;
+    _boardPickMode=null;
+    execAbility(bPIdx,sc,'finale',0,{type:'self',si});
+    return;
+  }
+}
+
+/* ── Target modal (بسيط — نفسك أو الخصم) ── */
+function openTargetModal(title,onSelf,onOpp){
+  document.getElementById('target-title').textContent=title;
+  document.getElementById('target-self-btn').onclick=()=>{
+    document.getElementById('target-overlay').style.display='none';
+    onSelf();
+  };
+  document.getElementById('target-opp-btn').onclick=()=>{
+    document.getElementById('target-overlay').style.display='none';
+    onOpp();
+  };
+  document.getElementById('target-overlay').style.display='flex';
+}
+
+/* ── Vitality picker (اختيار الـ suit) ── */
+function openVitalityPicker(pIdx,sc,ab){
+  const overlay=document.getElementById('target-overlay');
+  const box=overlay.querySelector('.ab-target-box');
+  box.innerHTML=`<div class="ab-target-title">✨ نشاط — اختر القدرة للشحن (+${AB_VALUES.vitality_pts} نقاط)</div>
+  <div class="ab-target-btns" style="flex-wrap:wrap;gap:6px;">
+    ${Object.entries(ABILITY_DEF).map(([k,d])=>`
+      <button onclick="document.getElementById('target-overlay').style.display='none';execAbility(${pIdx},'${sc}','vitality',${ab.cost},{targetSC:'${k}'})"
+        class="ab-tgt" style="background:rgba(255,255,255,.06);border:1px solid ${d.color}55;color:${d.color};min-width:68px;flex-direction:column;gap:3px;">
+        <span style="font-size:20px">${d.suit}</span><span style="font-size:11px;">${d.name}</span>
+      </button>`).join('')}
+  </div>
+  <button class="ab-close" onclick="document.getElementById('target-overlay').style.display='none';cancelBoardPickMode&&cancelBoardPickMode()" style="margin-top:10px">← إلغاء</button>`;
+  overlay.style.display='flex';
+}
+
+/* ── Bomb modal ── */
+function openBombModal(pIdx,sc,ab){
+  _abilityPIdx=pIdx; _abilitySC=sc;
+  const opp=G.players.length>1?G.players[1-pIdx]:null;
+  document.getElementById('bomb-self-btn').onclick=()=>{
+    document.getElementById('bomb-overlay').style.display='none';
+    // اختيار من الأرض
+    enterBoardPickMode(pIdx,sc,ab,'finale_pick');
+    // نعيد النقاط المخصومة مسبقاً لأن execAbility هتخصمها
+    G.players[pIdx].abilityPoints[sc]=Math.min(CONFIG.MAX_AB_POINTS,
+      (G.players[pIdx].abilityPoints[sc]||0)+ab.cost);
+  };
+  document.getElementById('bomb-trap-btn').onclick=()=>{
+    document.getElementById('bomb-overlay').style.display='none';
+    if(!opp){showNotif('⚠️ لا يوجد خصم!');return;}
+    execAbility(pIdx,sc,'finale',ab.cost,{type:'trap'});
+  };
+  document.getElementById('bomb-trap-btn').style.opacity=opp?'1':'.35';
+  document.getElementById('bomb-overlay').style.display='flex';
+}
+function closeBombModal(){document.getElementById('bomb-overlay').style.display='none';}
+
+function showBoost(txt,color){
+  const el=document.createElement('div');
+  el.className='boost-pop';el.textContent=txt;el.style.color=color;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),1200);
+}
+
 function addExtraCardToOpponent(opp,card){
-  // إضافة كرت محدد في عمود عشوائي عند الخصم
   const cols=G.boardCols||8;
   const nonEmpty=[];
   for(let i=0;i<cols;i++){if(opp.stacks[i].length>0) nonEmpty.push(i);}
   const target=nonEmpty.length>0?nonEmpty[ri(nonEmpty.length)]:ri(cols);
-  // نضيف الكرت قبل الكرت العلوي
   const insertAt=Math.max(0,opp.stacks[target].length-1);
   opp.stacks[target].splice(insertAt,0,card||randCard());
 }
 
-function shuffleMyStacks(p){
-  // جمع كل الكروت وتوزيعها عشوائياً
-  const perCol=G.cardsPerCol||10;
-  const all=[];
-  p.stacks.forEach(st=>all.push(...st));
-  for(let i=all.length-1;i>0;i--){const j=ri(i+1);[all[i],all[j]]=[all[j],all[i]];}
-  let idx=0;
-  p.stacks.forEach(st=>{st.length=0;for(let i=0;i<perCol&&idx<all.length;i++)st.push(all[idx++]);});
-}
-
-function freezeRandomSlots(p,count){
+function freezeRandomSlots(p,count,preSlots){
   const cols=G.boardCols||8;
-  const available=[];
-  for(let i=0;i<cols;i++){if(p.stacks[i].length>0&&!(p.frozenSlots[i]>0))available.push(i);}
-  for(let i=available.length-1;i>0;i--){const j=ri(i+1);[available[i],available[j]]=[available[j],available[i]];}
-  available.slice(0,count).forEach(si=>{p.frozenSlots[si]=3;});
+  let slots;
+  if(preSlots){
+    slots=preSlots;
+  } else {
+    const available=[];
+    for(let i=0;i<cols;i++){if(p.stacks[i].length>0&&!(p.frozenSlots[i]>0))available.push(i);}
+    for(let i=available.length-1;i>0;i--){const j=ri(i+1);[available[i],available[j]]=[available[j],available[i]];}
+    slots=available.slice(0,count);
+  }
+  slots.forEach(si=>{p.frozenSlots[si]=3;});
+  return slots;
 }
 
 /* ══════════════════════════════════════════════════
@@ -1184,19 +2003,25 @@ function onDeckClick(pIdx){
     } else {
       const newCard=randCard();
       p.hand=newCard; p.drawCount++;
+      // إضافة نقطة قدرة عند السحب (لو مفعّلة في الإعدادات)
+      if(CONFIG.DRAW_GIVES_POINT){
+        const maxPts=CONFIG.MAX_AB_POINTS;
+        if((p.abilityPoints[newCard.sc]||0)<maxPts)
+          p.abilityPoints[newCard.sc]=(p.abilityPoints[newCard.sc]||0)+1;
+      }
       if(G.pMode==='online') syncDeck(pIdx, -1, newCard);
       render();
     }
   } else {
-    // مود السرعة — سحب كرت جديد يريست عداد القدرات
+    // مود السرعة
     if(!canInteract(pIdx)) return;
     const newCard=randCard();
     p.hand=newCard; p.drawCount++;
-    // ريست عداد الـ suit والقدرات عند السحب
-    p.turnSuitCount={S:0,H:0,D:0,C:0};
-    p.usedAbility={S:false,H:false,D:false,C:false};
-    p._appliedAbility=null;
-    p._pendingAbility=null;
+    if(CONFIG.DRAW_GIVES_POINT){
+      const maxPts=CONFIG.MAX_AB_POINTS;
+      if((p.abilityPoints[newCard.sc]||0)<maxPts)
+        p.abilityPoints[newCard.sc]=(p.abilityPoints[newCard.sc]||0)+1;
+    }
     if(G.pMode==='online') syncDeck(pIdx, -1, newCard);
     render();
   }
@@ -1208,12 +2033,22 @@ function doNextTurn(nextTurnIdx, nextCard){
   tickFreezeCounters(prevP);
   G.turn=nextTurnIdx;
   const p=G.players[G.turn];
-  p.turnSuitCount={S:0,H:0,D:0,C:0};
-  p.usedAbility={S:false,H:false,D:false,C:false};
   p._frozenHits={};
-  p._appliedAbility=null;
-  p._pendingAbility=null;
   p.hand=nextCard; p.drawCount++;
+  // تقليل عداد الـ stun
+  if(p.stunTurns>0){
+    p.stunTurns--;
+    if(p.stunTurns>0){
+      showNotif(`😵 ${p.name} مقيّد — أدوار متبقية: ${p.stunTurns}`);
+      // انتقل تلقائياً للدور التالي
+      const nextT=G.players.length>1?1-G.turn:G.turn;
+      const nc=randCard();
+      if(G.pMode==='online') syncDeck(G.turn,nextT,nc);
+      render();
+      setTimeout(()=>doNextTurn(nextT,nc),1200);
+      return;
+    }
+  }
   render();
   startTimer(G.turn);
 }
@@ -1378,7 +2213,7 @@ function startOnlineGame(mode,n1,n2,myIdx,cols=8,perCol=10,stacks1,stacks2){
 
 function syncMove(pIdx,si,newHand){if(ach)ach.publish('move',{pIdx,si,newHand});}
 function syncDeck(pIdx,nextTurnIdx,nextCard){if(ach)ach.publish('deck',{pIdx,nextTurnIdx,nextCard});}
-function syncAbility(pIdx,sc,optId,extra){if(ach)ach.publish('ability',{pIdx,sc,optId,extra});}
+function syncAbility(pIdx,sc,abId,extra){if(ach)ach.publish('ability',{pIdx,sc,abId,extra});}
 
 function applyRemoteMove(d){
   const p=G.players[d.pIdx];if(!p)return;
@@ -1389,7 +2224,17 @@ function applyRemoteMove(d){
     else{delete p._frozenHits[d.si];delete p.frozenSlots[d.si];}
   }
   p.stacks[d.si].pop();p.hand=d.newHand;p.removed++;
-  p.turnSuitCount[d.newHand.sc]=(p.turnSuitCount[d.newHand.sc]||0)+1;
+  // إضافة نقطة قدرة
+  const maxPts=CONFIG.MAX_AB_POINTS;
+  if((p.abilityPoints[d.newHand.sc]||0)<maxPts)
+    p.abilityPoints[d.newHand.sc]=(p.abilityPoints[d.newHand.sc]||0)+1;
+  // فخ
+  if(p.trappedSlots&&p.trappedSlots[d.si]){
+    delete p.trappedSlots[d.si];
+    p.hp=Math.max(0,p.hp-30);
+    showDmg('-30💣','#f87171');
+    if(checkHPWin())return;
+  }
   if(G.gMode==='speed'){
     G.players[1-d.pIdx].hp=Math.max(0,G.players[1-d.pIdx].hp-d.newHand.num);
     if(checkHPWin())return;
@@ -1402,18 +2247,24 @@ function applyRemoteDeck(d){
   const p=G.players[d.pIdx];if(!p)return;
   if(G.gMode==='turns'){
     if(d.nextTurnIdx===-1||d.nextTurnIdx===undefined){
-      // مجرد سحب كرت مش نهاية دور
-      p.hand=d.nextCard; p.drawCount++; render();
+      p.hand=d.nextCard; p.drawCount++;
+      if(CONFIG.DRAW_GIVES_POINT){
+        const maxPts=CONFIG.MAX_AB_POINTS;
+        if((p.abilityPoints[d.nextCard.sc]||0)<maxPts)
+          p.abilityPoints[d.nextCard.sc]=(p.abilityPoints[d.nextCard.sc]||0)+1;
+      }
+      render();
     } else {
-      // نهاية دور — نطبق مباشرة بنفس القيم اللي جاءت
       p.hand=null;
       doNextTurn(d.nextTurnIdx, d.nextCard);
     }
   } else {
-    // مود السرعة — ريست عداد القدرات عند السحب
     p.hand=d.nextCard; p.drawCount++;
-    p.turnSuitCount={S:0,H:0,D:0,C:0};
-    p.usedAbility={S:false,H:false,D:false,C:false};
+    if(CONFIG.DRAW_GIVES_POINT){
+      const maxPts=CONFIG.MAX_AB_POINTS;
+      if((p.abilityPoints[d.nextCard.sc]||0)<maxPts)
+        p.abilityPoints[d.nextCard.sc]=(p.abilityPoints[d.nextCard.sc]||0)+1;
+    }
     render();
   }
 }
@@ -1421,9 +2272,7 @@ function applyRemoteDeck(d){
 function applyRemoteAbility(d){
   const p=G.players[d.pIdx];
   if(!p) return;
-  // لو القدرة دي اتطبقت بالفعل من remote، تجاهل
-  if(p._appliedAbility===d.sc+'_'+d.optId) return;
-  applyAbility(d.pIdx,d.sc,d.optId,d.extra);
+  execAbility(d.pIdx,d.sc,d.abId,d.cost,d.extra||{});
 }
 
 function stopOnline(){if(ach){ach.unsubscribe();ach=null;}if(abl){abl.close();abl=null;}}
