@@ -424,6 +424,9 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
       <button class="obtn obtn-create" onclick="showOnlinePanel('create')"><span class="obtn-ico">➕</span><span>إنشاء غرفة</span></button>
       <button class="obtn obtn-join" onclick="showOnlinePanel('join')"><span class="obtn-ico">🔗</span><span>انضمام</span></button>
     </div>
+    <div id="online-settings-row" style="display:flex;justify-content:center;margin-bottom:6px;">
+      <button class="abtn" style="background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);color:var(--gold);padding:9px 18px;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;width:100%;" onclick="showSettingsFromOnline()">⚙️ إعدادات اللعبة</button>
+    </div>
     <div id="panel-create" class="opanel">
       <label class="lbl">اسمك</label><input class="inp" id="c-name" value="لاعب 1">
       <label class="lbl">مود اللعبة</label>
@@ -540,7 +543,7 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
       </div>
     </div>
     <button class="abtn abtn-gold" onclick="confirmSizeAndStart()">🚀 ابدأ اللعبة!</button>
-    <button class="abtn" style="background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);color:var(--gold);padding:12px;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;width:100%;margin-top:8px;" onclick="showSettings()">⚙️ إعدادات اللعبة</button>
+    <button class="abtn" style="background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);color:var(--gold);padding:12px;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;width:100%;margin-top:8px;" onclick="_settingsFrom='size';showSettings()">⚙️ إعدادات اللعبة</button>
     <button class="abtn abtn-dim" onclick="cancelSizeScreen()" style="margin-top:8px">← رجوع</button>
   </div>
 </div>
@@ -877,11 +880,9 @@ function showSettings(){
   document.getElementById('cfg-maxpts').value   = CONFIG.MAX_AB_POINTS;
   setToggle('cfg-draw-pts-toggle', CONFIG.DRAW_GIVES_POINT?0:1);
   // قيم تأثيرات القدرات
-  const mapC={blizzard:5,frost:5,lightning:7,burning_sun:3,sun_strike:3,vitality:9,all_seeing:4,mine:5,controller:9,absorb:4,not_over:6,finale:9};
-  Object.entries(mapC).forEach(([id,def])=>{
+  Object.entries({blizzard:5,frost:5,lightning:7,burning_sun:3,sun_strike:3,vitality:9,all_seeing:4,mine:5,controller:9,absorb:4,not_over:6,finale:9}).forEach(([id])=>{
     const el=document.getElementById('ab-cost-'+id);
     if(!el) return;
-    // ابحث عن التكلفة الحالية في ABILITY_DEF
     for(const sc of Object.values(ABILITY_DEF)){
       const ab=sc.abilities.find(a=>a.id===id);
       if(ab){el.value=ab.cost;break;}
@@ -895,10 +896,15 @@ function showSettings(){
     const el=document.getElementById('ab-val-'+id);
     if(el) el.value=val;
   });
-  _settingsFrom='size';
+  // _settingsFrom يتحدد من الـ caller (showSettings من size-screen أو showSettingsFromOnline)
+  if(!_settingsFrom) _settingsFrom='size';
   showScreen('settings-screen');
 }
 let _settingsFrom='size';
+function showSettingsFromOnline(){
+  _settingsFrom='online';
+  showSettings();
+}
 function applySettings(){
   CONFIG.PLAYER_HP       = Math.max(1, getNum('cfg-hp',100));
   CONFIG.TURN_SECONDS    = Math.max(5, getNum('cfg-timer',30));
@@ -928,6 +934,7 @@ function applySettings(){
 }
 function cancelSettings(){
   if(_settingsFrom==='size') showScreen('size-screen');
+  else if(_settingsFrom==='online') showOnline();
   else showMenu();
 }
 
@@ -1102,6 +1109,7 @@ function showOnline(){
   document.getElementById('panel-create').classList.remove('on');
   document.getElementById('panel-join').classList.remove('on');
   document.getElementById('online-choice').style.display='flex';
+  document.getElementById('online-settings-row').style.display='flex';
   document.getElementById('st-create').className='status';
   document.getElementById('st-join').className='status';
   document.getElementById('codebox').classList.remove('on');
@@ -1109,6 +1117,7 @@ function showOnline(){
 }
 function showOnlinePanel(which){
   document.getElementById('online-choice').style.display='none';
+  document.getElementById('online-settings-row').style.display='none';
   document.getElementById('panel-create').classList.toggle('on',which==='create');
   document.getElementById('panel-join').classList.toggle('on',which==='join');
   if(which==='join')setTimeout(()=>document.getElementById('cd0').focus(),100);
@@ -1119,6 +1128,7 @@ function backToOnlineChoice(){
   document.getElementById('panel-create').classList.remove('on');
   document.getElementById('panel-join').classList.remove('on');
   document.getElementById('online-choice').style.display='flex';
+  document.getElementById('online-settings-row').style.display='flex';
   document.getElementById('st-create').className='status';
   document.getElementById('st-join').className='status';
   document.getElementById('codebox').classList.remove('on');
@@ -1519,9 +1529,10 @@ function playCard(pIdx,si,isFrozenPlay){
   if(p.trappedSlots&&p.trappedSlots[si]){
     // الفخ انفجر!
     delete p.trappedSlots[si];
-    p.hp=Math.max(0,p.hp-30);
-    showDmg('-30💣','#f87171');
-    showNotif('💣 انفجر الفخ! خسرت 30 نقطة حياة!');
+    const trapDmg=AB_VALUES.finale_trap_dmg||30;
+    p.hp=Math.max(0,p.hp-trapDmg);
+    showDmg(`-${trapDmg}💣`,'#f87171');
+    showNotif(`💣 انفجر الفخ! خسرت ${trapDmg} نقطة حياة!`);
     if(checkHPWin()) return;
   }
 
@@ -1634,10 +1645,11 @@ function triggerAbility(pIdx,sc,ab){
   execAbility(pIdx,sc,ab.id,ab.cost,{});
 }
 
-function execAbility(pIdx,sc,abId,cost,extra){
+function execAbility(pIdx,sc,abId,cost,extra,isRemote){
   const p=G.players[pIdx];
   const opp=G.players.length>1?G.players[1-pIdx]:null;
-  p.abilityPoints[sc]=Math.max(0,(p.abilityPoints[sc]||0)-cost);
+  // خصم النقاط فقط إذا التكلفة > 0 (board-pick يمرر 0 لأن الخصم اتخصم مسبقاً في triggerAbility)
+  if(cost>0) p.abilityPoints[sc]=Math.max(0,(p.abilityPoints[sc]||0)-cost);
 
   let syncExtra=Object.assign({},extra,{abId,cost});
 
@@ -1654,7 +1666,7 @@ function execAbility(pIdx,sc,abId,cost,extra){
           target.stacks[i][target.stacks[i].length-1]=newCards[i];
       }
       if(!extra.order) syncExtra.order=newCards;
-      showNotif(extra.target==='opp'?'🌪️ إعصار اجتاح أرض الخصم!':'🌪️ إعصار اجتاح أرضك!');
+      showNotif(extra.target==='opp'?'🌪️ إعصار اجتاح أرض الخصم — كل الكروت الأمامية تغيرت!':'🌪️ إعصار اجتاح أرضك — كل الكروت الأمامية تغيرت!');
       break;
     }
     case 'frost':{
@@ -1790,7 +1802,8 @@ function execAbility(pIdx,sc,abId,cost,extra){
     }
   }
 
-  if(G.pMode==='online') syncAbility(pIdx,sc,abId,syncExtra);
+  // نرسل للتاني فقط لو الحدث محلي (مش قادم من remote)
+  if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,abId,syncExtra);
   if(opp&&checkHPWin()) return;
   render();
 }
@@ -1839,6 +1852,8 @@ function placeTrap(opp){
 let _boardPickMode=null; // null أو {pIdx,sc,ab,mode,step,myPickedSi}
 
 function enterBoardPickMode(pIdx,sc,ab,mode){
+  // خصم النقاط مسبقاً هنا (cancelBoardPickMode هيردها لو ألغى)
+  G.players[pIdx].abilityPoints[sc]=Math.max(0,(G.players[pIdx].abilityPoints[sc]||0)-ab.cost);
   _boardPickMode={pIdx,sc,ab,mode,step:1,myPickedSi:null};
   const msgs={
     'burning_sun_pick':'🔥 اختر بطاقة من أرضك لحرقها',
@@ -1847,7 +1862,7 @@ function enterBoardPickMode(pIdx,sc,ab,mode){
     'finale_pick'     :'💥 اختر البطاقة المركزية للتفجير',
   };
   showNotif(msgs[mode]||'اختر بطاقة من الأرض');
-  render(); // إعادة الرسم عشان تظهر highlight على الكروت القابلة للاختيار
+  render();
 }
 
 function cancelBoardPickMode(){
@@ -1934,11 +1949,8 @@ function openBombModal(pIdx,sc,ab){
   const opp=G.players.length>1?G.players[1-pIdx]:null;
   document.getElementById('bomb-self-btn').onclick=()=>{
     document.getElementById('bomb-overlay').style.display='none';
-    // اختيار من الأرض
+    // enterBoardPickMode ستخصم النقاط بنفسها
     enterBoardPickMode(pIdx,sc,ab,'finale_pick');
-    // نعيد النقاط المخصومة مسبقاً لأن execAbility هتخصمها
-    G.players[pIdx].abilityPoints[sc]=Math.min(CONFIG.MAX_AB_POINTS,
-      (G.players[pIdx].abilityPoints[sc]||0)+ab.cost);
   };
   document.getElementById('bomb-trap-btn').onclick=()=>{
     document.getElementById('bomb-overlay').style.display='none';
@@ -1965,8 +1977,9 @@ function addExtraCardToOpponent(opp,card){
   opp.stacks[target].splice(insertAt,0,card||randCard());
 }
 
-function freezeRandomSlots(p,count,preSlots){
+function freezeRandomSlots(p,count,preSlots,turns){
   const cols=G.boardCols||8;
+  const freezeTurns=turns||AB_VALUES.frost_turns||3;
   let slots;
   if(preSlots){
     slots=preSlots;
@@ -1976,7 +1989,7 @@ function freezeRandomSlots(p,count,preSlots){
     for(let i=available.length-1;i>0;i--){const j=ri(i+1);[available[i],available[j]]=[available[j],available[i]];}
     slots=available.slice(0,count);
   }
-  slots.forEach(si=>{p.frozenSlots[si]=3;});
+  slots.forEach(si=>{p.frozenSlots[si]=freezeTurns;});
   return slots;
 }
 
@@ -2035,6 +2048,12 @@ function doNextTurn(nextTurnIdx, nextCard){
   const p=G.players[G.turn];
   p._frozenHits={};
   p.hand=nextCard; p.drawCount++;
+  // إضافة نقطة قدرة عند بداية الدور (لو الإعداد مفعّل)
+  if(CONFIG.DRAW_GIVES_POINT && nextCard){
+    const maxPts=CONFIG.MAX_AB_POINTS;
+    if((p.abilityPoints[nextCard.sc]||0)<maxPts)
+      p.abilityPoints[nextCard.sc]=(p.abilityPoints[nextCard.sc]||0)+1;
+  }
   // تقليل عداد الـ stun
   if(p.stunTurns>0){
     p.stunTurns--;
@@ -2231,8 +2250,9 @@ function applyRemoteMove(d){
   // فخ
   if(p.trappedSlots&&p.trappedSlots[d.si]){
     delete p.trappedSlots[d.si];
-    p.hp=Math.max(0,p.hp-30);
-    showDmg('-30💣','#f87171');
+    const trapDmg=AB_VALUES.finale_trap_dmg||30;
+    p.hp=Math.max(0,p.hp-trapDmg);
+    showDmg(`-${trapDmg}💣`,'#f87171');
     if(checkHPWin())return;
   }
   if(G.gMode==='speed'){
@@ -2272,7 +2292,11 @@ function applyRemoteDeck(d){
 function applyRemoteAbility(d){
   const p=G.players[d.pIdx];
   if(!p) return;
-  execAbility(d.pIdx,d.sc,d.abId,d.cost,d.extra||{});
+  // cost موجود في d.extra.cost (لأن syncExtra يحتوي على cost)
+  const extra=d.extra||{};
+  const cost=extra.cost||0;
+  // نمرر isRemote=true عشان نمنع الـ sync loop
+  execAbility(d.pIdx,d.sc,d.abId,cost,extra,true);
 }
 
 function stopOnline(){if(ach){ach.unsubscribe();ach=null;}if(abl){abl.close();abl=null;}}
