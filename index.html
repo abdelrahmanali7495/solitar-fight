@@ -49,7 +49,7 @@ html,body{height:100%;overflow:hidden;touch-action:manipulation;}
 body{background:var(--darker);font-family:'Cairo',sans-serif;color:var(--text);
   background-image:radial-gradient(ellipse at 15% 15%,rgba(26,55,100,.2) 0%,transparent 55%),
   radial-gradient(ellipse at 85% 85%,rgba(180,40,40,.13) 0%,transparent 55%);}
-.game-bg{position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;pointer-events:none;opacity:.18;}
+.game-bg{position:fixed;inset:0;z-index:0;background-size:cover;background-position:center;pointer-events:none;opacity:1;}
 .screen{display:none;width:100%;height:100%;position:relative;z-index:1;}
 .screen.active{display:flex;flex-direction:column;}
 
@@ -479,13 +479,16 @@ body.mode-small .stacks-row {
   40% {opacity:.5;transform:scale(.85) translateY(6px) rotate(-3deg);}
   100%{opacity:0;transform:scale(.6) translateY(20px) rotate(-8deg);}
 }
-@keyframes handCardIn{
-  0%  {opacity:0;transform:scale(.5) translateY(-25px) rotate(8deg);}
-  60% {opacity:1;transform:scale(1.08) translateY(-4px) rotate(-1deg);}
-  100%{opacity:1;transform:scale(1) translateY(0) rotate(0deg);}
+/* تأثير الإعصار — يظهر الكرت الجديد في دوامة */
+@keyframes handCardTornado{
+  0%  {opacity:0;transform:scale(0) rotate(-360deg) translateY(30px);filter:blur(4px);}
+  35% {opacity:.7;transform:scale(1.15) rotate(-180deg) translateY(-8px);filter:blur(1px);}
+  60% {opacity:1;transform:scale(1.05) rotate(-20deg) translateY(-3px);filter:blur(0);}
+  80% {transform:scale(.97) rotate(5deg) translateY(1px);}
+  100%{opacity:1;transform:scale(1) rotate(0deg) translateY(0);filter:blur(0);}
 }
 .hand-card-out{animation:handCardOut .22s ease-in forwards!important;pointer-events:none!important;}
-.hand-card-in {animation:handCardIn  .28s ease-out forwards!important;}
+.hand-card-in {animation:handCardTornado .42s cubic-bezier(.25,.46,.45,.94) forwards!important;}
 
 /* ─── ABILITY FLASH CARD ─── */
 @keyframes abilityFlash{
@@ -559,7 +562,7 @@ body.mode-small .stacks-row {
   border:2px solid rgba(160,60,255,.5);
 }
 .stun-banner{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  position:absolute;top:50%;left:;transform:translate(-50%,-50%);
   background:rgba(80,20,160,.85);border:2px solid rgba(160,60,255,.8);
   border-radius:12px;padding:8px 14px;
   font-family:'Cinzel Decorative',serif;font-size:clamp(11px,2.5vw,16px);
@@ -760,32 +763,6 @@ body.mode-small .stacks-row {
     <div class="half opponent" id="half-top"></div>
     <div class="split-divider">
       <!-- ═══ خط الوسط المموج ═══ -->
-      <svg class="wavy-line-svg" viewBox="0 0 1000 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stop-color="rgba(255,215,0,0)"/>
-            <stop offset="8%"   stop-color="rgba(255,215,0,0.4)"/>
-            <stop offset="25%"  stop-color="rgba(255,215,0,0.85)"/>
-            <stop offset="50%"  stop-color="rgba(255,255,200,1)"/>
-            <stop offset="75%"  stop-color="rgba(255,215,0,0.85)"/>
-            <stop offset="92%"  stop-color="rgba(255,215,0,0.4)"/>
-            <stop offset="100%" stop-color="rgba(255,215,0,0)"/>
-          </linearGradient>
-          <filter id="waveGlow">
-            <feGaussianBlur stdDeviation="2" result="blur"/>
-            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-          </filter>
-        </defs>
-        <!-- الخط الخلفي (توهج) -->
-        <path d="M0,14 C50,4 100,24 150,14 C200,4 250,24 300,14 C350,4 400,24 450,14 C500,4 550,24 600,14 C650,4 700,24 750,14 C800,4 850,24 900,14 C950,4 980,18 1000,14"
-          fill="none" stroke="rgba(255,180,0,0.35)" stroke-width="6" stroke-linecap="round" filter="url(#waveGlow)"/>
-        <!-- الخط الرئيسي -->
-        <path d="M0,14 C50,4 100,24 150,14 C200,4 250,24 300,14 C350,4 400,24 450,14 C500,4 550,24 600,14 C650,4 700,24 750,14 C800,4 850,24 900,14 C950,4 980,18 1000,14"
-          fill="none" stroke="url(#waveGrad)" stroke-width="2.2" stroke-linecap="round"/>
-        <!-- نقطة الوسط -->
-        <circle cx="500" cy="14" r="4" fill="rgba(255,230,100,0.9)" filter="url(#waveGlow)"/>
-        <circle cx="500" cy="14" r="2" fill="white"/>
-      </svg>
       <div class="divider-side" id="divider-side-left"></div>
       <div class="divider-center">
         <button class="qbtn" onclick="quitGame()" style="font-size:10px;padding:3px 9px;">✕</button>
@@ -1182,7 +1159,7 @@ const CARD_BACK_IMAGE = "https://i.postimg.cc/65tFW5mF/الظهر.png";
 /* ┌──────────────────────────────────────────────────┐
    │  خلفية الساحة — ضع رابط الصورة هنا             │
    └──────────────────────────────────────────────────┘ */
-const BOARD_BG_IMAGE = "https://i.postimg.cc/650FnnGX/Asset-2.png";
+const BOARD_BG_IMAGE = "خلفيات ساحة.png 2.png";
 
 /* ┌──────────────────────────────────────────────────┐
    │  إعدادات اللعبة — القيم الافتراضية              │
@@ -1411,13 +1388,13 @@ const ABILITY_DEF = {
         id:'all_seeing', name:'أرى كل شيء', ico:'👁️',
         desc:'+10 HP لك + كرت إضافي على أرض الخصم',
         cost:4, modesAllowed:['turns','speed'],
-        img:'',
+        img:'تجربه 1.png',
       },
       {
         id:'mine', name:'هذه ملكي', ico:'🔄',
         desc:'بادِل بطاقة من أرضك مع بطاقة من أرض الخصم',
         cost:5, modesAllowed:['turns','speed'],
-        img:'',
+        img:'تجربه 2.png',
       },
       {
         id:'controller', name:'المتحكم', ico:'🔒',
@@ -2132,7 +2109,8 @@ function playCard(pIdx,si,isFrozenPlay){
   if(totalCards(p)===0){endGame(pIdx,'cards');return;}
 
   // تأثير بصري: الكرت ينزل — وميض في نصف اللاعب اللي لعب فقط
-  const halfId=pIdx===0?'half-bot':'half-top';
+  // في الأونلاين: halfId يتحدد حسب منظور اللاعب الحالي (myIdx)
+  const halfId = (G.pMode==='online') ? (pIdx===G.myIdx?'half-bot':'half-top') : (pIdx===0?'half-bot':'half-top');
   animCardPlay(halfId,si);
   render();
 }
@@ -2786,7 +2764,8 @@ function freezeRandomSlots(p,count,preSlots,turns){
    ══════════════════════════════════════════════════ */
 /* مساعد: تأثير بصري على كرت اليد عند السحب */
 function animateHandDraw(pIdx, afterAnim){
-  const halfId=pIdx===0?'half-bot':'half-top';
+  // في الأونلاين: اللاعب يشوف نفسه دايماً في half-bot
+  const halfId = (G.pMode==='online') ? (pIdx===G.myIdx?'half-bot':'half-top') : (pIdx===0?'half-bot':'half-top');
   const half=document.getElementById(halfId);
   const handEl=half?.querySelector('.hand-card,.hand-empty');
   if(handEl){
@@ -2824,9 +2803,9 @@ function onDeckClick(pIdx){
         }
         if(G.pMode==='online') syncDeck(pIdx, -1, newCard);
         render();
-        // تأثير ظهور الكرت الجديد
+        // تأثير ظهور الكرت الجديد — في الأونلاين يظهر في نصف اللاعب الصح
         setTimeout(()=>{
-          const halfId2=pIdx===0?'half-bot':'half-top';
+          const halfId2=(G.pMode==='online')?(pIdx===G.myIdx?'half-bot':'half-top'):(pIdx===0?'half-bot':'half-top');
           const half2=document.getElementById(halfId2);
           const newHandEl=half2?.querySelector('.hand-card');
           if(newHandEl) newHandEl.classList.add('hand-card-in');
@@ -2846,7 +2825,7 @@ function onDeckClick(pIdx){
       if(G.pMode==='online') syncDeck(pIdx, -1, newCard);
       render();
       setTimeout(()=>{
-        const halfId2=pIdx===0?'half-bot':'half-top';
+        const halfId2=(G.pMode==='online')?(pIdx===G.myIdx?'half-bot':'half-top'):(pIdx===0?'half-bot':'half-top');
         const half2=document.getElementById(halfId2);
         const newHandEl=half2?.querySelector('.hand-card');
         if(newHandEl) newHandEl.classList.add('hand-card-in');
@@ -2947,7 +2926,7 @@ function endGame(wIdx,reason){
   const w=G.players[wIdx];
   const secs=Math.floor((Date.now()-G.started)/1000);
   const m=Math.floor(secs/60),s=secs%60;
-  const reasons={cards:'نزّل كل الكروت!',hp:'أنهى نقاط حياة الخصم!'};
+  const reasons={cards:'نزّل كل الكروت!',hp:'أنهى نقاط حياة الخصم!',quit:'المنافس غادر اللعبة!'};
   const reasonTxt=reasons[reason]||'';
 
   // لاعب واحد — شاشة الفوز فقط
@@ -2994,7 +2973,19 @@ function endGame(wIdx,reason){
   }
 }
 
-function quitGame(){if(confirm('تأكيد الخروج؟')){stopTimer();stopOnline();showMenu();}}
+function quitGame(){
+  if(confirm('تأكيد الخروج؟')){
+    stopTimer();
+    // في الأونلاين: بلّغ اللاعب التاني أنك خرجت
+    if(G && G.pMode==='online' && ach && !G.ended){
+      try{ ach.publish('quit',{pIdx:G.myIdx}); }catch(e){}
+      // تأخير بسيط عشان الرسالة توصل قبل ما نغلق الاتصال
+      setTimeout(()=>{stopOnline();showMenu();}, 300);
+    } else {
+      stopOnline();showMenu();
+    }
+  }
+}
 function restartGame(){
   stopOnline();
   startGame(G.pMode,G.gMode,null,G.boardCols||8,G.cardsPerCol||10);
@@ -3055,11 +3046,39 @@ function startOnlineGame(mode,n1,n2,myIdx,cols=8,perCol=10,stacks1,stacks2){
   document.body.classList.toggle('mode-small',cols===6);
   startGame('online',mode,{myIdx,n1,n2,stacks1,stacks2},cols,perCol);
   if(ach){
-    ach.unsubscribe('move');ach.unsubscribe('deck');ach.unsubscribe('ability');ach.unsubscribe('end');
+    ach.unsubscribe('move');ach.unsubscribe('deck');ach.unsubscribe('ability');ach.unsubscribe('end');ach.unsubscribe('quit');ach.unsubscribe('state_sync');
     ach.subscribe('move',msg=>{if(msg.data.pIdx!==G.myIdx)applyRemoteMove(msg.data);});
     ach.subscribe('deck',msg=>{if(msg.data.pIdx!==G.myIdx)applyRemoteDeck(msg.data);});
     ach.subscribe('ability',msg=>{if(msg.data.pIdx!==G.myIdx)applyRemoteAbility(msg.data);});
     ach.subscribe('end',msg=>{if(!G.ended)endGame(msg.data.wIdx,msg.data.reason);});
+    ach.subscribe('quit',msg=>{
+      if(msg.data.pIdx!==G.myIdx && !G.ended){
+        const oppName=G.players[msg.data.pIdx]?G.players[msg.data.pIdx].name:'المنافس';
+        showNotif(`🚪 ${oppName} غادر الغرفة!`);
+        setTimeout(()=>{
+          if(!G.ended){
+            // اعتبر اللاعب الحالي فائزاً
+            endGame(G.myIdx,'quit');
+          }
+        },1500);
+      }
+    });
+    // اللاعب التاني (myIdx=1) يستمع للـ state_sync من الـ host
+    if(myIdx===1){
+      ach.subscribe('state_sync',msg=>{
+        if(G.ended) return;
+        applyStateSnapshot(msg.data.snapshot, msg.data.turn);
+        render();
+      });
+    }
+  }
+  // الـ host (myIdx=0) يبعت state_sync كل 4 ثواني
+  if(myIdx===0){
+    if(window._stateSyncInterval) clearInterval(window._stateSyncInterval);
+    window._stateSyncInterval=setInterval(()=>{
+      if(!G||G.ended||G.pMode!=='online'){clearInterval(window._stateSyncInterval);return;}
+      syncFullState();
+    },4000);
   }
 }
 
@@ -3067,6 +3086,49 @@ function syncMove(pIdx,si,newHand){if(ach)ach.publish('move',{pIdx,si,newHand});
 function syncDeck(pIdx,nextTurnIdx,nextCard){if(ach)ach.publish('deck',{pIdx,nextTurnIdx,nextCard});}
 function syncAbility(pIdx,sc,abId,extra){if(ach)ach.publish('ability',{pIdx,sc,abId,extra});}
 function syncEnd(wIdx,reason){if(ach)ach.publish('end',{wIdx,reason});}
+
+/* ── مزامنة الحالة الكاملة — تُرسَل بعد كل حدث مهم من الـ host (myIdx=0) ── */
+function buildStateSnapshot(){
+  return G.players.map(p=>({
+    hp: p.hp,
+    maxHp: p.maxHp,
+    abilityPoints: {...p.abilityPoints},
+    stacks: p.stacks.map(s=>[...s]),
+    frozenSlots: {...p.frozenSlots},
+    thornedSlots: p.thornedSlots?{...p.thornedSlots}:{},
+    timebombSlots: p.timebombSlots?{...p.timebombSlots}:{},
+    trappedSlots: p.trappedSlots?{...p.trappedSlots}:{},
+    stunTurns: p.stunTurns||0,
+    removed: p.removed,
+    drawCount: p.drawCount,
+    hand: p.hand,
+  }));
+}
+
+function syncFullState(){
+  if(!ach||G.myIdx!==0||G.ended) return;
+  try{ ach.publish('state_sync',{snapshot:buildStateSnapshot(), turn:G.turn}); }catch(e){}
+}
+
+function applyStateSnapshot(snapshot, turn){
+  if(!snapshot||!G.players) return;
+  snapshot.forEach((s,i)=>{
+    const p=G.players[i];
+    if(!p) return;
+    p.hp=s.hp; p.maxHp=s.maxHp;
+    p.abilityPoints=s.abilityPoints||{};
+    p.stacks=s.stacks.map(st=>[...st]);
+    p.frozenSlots=s.frozenSlots||{};
+    p.thornedSlots=s.thornedSlots||{};
+    p.timebombSlots=s.timebombSlots||{};
+    p.trappedSlots=s.trappedSlots||{};
+    p.stunTurns=s.stunTurns||0;
+    p.removed=s.removed||0;
+    p.drawCount=s.drawCount||0;
+    p.hand=s.hand||null;
+  });
+  if(turn!==undefined) G.turn=turn;
+}
 
 function applyRemoteMove(d){
   const p=G.players[d.pIdx];if(!p)return;
@@ -3102,9 +3164,9 @@ function applyRemoteMove(d){
     if(checkHPWin())return;
   }
   if(totalCards(p)===0){endGame(d.pIdx,'cards');return;}
-  // نرسم أولاً ثم نضيف التأثير البصري على نصف ملعب الخصم (اللي ظهر عندنا كـ half-top)
+  // نرسم أولاً ثم نضيف التأثير البصري
+  // من منظور اللاعب الحالي: إذا d.pIdx = myIdx → half-bot (أرضي) ، غيره → half-top (أرض الخصم)
   render();
-  // نصف الخصم من وجهة نظرنا = half-top (لأننا myIdx=0 دايماً يشوف نفسه في half-bot)
   const remoteHalfId = d.pIdx===G.myIdx ? 'half-bot' : 'half-top';
   animCardPlay(remoteHalfId, d.si);
 }
@@ -3147,7 +3209,10 @@ function applyRemoteAbility(d){
   execAbility(d.pIdx,d.sc,d.abId,cost,extra,true);
 }
 
-function stopOnline(){if(ach){ach.unsubscribe();ach=null;}if(abl){abl.close();abl=null;}}
+function stopOnline(){
+  if(window._stateSyncInterval){clearInterval(window._stateSyncInterval);window._stateSyncInterval=null;}
+  if(ach){ach.unsubscribe();ach=null;}if(abl){abl.close();abl=null;}
+}
 function stopTimer(){clearInterval(timerInterval);timerInterval=null;}
 function setStatus(w,msg,cls){const el=document.getElementById('st-'+w);el.innerHTML=msg;el.className='status on '+cls;}
 </script>
