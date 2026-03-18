@@ -160,8 +160,18 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 /* ─── SPLIT ─── */
 .game-split{flex:1;display:grid;grid-template-rows:1fr 38px 1fr;overflow:hidden;min-height:0;}
 .split-divider{background:transparent;position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.split-divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0),transparent);}
+.split-divider::before{display:none;}
 .split-divider::after{display:none;}
+/* ─── الخط المموج SVG ─── */
+.wavy-line-svg{
+  position:absolute;
+  top:50%;left:0;right:0;
+  width:100%;height:28px;
+  transform:translateY(-50%);
+  z-index:1;
+  pointer-events:none;
+  overflow:visible;
+}
 .divider-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(10,10,22,.98),rgba(5,5,14,.99));padding:4px 16px;border-radius:24px;border:1px solid rgba(255,215,0,.28);z-index:5;box-shadow:0 2px 20px rgba(0,0,0,.7),0 0 14px rgba(255,215,0,.07);}
 .divider-side{position:absolute;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:5px;z-index:5;}
 #divider-side-left{left:8px;}
@@ -247,7 +257,7 @@ body.mode-small .stacks-row {
   width: var(--cw);       /* عرض الكارت */
   height: var(--ch);      /* ارتفاع الكارت */
   border-radius: 5px;
-  border: 1px solid rgba(255,215,0,.2);
+  border: 1px solid rgba(255,255,255,.2);
   overflow: hidden;
   background-size: cover;
   background-position: center;
@@ -306,7 +316,7 @@ body.mode-small .stacks-row {
 
 /* ─── HAND ─── */
 .hand-area{display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0;position:relative;z-index:10;}
-.hand-card{width:var(--hand-w);height:var(--hand-h);border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;position:relative;overflow:hidden;border:1px solid #ffffff;box-shadow:var(--glow-gold),0 8px 24px rgba(0,0,0,.7),0 0 0 1px rgba(255,215,0,.15);flex-shrink:0;}
+.hand-card{width:var(--hand-w);height:var(--hand-h);border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;position:relative;overflow:hidden;border:0px solid #ffffff;box-shadow:var(--glow-gold),0 8px 24px rgba(0,0,0,.7),0 0 0 1px rgba(255,215,0,.15);flex-shrink:0;}
 .hand-card.face-up{background:linear-gradient(155deg,#f9f5ea,#ece7d4);}
 .hand-card.face-up.hearts,.hand-card.face-up.diamonds{color:#b02020;}
 .hand-card.face-up.spades,.hand-card.face-up.clubs{color:#111828;}
@@ -420,14 +430,15 @@ body.mode-small .stacks-row {
 .card-play-anim{animation:cardPlay .32s ease-out forwards!important;}
 
 /* ════════════ 🎯 منطقة التعديل — حجم الكروت والتأثيرات ════════════ */
-/* ─── col-flash: وميض العمود عند لعب كرت ─── */
-@keyframes colFlash{
-  0%  {background:rgba(255,215,0,0);box-shadow:none;}
-  30% {background:rgba(255,215,0,.18);box-shadow:0 0 18px rgba(255,215,0,.5),inset 0 0 12px rgba(255,215,0,.15);}
-  60% {background:rgba(255,215,0,.08);box-shadow:0 0 8px rgba(255,215,0,.25);}
-  100%{background:rgba(255,215,0,0);box-shadow:none;}
+/* ─── col-flash: وميض العمود — على الكروت الموجودة فقط ─── */
+@keyframes pileFlash{
+  0%  {box-shadow:none;background:rgba(255,215,0,0);}
+  30% {box-shadow:0 0 18px rgba(255,215,0,.65),inset 0 0 10px rgba(255,215,0,.2);background:rgba(255,215,0,.18);}
+  60% {box-shadow:0 0 8px rgba(255,215,0,.3);background:rgba(255,215,0,.07);}
+  100%{box-shadow:none;background:rgba(255,215,0,0);}
 }
-.col-flash{animation:colFlash .35s ease-out forwards!important;border-radius:6px;}
+/* التأثير على .stack-pile مباشرة (اللي ارتفاعه بيتحدد ديناميكياً بالكروت) */
+.col-flash .stack-pile{animation:pileFlash .38s ease-out forwards!important;border-radius:6px;}
 
 /* ─── جزيئات اللعب ─── */
 .play-particle{
@@ -454,7 +465,88 @@ body.mode-small .stacks-row {
 .card-destroy-anim{animation:cardDestroy .45s ease-in forwards!important;pointer-events:none!important;}
 .boost-pop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(20px,4vw,30px);pointer-events:none;z-index:1001;animation:boostPop 1.1s forwards;text-shadow:0 0 18px currentColor;}
 
-/* ─── SETTINGS SCREEN ─── */
+/* ─── ABILITY FLASH CARD ─── */
+@keyframes abilityFlash{
+  0%  {opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-15deg);}
+  20% {opacity:1;transform:translate(-50%,-50%) scale(1.08) rotate(2deg);}
+  60% {opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0deg);}
+  80% {opacity:.9;transform:translate(-50%,-50%) scale(1.03) rotate(-1deg);}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(.7) rotate(5deg);}
+}
+.ability-flash-card{
+  position:fixed;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  z-index:2000;pointer-events:none;
+  width:clamp(120px,25vw,200px);
+  aspect-ratio:2/3;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 0 60px rgba(255,215,0,.8),0 0 120px rgba(255,215,0,.4),0 20px 60px rgba(0,0,0,.9);
+  border:3px solid rgba(255,215,0,.9);
+  animation:abilityFlash .75s cubic-bezier(.25,.46,.45,.94) forwards;
+}
+.ability-flash-card img{width:100%;height:100%;object-fit:cover;}
+.ability-flash-card .ability-flash-ico{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(50px,12vw,90px);
+  background:linear-gradient(145deg,rgba(14,14,28,.99),rgba(6,6,16,.99));
+}
+@keyframes abilityFlashGlow{
+  0%,100%{box-shadow:0 0 40px rgba(255,215,0,.6),0 0 80px rgba(255,215,0,.3),0 20px 60px rgba(0,0,0,.9);}
+  50%{box-shadow:0 0 80px rgba(255,215,0,1),0 0 160px rgba(255,215,0,.6),0 20px 60px rgba(0,0,0,.9);}
+}
+
+/* ─── CARD FLIP ANIMATION — نص أول يختفي، نص تاني يظهر في نفس الاتجاه ─── */
+@keyframes cardFlipHide{
+  0%  {transform:scaleX(1);filter:brightness(1);}
+  100%{transform:scaleX(0);filter:brightness(1.8);}
+}
+@keyframes cardFlipShow{
+  0%  {transform:scaleX(0);filter:brightness(1.8);}
+  100%{transform:scaleX(1);filter:brightness(1);}
+}
+.card-flip-out{
+  animation:cardFlipHide .18s ease-in forwards !important;
+  transform-origin:center center;
+}
+.card-flip-in{
+  animation:cardFlipShow .18s ease-out forwards !important;
+  transform-origin:center center;
+  transform:scaleX(0);
+}
+
+/* ─── CONTROLLER LOCK OVERLAY ─── */
+@keyframes lockPulse{
+  0%,100%{box-shadow:inset 0 0 30px rgba(160,60,255,.35),0 0 30px rgba(160,60,255,.25);}
+  50%    {box-shadow:inset 0 0 60px rgba(160,60,255,.65),0 0 60px rgba(160,60,255,.5);}
+}
+@keyframes lockChain{
+  0%,100%{opacity:.7;transform:scale(1);}
+  50%    {opacity:1;transform:scale(1.08);}
+}
+.stun-overlay{
+  position:absolute;inset:0;z-index:30;pointer-events:none;
+  background:repeating-linear-gradient(
+    45deg,
+    rgba(120,40,200,.08) 0px,rgba(120,40,200,.08) 4px,
+    transparent 4px,transparent 12px
+  );
+  border-radius:6px;
+  animation:lockPulse 1.5s ease-in-out infinite;
+  border:2px solid rgba(160,60,255,.5);
+}
+.stun-banner{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(80,20,160,.85);border:2px solid rgba(160,60,255,.8);
+  border-radius:12px;padding:8px 14px;
+  font-family:'Cinzel Decorative',serif;font-size:clamp(11px,2.5vw,16px);
+  color:#d4aaff;text-align:center;
+  box-shadow:0 0 30px rgba(160,60,255,.6);
+  white-space:nowrap;
+  animation:lockChain 1.2s ease-in-out infinite;
+  z-index:31;
+}
 #settings-screen{align-items:center;justify-content:flex-start;overflow-y:auto;}
 .settings-box{background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99));border:1px solid rgba(255,215,0,.18);border-radius:16px;padding:20px 18px;width:100%;max-width:480px;box-shadow:0 24px 64px rgba(0,0,0,.65);margin:16px;}
 .settings-title{font-family:'Cinzel Decorative',serif;font-size:15px;color:var(--gold);text-align:center;margin-bottom:4px;}
@@ -512,7 +604,17 @@ body.mode-small .stacks-row {
 
 <!-- ══════════════ MENU ══════════════ -->
 <style>
-.logo-main{display:flex;justify-content:center;align-items:center;position:relative;}.logo-img{width:250px;height:auto;display:block;border-radius:10px;filter:grayscale(1) sepia(1) brightness(1.2) contrast(1.4);mix-blend-mode:screen;background:linear-gradient(45deg,#FFD700,#FFC200,#FFA500,#FFD700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:glowGold 3s linear infinite;}@keyframes glowGold{0%{filter:brightness(1.2) contrast(1.4) sepia(1);}25%{filter:brightness(1.3) contrast(1.5) sepia(1);}100%{filter:brightness(1.4) contrast(1.6) sepia(1);}75%{filter:brightness(1.3) contrast(1.5) sepia(1);}100%{filter:brightness(1.2) contrast(1.4) sepia(1);}}
+.logo-main{display:flex;justify-content:center;align-items:center;position:relative;}
+.logo-img{
+  width:250px;height:auto;display:block;border-radius:10px;
+  mix-blend-mode:screen;
+  animation:glowGoldLogo 3s ease-in-out infinite alternate;
+}
+@keyframes glowGoldLogo{
+  0%  {filter:brightness(1.1) contrast(1.2) drop-shadow(0 0 8px rgba(255,200,0,.7)) drop-shadow(0 0 20px rgba(255,160,0,.4));}
+  50% {filter:brightness(1.3) contrast(1.4) drop-shadow(0 0 16px rgba(255,215,0,.9)) drop-shadow(0 0 40px rgba(255,180,0,.6)) drop-shadow(0 0 70px rgba(255,120,0,.3));}
+  100%{filter:brightness(1.15) contrast(1.25) drop-shadow(0 0 10px rgba(255,200,100,.75)) drop-shadow(0 0 28px rgba(255,160,0,.5));}
+}
 </style>
 
 <div id="menu-screen" class="screen active">
@@ -635,6 +737,33 @@ body.mode-small .stacks-row {
   <div class="game-split">
     <div class="half opponent" id="half-top"></div>
     <div class="split-divider">
+      <!-- ═══ خط الوسط المموج ═══ -->
+      <svg class="wavy-line-svg" viewBox="0 0 1000 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="rgba(255,215,0,0)"/>
+            <stop offset="8%"   stop-color="rgba(255,215,0,0.4)"/>
+            <stop offset="25%"  stop-color="rgba(255,215,0,0.85)"/>
+            <stop offset="50%"  stop-color="rgba(255,255,200,1)"/>
+            <stop offset="75%"  stop-color="rgba(255,215,0,0.85)"/>
+            <stop offset="92%"  stop-color="rgba(255,215,0,0.4)"/>
+            <stop offset="100%" stop-color="rgba(255,215,0,0)"/>
+          </linearGradient>
+          <filter id="waveGlow">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+        <!-- الخط الخلفي (توهج) -->
+        <path d="M0,14 C50,4 100,24 150,14 C200,4 250,24 300,14 C350,4 400,24 450,14 C500,4 550,24 600,14 C650,4 700,24 750,14 C800,4 850,24 900,14 C950,4 980,18 1000,14"
+          fill="none" stroke="rgba(255,180,0,0.35)" stroke-width="6" stroke-linecap="round" filter="url(#waveGlow)"/>
+        <!-- الخط الرئيسي -->
+        <path d="M0,14 C50,4 100,24 150,14 C200,4 250,24 300,14 C350,4 400,24 450,14 C500,4 550,24 600,14 C650,4 700,24 750,14 C800,4 850,24 900,14 C950,4 980,18 1000,14"
+          fill="none" stroke="url(#waveGrad)" stroke-width="2.2" stroke-linecap="round"/>
+        <!-- نقطة الوسط -->
+        <circle cx="500" cy="14" r="4" fill="rgba(255,230,100,0.9)" filter="url(#waveGlow)"/>
+        <circle cx="500" cy="14" r="2" fill="white"/>
+      </svg>
       <div class="divider-side" id="divider-side-left"></div>
       <div class="divider-center">
         <button class="qbtn" onclick="quitGame()" style="font-size:10px;padding:3px 9px;">✕</button>
@@ -1550,6 +1679,10 @@ function renderHalf(halfId,pIdx){
     pile.className='stack-pile';
     pile.style.height=pileH+'px';
     pile.style.width=cw+'px';
+    // ارتفاع الكروت الفعلي (للوميض)
+    const actualCardsH = cnt===0 ? 0 : ch + Math.min(cnt-1,maxPeek)*pk;
+    pile.dataset.cardsH = actualCardsH;
+    pile.dataset.pileH  = maxPileH;
 
     if(cnt===0){
       const tc=document.createElement('div');
@@ -1665,6 +1798,19 @@ function renderHalf(halfId,pIdx){
   }
   handArea.appendChild(handEl);
   half.appendChild(handArea);
+
+  // ── تأثير بصري دائم للاعب المقيّد ──
+  if(p.stunTurns>0){
+    half.style.position='relative';
+    const sOverlay=document.createElement('div');
+    sOverlay.className='stun-overlay';
+    sOverlay.style.pointerEvents='none';
+    const sBanner=document.createElement('div');
+    sBanner.className='stun-banner';
+    sBanner.innerHTML=`🔒 مقيّد × ${p.stunTurns}`;
+    half.appendChild(sOverlay);
+    half.appendChild(sBanner);
+  }
 }
 
 function canInteract(pIdx){
@@ -1716,17 +1862,31 @@ function animCardPlay(halfId, si){
         spawnParticles(sn);
       }
     }
-    // وميض العمود للاعبَين (half-bot و half-top)
+    // وميض على قد الكروت الموجودة بس — overlay مؤقت
     setTimeout(()=>{
-      ['half-bot','half-top'].forEach(hId=>{
-        const h=document.getElementById(hId);
-        if(!h) return;
-        const colArr=Array.from(h.querySelectorAll('.stack-col'));
-        if(colArr[si]){
-          colArr[si].classList.add('col-flash');
-          setTimeout(()=>colArr[si].classList.remove('col-flash'),350);
-        }
-      });
+      const h=document.getElementById(halfId);
+      if(!h) return;
+      const colEl=Array.from(h.querySelectorAll('.stack-col'))[si];
+      if(!colEl) return;
+      const pileEl=colEl.querySelector('.stack-pile');
+      if(!pileEl) return;
+      const cardsH=parseInt(pileEl.dataset.cardsH)||0;
+      const pileH=parseInt(pileEl.dataset.pileH)||pileEl.offsetHeight;
+      if(cardsH<=0) return;
+      // نضع overlay بارتفاع الكروت الفعلي في أسفل الـ pile
+      const flash=document.createElement('div');
+      flash.style.cssText=`
+        position:absolute;
+        bottom:0;left:0;right:0;
+        height:${cardsH}px;
+        border-radius:6px;
+        pointer-events:none;
+        z-index:100;
+        animation:pileFlash .38s ease-out forwards;
+      `;
+      pileEl.style.position='relative';
+      pileEl.appendChild(flash);
+      setTimeout(()=>flash.remove(),400);
     },0);
   }catch(e){}
 }
@@ -1819,7 +1979,7 @@ function playCard(pIdx,si,isFrozenPlay){
   if(G.pMode==='online') syncMove(pIdx,si,top);
   if(totalCards(p)===0){endGame(pIdx,'cards');return;}
 
-  // تأثير بصري: الكرت ينزل
+  // تأثير بصري: الكرت ينزل — وميض في نصف اللاعب اللي لعب فقط
   const halfId=pIdx===0?'half-bot':'half-top';
   animCardPlay(halfId,si);
   render();
@@ -1889,6 +2049,11 @@ function closeAbilityModal(){
 /* تفعيل القدرة — بعض القدرات تحتاج تحديد هدف أو اختيار إضافي */
 function triggerAbility(pIdx,sc,ab){
   closeAbilityModal();
+  // ═══ لا نعرض الفلاش هنا — بيتعرض بعد إكمال الاختيارات في execAbility ═══
+  _doTriggerAbility(pIdx,sc,ab);
+}
+
+function _doTriggerAbility(pIdx,sc,ab){
   const opp=G.players.length>1?G.players[1-pIdx]:null;
 
   if(ab.id==='blizzard'){
@@ -1903,7 +2068,6 @@ function triggerAbility(pIdx,sc,ab){
     return;
   }
   if(ab.id==='burning_sun'){
-    // اختيار من الأرض مباشرة
     enterBoardPickMode(pIdx, sc, ab, 'burning_sun_pick');
     return;
   }
@@ -1926,8 +2090,13 @@ function triggerAbility(pIdx,sc,ab){
 function execAbility(pIdx,sc,abId,cost,extra,isRemote){
   const p=G.players[pIdx];
   const opp=G.players.length>1?G.players[1-pIdx]:null;
-  // خصم النقاط فقط إذا التكلفة > 0 (board-pick يمرر 0 لأن الخصم اتخصم مسبقاً في triggerAbility)
   if(cost>0) p.abilityPoints[sc]=Math.max(0,(p.abilityPoints[sc]||0)-cost);
+
+  // ═══ عرض فلاش بطاقة القدرة بعد اكتمال الاختيارات (مش للـ remote) ═══
+  if(!isRemote){
+    const abDef=ABILITY_DEF[sc]?.abilities.find(a=>a.id===abId);
+    if(abDef) showAbilityFlash(abDef, null);
+  }
 
   let syncExtra=Object.assign({},extra,{abId,cost});
 
@@ -1937,15 +2106,53 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       const target=extra.target==='opp'?opp:p;
       if(!target) break;
       const cols=G.boardCols||8;
-      // إذا جاءت order من remote استخدمها، غير كده ولّدها
       const newCards=extra.order||Array.from({length:cols},()=>randCard());
-      for(let i=0;i<cols;i++){
-        if(target.stacks[i]&&target.stacks[i].length>0)
-          target.stacks[i][target.stacks[i].length-1]=newCards[i];
-      }
       if(!extra.order) syncExtra.order=newCards;
-      showNotif(extra.target==='opp'?'🌪️ إعصار اجتاح أرض الخصم — كل الكروت الأمامية تغيرت!':'🌪️ إعصار اجتاح أرضك — كل الكروت الأمامية تغيرت!');
-      break;
+      showNotif(extra.target==='opp'?'🌪️ إعصار اجتاح أرض الخصم!':'🌪️ إعصار اجتاح أرضك!');
+
+      const blizzTargetIdx=extra.target==='opp'?(G.players.indexOf(opp)):(pIdx);
+      const blizzHalfId=blizzTargetIdx===0?'half-bot':'half-top';
+      const blizzHalf=document.getElementById(blizzHalfId);
+
+      // قلب الكروت بالترتيب — فرق 60ms بين كل كرت
+      const FLIP_STAGGER=60;
+      const FLIP_DUR=180; // مدة الاختفاء
+      let maxDelay=0;
+      for(let i=0;i<cols;i++){
+        if(!(target.stacks[i]&&target.stacks[i].length>0)) continue;
+        const delay=i*FLIP_STAGGER;
+        maxDelay=delay+FLIP_DUR*2;
+        if(blizzHalf){
+          const colEl=Array.from(blizzHalf.querySelectorAll('.stack-col'))[i];
+          const tc=colEl?.querySelector('.pile-card-up');
+          if(tc){
+            // بعد delay: ابدأ اختفاء الكرت القديم
+            setTimeout(()=>{
+              tc.classList.add('card-flip-out');
+            }, delay);
+            // بعد delay+FLIP_DUR: غيّر البيانات في الـ state وأعد الرسم للعمود ده
+            setTimeout(()=>{
+              target.stacks[i][target.stacks[i].length-1]=newCards[i];
+              // تحديث الكرت مكانه مباشرة بدون re-render كامل
+              const img=newCards[i]?cardImg(newCards[i]):null;
+              tc.classList.remove('card-flip-out');
+              if(img){tc.style.backgroundImage=`url('${img}')`;tc.classList.add('has-image');}
+              else{tc.style.backgroundImage='';tc.classList.remove('has-image');}
+              tc.className=tc.className.replace(/hearts|diamonds|clubs|spades/g,'').trim()+' '+newCards[i].sn;
+              tc.classList.add('card-flip-in');
+              setTimeout(()=>tc.classList.remove('card-flip-in'),FLIP_DUR+50);
+            }, delay+FLIP_DUR);
+          } else {
+            target.stacks[i][target.stacks[i].length-1]=newCards[i];
+          }
+        } else {
+          target.stacks[i][target.stacks[i].length-1]=newCards[i];
+        }
+      }
+      // بعد انتهاء كل الكروت: render كامل للتأكد من التزامن
+      setTimeout(()=>render(), maxDelay+100);
+      if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,'blizzard',syncExtra);
+      return;
     }
     case 'frost':{
       if(!opp) break;
@@ -2022,18 +2229,73 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
     case 'mine':{
       const mi=extra.myIdx, oi=extra.oppIdx;
       if(mi===undefined||oi===undefined||!opp) break;
-      const myCard=p.stacks[mi]&&p.stacks[mi].length>0?p.stacks[mi].pop():null;
-      const oppCard=opp.stacks[oi]&&opp.stacks[oi].length>0?opp.stacks[oi].pop():null;
-      if(myCard) opp.stacks[oi].push(myCard);
-      if(oppCard) p.stacks[mi].push(oppCard);
+      const myHalfId=pIdx===0?'half-bot':'half-top';
+      const oppHalfId=pIdx===0?'half-top':'half-bot';
+      const myHalfEl=document.getElementById(myHalfId);
+      const oppHalfEl=document.getElementById(oppHalfId);
+      const myTC=myHalfEl?.querySelectorAll('.stack-col')[mi]?.querySelector('.pile-card-up');
+      const oppTC=oppHalfEl?.querySelectorAll('.stack-col')[oi]?.querySelector('.pile-card-up');
+      const FLIP_DUR=180;
+
+      // الكرتين يختفوا مع بعض
+      if(myTC) myTC.classList.add('card-flip-out');
+      if(oppTC) oppTC.classList.add('card-flip-out');
+
+      setTimeout(()=>{
+        // تبادل البيانات
+        const myCard=p.stacks[mi]&&p.stacks[mi].length>0?p.stacks[mi].pop():null;
+        const oppCard=opp.stacks[oi]&&opp.stacks[oi].length>0?opp.stacks[oi].pop():null;
+        if(myCard) opp.stacks[oi].push(myCard);
+        if(oppCard) p.stacks[mi].push(oppCard);
+        // تحديث الكروت في الـ DOM مباشرة بدون render كامل
+        function updateFlipCard(tc, card){
+          if(!tc||!card) return;
+          const img=cardImg(card);
+          tc.classList.remove('card-flip-out');
+          tc.className=tc.className.replace(/hearts|diamonds|clubs|spades/g,'').trim()+' '+card.sn;
+          if(img){tc.style.backgroundImage=`url('${img}')`;tc.classList.add('has-image');}
+          else{tc.style.backgroundImage='';tc.classList.remove('has-image');}
+          tc.innerHTML=`<div class="card-inner">
+            <div class="ci-tl"><span class="ci-val">${card.val}</span><span class="ci-ssm">${card.suit}</span></div>
+            <span class="ci-slg">${card.suit}</span>
+            <div class="ci-br"><span class="ci-val">${card.val}</span><span class="ci-ssm">${card.suit}</span></div>
+          </div>`;
+          tc.classList.add('card-flip-in');
+          setTimeout(()=>tc.classList.remove('card-flip-in'),FLIP_DUR+50);
+        }
+        updateFlipCard(myTC, oppCard);  // مكاني بيظهر كرت الخصم
+        updateFlipCard(oppTC, myCard);  // مكان الخصم بيظهر كرتي
+        setTimeout(()=>render(), FLIP_DUR+100);
+      }, FLIP_DUR);
+
       showNotif('🔄 هذه ملكي — تم تبادل البطاقتين!');
-      break;
+      if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,'mine',syncExtra);
+      return;
     }
     case 'controller':{
       if(!opp) break;
       const turns=AB_VALUES.controller_turns;
       opp.stunTurns=(opp.stunTurns||0)+turns;
       showNotif(`🔒 المتحكم — الخصم مقيّد لـ ${turns} أدوار!`);
+      // تأثير بصري كبير على نصف ملعب الخصم
+      const ctrlOppIdx=1-pIdx;
+      const ctrlHalfId=ctrlOppIdx===0?'half-bot':'half-top';
+      setTimeout(()=>{
+        const ctrlHalf=document.getElementById(ctrlHalfId);
+        if(ctrlHalf){
+          // إزالة أي overlay قديم
+          ctrlHalf.querySelectorAll('.stun-overlay,.stun-banner').forEach(e=>e.remove());
+          const overlay=document.createElement('div');
+          overlay.className='stun-overlay';
+          const banner=document.createElement('div');
+          banner.className='stun-banner';
+          banner.innerHTML=`🔒 مقيّد × ${turns}`;
+          ctrlHalf.style.position='relative';
+          ctrlHalf.appendChild(overlay);
+          ctrlHalf.appendChild(banner);
+          setTimeout(()=>{overlay.remove();banner.remove();},2500);
+        }
+      },100);
       break;
     }
     /* ─── CLUBS ─── */
@@ -2258,6 +2520,26 @@ function showBoost(txt,color){
   const el=document.createElement('div');
   el.className='boost-pop';el.textContent=txt;el.style.color=color;
   document.body.appendChild(el);setTimeout(()=>el.remove(),1200);
+}
+
+/* ════════════════════════════════════════════════════
+   ⚡ إعداد تأثير ظهور بطاقة القدرة — عدّل هنا
+   true = مفعّل | false = معطّل
+   ════════════════════════════════════════════════════ */
+const ABILITY_CARD_FLASH_ENABLED = true;
+
+/* ── تأثير ظهور كرت القدرة بحجم كبير في وسط الشاشة ── */
+function showAbilityFlash(ab, cb){
+  if(!ABILITY_CARD_FLASH_ENABLED){if(cb)cb();return;}
+  const el=document.createElement('div');
+  el.className='ability-flash-card';
+  if(ab.img && ab.img.trim()){
+    el.innerHTML=`<img src="${ab.img}" alt="${ab.name}" onerror="this.parentNode.innerHTML='<div class=\\'ability-flash-ico\\'>${ab.ico}</div>'">`;
+  } else {
+    el.innerHTML=`<div class="ability-flash-ico">${ab.ico}</div>`;
+  }
+  document.body.appendChild(el);
+  setTimeout(()=>{el.remove();if(cb)cb();}, 650);
 }
 
 function addExtraCardToOpponent(opp,card){
