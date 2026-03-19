@@ -65,16 +65,16 @@ body{background:var(--darker);font-family:'Cairo',sans-serif;color:var(--text);
 .logo-main{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,4.5vw,44px);color:var(--gold);text-shadow:var(--glow-gold),0 3px 8px rgba(0,0,0,.9);}
 .logo-line{width:180px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:11px auto;}
 .logo-sub{font-size:11px;color:var(--text-dim);letter-spacing:4px;text-transform:uppercase;}
-.menu-box{background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99));border:1px solid rgba(255,215,0,.18);border-radius:16px;padding:24px 28px;width:100%;max-width:350px;box-shadow:0 24px 64px rgba(0,0,0,.65);}
+.menu-box{background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.50));border:1px solid rgba(255,215,0,.18);border-radius:16px;padding:24px 28px;width:100%;max-width:350px;box-shadow:0 24px 64px rgba(0,0,0,.65);}
 .sec-lbl{text-align:center;font-size:11px;color:var(--gold);letter-spacing:4px;text-transform:uppercase;margin-bottom:14px;opacity:.75;}
 .mbtn{width:100%;padding:13px 15px;margin-bottom:8px;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;gap:11px;transition:all .22s;position:relative;overflow:hidden;}
 .mbtn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.06);transform:translateX(-100%);transition:transform .28s}
 .mbtn:hover::before,.mbtn:active::before{transform:translateX(0)}.mbtn:hover{transform:translateY(-2px)}
-.mbtn-solo{background:linear-gradient(135deg,#0e2e1a,#071510);border:1px solid rgba(39,174,96,.35);color:#4ade80}
+.mbtn-solo{background:linear-gradient(135deg, rgb(255 215 0), #040400);border:1px solid rgb(255 255 255 / 35%);color:#ffffff}
 .mbtn-solo:hover{border-color:rgba(39,174,96,.75);box-shadow:0 0 18px rgba(39,174,96,.2)}
-.mbtn-local{background:linear-gradient(135deg,#101e38,#080f1e);border:1px solid rgba(41,128,185,.35);color:#60a5fa}
+.mbtn-local{background:linear-gradient(135deg, #ffb52d, #000000);border:1px solid rgb(250 253 255 / 35%);color:#ffffff}
 .mbtn-local:hover{border-color:rgba(41,128,185,.75);box-shadow:0 0 18px rgba(41,128,185,.2)}
-.mbtn-online{background:linear-gradient(135deg,#2e0e0e,#180707);border:1px solid rgba(200,50,50,.35);color:#f87171}
+.mbtn-online{background:linear-gradient(135deg, #ff9900, #180707);border:1px solid rgb(255 248 248 / 35%);color:#ffffff}
 .mbtn-online:hover{border-color:rgba(200,50,50,.75);box-shadow:0 0 18px rgba(200,50,50,.2)}
 .mbtn-ico{font-size:21px;flex-shrink:0}.mbtn-t{text-align:right}.mbtn-t span{display:block}.mbtn-t .sm{font-size:11px;opacity:.55;font-weight:400}
 .submenu{display:none;margin-top:3px;padding:10px;background:rgba(0,0,0,.35);border-radius:8px;border:1px solid rgba(255,215,0,.08)}
@@ -184,7 +184,7 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 .half .pinfo{flex-shrink:0;margin-bottom:1px;}
 /* اسم المنافس في half-top: نلغي تأثير الـ rotate عليه ونعكس الاتجاه */
 .half.opponent .pinfo{
-  transform:rotate(180deg) scaleX(-1);
+  transform:rotate(180deg) scaleX(1);
   flex-direction:row-reverse;
 }
 /* stacks-row تلتصق بالشريط الأوسط (أسفل half) بمسافة بسيطة */
@@ -292,33 +292,86 @@ body.mode-small .stacks-row {
 }
 
 /* frozen card */
-.pile-card-down.frozen{border-color:rgba(100,180,255,.6)!important;background:linear-gradient(155deg,#0a1f3a,#061020)!important;}
-.pile-card-down.frozen::after{content:'❄️';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22px;opacity:.9;}
-.pile-card-down.frozen .freeze-count{display:none;}
-.pile-card-up.frozen-top{border-color:rgba(100,180,255,.7)!important;background:linear-gradient(155deg,#0d2240,#081830)!important;color:#60a5fa!important;}
-.pile-card-up.frozen-top::before{content:'❄️';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22px;opacity:.7;pointer-events:none;}
-.pile-card-up.frozen-top .freeze-badge{position:absolute;bottom:2px;right:2px;font-size:8px;color:#60a5fa;font-weight:700;background:rgba(6,18,48,.8);border-radius:3px;padding:0 2px;}
+.pile-card-down.frozen {
+  border-color: rgba(100,180,255,.6) !important;
+  /* شيلنا background الأزرق */
+}
 
-.pile-card-up{position:absolute;width:100%;height:var(--ch);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;user-select:none;transition:transform .15s,box-shadow .15s;overflow:hidden;cursor:default;}
-.pile-card-up.face-up{background:linear-gradient(155deg,#f9f5ea,#ece7d4);border:2px solid rgba(0,0,0,.15);}
-.pile-card-up.face-up.hearts,.pile-card-up.face-up.diamonds{color:#b02020;}
-.pile-card-up.face-up.spades,.pile-card-up.face-up.clubs{color:#111828;}
-.pile-card-up.has-image .card-inner{display:none;}
-.pile-card-up.has-image{background-size:cover;background-position:center;background-repeat:no-repeat;}
-.pile-card-up.empty-slot{background:rgba(255,255,255,.02);border:1.5px dashed rgba(255,255,255,.1);color:rgba(255,255,255,.15);font-size:11px;}
-.pile-card-up.playable{cursor:pointer;}
-.pile-card-up.playable:hover{transform:translateY(-5px);box-shadow:0 8px 22px rgba(255,215,0,.4),0 0 0 1px rgba(255,215,0,.6);border-color:rgba(255,215,0,.9)!important;}
-.pile-card-up.playable:active{transform:translateY(-2px);}
-.pile-card-clickable:hover{border-color:rgba(255,215,0,.7)!important;}
-.pile-card-clickable:active{opacity:.85;}
+.pile-card-down.frozen::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  /* ─── ضع رابط صورة الجليد هنا ─── */
+  background-image: url('');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: .9;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(100,180,255,.8));
+}
 
-.card-inner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
-.ci-tl{position:absolute;top:2px;right:3px;text-align:right;line-height:1.1;}
-.ci-br{position:absolute;bottom:2px;left:3px;transform:rotate(180deg);text-align:right;line-height:1.1;}
-.ci-val{font-size:clamp(8px,1.8vw,13px);font-weight:900;display:block;}
-.ci-ssm{font-size:clamp(7px,1.5vw,11px);display:block;}
-.ci-slg{font-size:clamp(14px,3.5vw,26px);line-height:1;}
+.pile-card-down.frozen .freeze-count { display: none; }
 
+.pile-card-up.frozen-top {
+  border-color: rgba(100,180,255,.7) !important;
+  /* شيلنا background الأزرق */
+  /* شيلنا color الأزرق */
+}
+
+.pile-card-up.frozen-top::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  /* ─── ضع رابط صورة الجليد هنا ─── */
+  background-image: url('https://i.postimg.cc/8CxbWnfj/jlyd-smyk.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(100,180,255,.8));
+}
+
+.pile-card-up.frozen-top .freeze-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 8px;
+  /* شيلنا اللون الأزرق */
+  font-weight: 700;
+  background: rgba(6,18,48,.8);
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+/* باقي الكود بدون تغيير */
+.pile-card-up { position: absolute; width: 100%; height: var(--ch); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; user-select: none; transition: transform .15s, box-shadow .15s; overflow: hidden; cursor: default; }
+.pile-card-up.face-up { background: linear-gradient(155deg,#f9f5ea,#ece7d4); border: 2px solid rgba(0,0,0,.15); }
+.pile-card-up.face-up.hearts, .pile-card-up.face-up.diamonds { color: #ffffff; }
+.pile-card-up.face-up.spades, .pile-card-up.face-up.clubs { color: #ffffff; }
+.pile-card-up.has-image .card-inner { display: none; }
+.pile-card-up.has-image { background-size: cover; background-position: center; background-repeat: no-repeat; }
+.pile-card-up.empty-slot { background: rgba(255,255,255,.02); border: 1.5px dashed rgba(255,255,255,.1); color: rgba(255,255,255,.15); font-size: 11px; }
+.pile-card-up.playable { cursor: pointer; }
+.pile-card-up.playable:hover { transform: translateY(-5px); box-shadow: 0 8px 22px rgba(255,215,0,.4), 0 0 0 1px rgba(255,215,0,.6); border-color: rgba(255,215,0,.9) !important; }
+.pile-card-up.playable:active { transform: translateY(-2px); }
+.pile-card-clickable:hover { border-color: rgba(255,215,0,.7) !important; }
+.pile-card-clickable:active { opacity: .85; }
+.card-inner { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+.ci-tl { position: absolute; top: 2px; right: 3px; text-align: right; line-height: 1.1; }
+.ci-br { position: absolute; bottom: 2px; left: 3px; transform: rotate(180deg); text-align: right; line-height: 1.1; }
+.ci-val { font-size: clamp(8px,1.8vw,13px); font-weight: 900; display: block; }
+.ci-ssm { font-size: clamp(7px,1.5vw,11px); display: block; }
+.ci-slg { font-size: clamp(14px,3.5vw,26px); line-height: 1; }
 /* ─── HAND ─── */
 .hand-area{display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0;position:relative;z-index:10;}
 .hand-card{width:var(--hand-w);height:var(--hand-h);border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;position:relative;overflow:hidden;border:0px solid #ffffff;box-shadow:var(--glow-gold),0 8px 24px rgba(0,0,0,.7),0 0 0 1px rgba(255,215,0,.15);flex-shrink:0;}
@@ -415,31 +468,146 @@ body.mode-small .stacks-row {
 .pile-card-down.trapped{border-color:rgba(220,50,50,.5)!important;}
 .pile-card-down.trapped::after{content:'💣';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;opacity:.7;}
 /* أشواك الجليد */
-.pile-card-up.thorned{box-shadow:0 0 0 2px rgba(100,200,255,.7),0 0 12px rgba(100,200,255,.4)!important;border-color:rgba(100,200,255,.8)!important;}
-.pile-card-up.thorned::after{content:'🌵';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22px;opacity:.85;pointer-events:none;text-shadow:0 0 8px rgba(100,200,255,.9);}
-/* تعليمة: لإضافة صورة مخصصة بدل الصبارة، أضف background-image للـ ::after أو استخدم .thorn-overlay-img */
-.thorn-overlay-img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:70%;object-fit:contain;pointer-events:none;z-index:5;opacity:.85;}
-/* ─── لإضافة صورة مخصصة: أضف <img class="thorn-overlay-img" src="رابط-صورتك"> داخل الكرت ─── */
-/* قنبلة موقوتة */
-.pile-card-up.timebomb{box-shadow:0 0 0 2px rgba(255,100,0,.8),0 0 16px rgba(255,100,0,.5)!important;border-color:rgba(255,80,0,.9)!important;}
-.pile-card-up.timebomb::after{content:'⏰';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:24px;opacity:.85;pointer-events:none;text-shadow:0 0 10px rgba(255,100,0,.9);}
-.timebomb-count{position:absolute;bottom:2px;right:2px;font-size:10px;font-weight:900;color:#ffffff;background:rgba(200,50,0,.9);border-radius:4px;padding:0 4px;line-height:1.6;pointer-events:none;z-index:10;border:1px solid rgba(255,100,0,.6);}
-/* تعليمة: لإضافة صورة مخصصة بدل المنبه، عدّل السطر التالي وضع رابط صورتك */
-/* const TIMEBOMB_OVERLAY_IMG = "رابط-صورة-المنبه"; */
-.timebomb-overlay-img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:70%;object-fit:contain;pointer-events:none;z-index:5;opacity:.85;}
-@keyframes bombPulse{0%,100%{box-shadow:0 0 0 2px rgba(255,100,0,.8),0 0 10px rgba(255,100,0,.4);}50%{box-shadow:0 0 0 3px rgba(255,50,0,1),0 0 25px rgba(255,50,0,.8);}}
-.pile-card-up.timebomb{animation:bombPulse 1s ease-in-out infinite!important;}
-/* board pick mode highlight */
-.pile-card-up.bpm-target{cursor:crosshair!important;animation:bpmPulse .6s ease-in-out infinite alternate;}
-@keyframes bpmPulse{from{box-shadow:0 0 0 2px rgba(255,215,0,.5)}to{box-shadow:0 0 12px 3px rgba(255,215,0,.9);border-color:var(--gold)!important;}}
-/* cancel board pick on ESC / tap outside */
-.bpm-cancel-bar{position:fixed;bottom:0;left:0;right:0;padding:10px;background:rgba(248,113,113,.12);border-top:1px solid rgba(248,113,113,.3);z-index:400;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;color:#f87171;cursor:pointer;}
-/* trap — invisible, same as normal hidden card */
-.pile-card-down.trapped{border-color:rgba(255,215,0,.2)!important;}
-.pile-card-down.trapped::after{display:none;}content:'😵 مُقيَّد';position:absolute;inset:0;background:rgba(100,0,200,.18);border:2px solid rgba(150,50,255,.4);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Cinzel Decorative',serif;font-size:14px;color:#c084fc;z-index:50;pointer-events:none;backdrop-filter:blur(1px);}
-/* boost notification */
-@keyframes boostPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}30%{opacity:1;transform:translate(-50%,-72%) scale(1.2)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-110%) scale(.8)}}
+.pile-card-up.thorned {
+  box-shadow: 0 0 0 2px rgba(100,200,255,.7), 0 0 12px rgba(100,200,255,.4) !important;
+  border-color: rgba(100,200,255,.8) !important;
+}
 
+.pile-card-up.thorned::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background-image: url('https://i.postimg.cc/LXMH4k6t/fc3b5f77-063a-45c0-9582-1099389444b9-Photoroom.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(100,200,255,.9));
+}
+
+/* ─── لتغيير الصورة: غيّر الرابط في background-image أعلاه ─── */
+
+/* أو بديل: أضف <img class="thorn-overlay-img" src="رابط-صورتك"> داخل الكرت */
+.thorn-overlay-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 5;
+  opacity: .85;
+}
+/* قنبلة موقوتة */
+.pile-card-up.timebomb {
+  box-shadow: 0 0 0 2px rgba(255,100,0,.8), 0 0 16px rgba(255,100,0,.5) !important;
+  border-color: rgba(255,80,0,.9) !important;
+}
+
+.pile-card-up.timebomb::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background-image: url('https://i.postimg.cc/C5BB4vGY/935410e0_b5ec_4a84_8c47_d25e00b20f14_Photoroom.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(255,100,0,.9));
+}
+
+/* ─── لتغيير الصورة: غيّر الرابط في background-image أعلاه ─── */
+
+.timebomb-count {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 10px;
+  font-weight: 900;
+  color: #ffffff;
+  background: rgba(200,50,0,.9);
+  border-radius: 4px;
+  padding: 0 4px;
+  line-height: 1.6;
+  pointer-events: none;
+  z-index: 10;
+  border: 1px solid rgba(255,100,0,.6);
+}
+
+/* أو بديل: أضف <img class="timebomb-overlay-img" src="رابط-صورتك"> داخل الكرت */
+.timebomb-overlay-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 5;
+  opacity: .85;
+}
+
+@keyframes bombPulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(255,100,0,.8), 0 0 10px rgba(255,100,0,.4); }
+  50%       { box-shadow: 0 0 0 3px rgba(255,50,0,1),  0 0 25px rgba(255,50,0,.8); }
+}
+
+.pile-card-up.timebomb { animation: bombPulse 1s ease-in-out infinite !important; }
+
+/* board pick mode highlight */
+.pile-card-up.bpm-target {
+  cursor: crosshair !important;
+  animation: bpmPulse .6s ease-in-out infinite alternate;
+}
+
+@keyframes bpmPulse {
+  from { box-shadow: 0 0 0 2px rgba(255,215,0,.5); }
+  to   { box-shadow: 0 0 12px 3px rgba(255,215,0,.9); border-color: var(--gold) !important; }
+}
+
+/* cancel board pick on ESC / tap outside */
+.bpm-cancel-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: rgba(248,113,113,.12);
+  border-top: 1px solid rgba(248,113,113,.3);
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #f87171;
+  cursor: pointer;
+}
+
+/* trap — invisible, same as normal hidden card */
+.pile-card-down.trapped { border-color: rgba(255,215,0,.2) !important; }
+.pile-card-down.trapped::after { display: none; }
+
+/* boost notification */
+@keyframes boostPop {
+  0%   { opacity: 0; transform: translate(-50%,-50%) scale(.4); }
+  30%  { opacity: 1; transform: translate(-50%,-72%) scale(1.2); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%,-110%) scale(.8); }
+}
 /* ─── CARD PLAY EFFECT (يتداس) ─── */
 @keyframes cardPlay{
   0%  {transform:scale(1);box-shadow:none;}
@@ -677,7 +845,7 @@ body.mode-small .stacks-row {
 
     <button class="mbtn mbtn-solo" onclick="toggleSub('sub-solo')">
       <span class="mbtn-ico">🎮</span>
-      <div class="mbtn-t"><span>لاعب واحد</span><span class="sm">مارس اللعبة بمفردك</span></div>
+      <div class="mbtn-t"><span>لاعب واحد</span></div>
     </button>
 
     <div id="sub-solo" class="submenu">
@@ -687,7 +855,7 @@ body.mode-small .stacks-row {
 
     <button class="mbtn mbtn-local" onclick="toggleSub('sub-local')" style="margin-top:4px">
       <span class="mbtn-ico">👥</span>
-      <div class="mbtn-t"><span>لاعبين – نفس الجهاز</span><span class="sm">العب مع صاحبك</span></div>
+      <div class="mbtn-t"><span>لاعبين – نفس الجهاز</span></div>
     </button>
 
     <div id="sub-local" class="submenu">
@@ -699,7 +867,7 @@ body.mode-small .stacks-row {
 
     <button class="mbtn mbtn-online" onclick="showOnline()">
       <span class="mbtn-ico">🌐</span>
-      <div class="mbtn-t"><span>أونلاين</span><span class="sm">العب مع أي شخص</span></div>
+      <div class="mbtn-t"><span>أونلاين</span></div>
     </button>
   </div>
 </div>
@@ -1189,7 +1357,7 @@ const TIMEBOMB_OVERLAY_IMAGE = "";  /* مثال: "https://i.postimg.cc/xxx/bomb.
 /* ┌──────────────────────────────────────────────────┐
    │  خلفية الساحة — ضع رابط الصورة هنا             │
    └──────────────────────────────────────────────────┘ */
-const BOARD_BG_IMAGE = "خلفيات ساحة.png 2.png";
+const BOARD_BG_IMAGE = "https://i.postimg.cc/qMYYQQKk/khlfyat-saht-png-2.png";
 
 /* ┌──────────────────────────────────────────────────┐
    │  إعدادات اللعبة — القيم الافتراضية              │
@@ -1528,7 +1696,7 @@ const ABILITY_DEF = {
       },
       {
         id:'split', name:'انشطار', ico:'⚡🌙',
-        desc:'اختر عموداً وادمر نصف كروته',
+        desc:'في حالة وجود مكان فارغ اختر عمود و اقسمه نصفين',
         cost:7, modesAllowed:['turns','speed'],
         img:'',
       },
@@ -1854,8 +2022,10 @@ function renderHalf(halfId,pIdx){
   const stunEl=p.stunTurns>0?`<span style="font-size:10px;color:#c084fc;margin-right:4px;">😵×${p.stunTurns}</span>`:'';
 
   // اسم اللاعب فقط في pinfo
+  // اللاعب 0 (half-bot): اسمه أقصى يسار — اللاعب 1 (half-top): اسمه أقصى يمين
+  const nameAlign = halfId==='half-bot' ? 'margin-right:auto;margin-left:0;' : 'margin-left:auto;margin-right:0;';
   info.innerHTML=`
-    <div class="pname">
+    <div class="pname" style="${nameAlign}">
       <div class="pulse" style="${isMyTurn?'display:block':''}"></div>
       ${stunEl}${p.name}
     </div>`;
@@ -2351,7 +2521,9 @@ function _doTriggerAbility(pIdx,sc,ab){
 function execAbility(pIdx,sc,abId,cost,extra,isRemote){
   const p=G.players[pIdx];
   const opp=G.players.length>1?G.players[1-pIdx]:null;
-  if(cost>0) p.abilityPoints[sc]=Math.max(0,(p.abilityPoints[sc]||0)-cost);
+  // لو remote وفيه originalCost نستخدمه للخصم (حالة mine وgameabilities اللي بتخصم مسبقاً)
+  const effectiveCost = isRemote && extra.originalCost!==undefined ? extra.originalCost : cost;
+  if(effectiveCost>0) p.abilityPoints[sc]=Math.max(0,(p.abilityPoints[sc]||0)-effectiveCost);
 
   // ═══ عرض فلاش بطاقة القدرة بعد اكتمال الاختيارات (مش للـ remote) ═══
   if(!isRemote){
@@ -2503,8 +2675,9 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
     case 'mine':{
       const mi=extra.myIdx, oi=extra.oppIdx;
       if(mi===undefined||oi===undefined||!opp) break;
-      const myHalfId=pIdx===0?'half-bot':'half-top';
-      const oppHalfId=pIdx===0?'half-top':'half-bot';
+      // نحدد halfId حسب منظور اللاعب الحالي (G.myIdx) في الأونلاين
+      const myHalfId=(G.pMode==='online')?(pIdx===G.myIdx?'half-bot':'half-top'):(pIdx===0?'half-bot':'half-top');
+      const oppHalfId=(G.pMode==='online')?(pIdx===G.myIdx?'half-top':'half-bot'):(pIdx===0?'half-top':'half-bot');
       const myHalfEl=document.getElementById(myHalfId);
       const oppHalfEl=document.getElementById(oppHalfId);
       const myTC=myHalfEl?.querySelectorAll('.stack-col')[mi]?.querySelector('.pile-card-up');
@@ -2563,7 +2736,7 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       }, FLIP_DUR);
 
       showNotif('🔄 هذه ملكي — تم تبادل البطاقتين!');
-      if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,'mine',syncExtra);
+      if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,'mine',Object.assign({},syncExtra,{originalCost:extra.originalCost||0}));
       return;
     }
     case 'controller':{
@@ -2808,8 +2981,9 @@ function onBoardPickClick(pIdx, si){
   if(mode==='mine_pick_opp'){
     if(pIdx===bPIdx) return; // يجب يختار من أرض الخصم
     const myIdx=_boardPickMode.myPickedSi;
+    const originalCost=_boardPickMode.ab.cost;
     _boardPickMode=null;
-    execAbility(bPIdx,sc,'mine',0,{myIdx,oppIdx:si});
+    execAbility(bPIdx,sc,'mine',0,{myIdx,oppIdx:si,originalCost});
     return;
   }
   if(mode==='finale_pick'){
@@ -3009,29 +3183,46 @@ function doNextTurn(nextTurnIdx, nextCard){
   G.turn=nextTurnIdx;
   const p=G.players[G.turn];
   p._frozenHits={};
-  p.hand=nextCard; p.drawCount++;
-  // إضافة نقطة قدرة عند بداية الدور (لو الإعداد مفعّل)
-  if(CONFIG.DRAW_GIVES_POINT && nextCard){
-    const maxPts=CONFIG.MAX_AB_POINTS;
-    if((p.abilityPoints[nextCard.sc]||0)<maxPts)
-      p.abilityPoints[nextCard.sc]=(p.abilityPoints[nextCard.sc]||0)+1;
+
+  // تأثير قلب: نشيل الكرت القديم (hand-empty أو hand-card) بـ flip-out
+  // ثم نضع الكرت الجديد مع flip-in
+  const newHalfId = (G.pMode==='online') ? (nextTurnIdx===G.myIdx?'half-bot':'half-top') : (nextTurnIdx===0?'half-bot':'half-top');
+  const newHalfEl = document.getElementById(newHalfId);
+  const oldHandEl = newHalfEl?.querySelector('.hand-card,.hand-empty');
+  if(oldHandEl){
+    oldHandEl.classList.add('hand-card-out');
   }
-  // تقليل عداد الـ stun
-  if(p.stunTurns>0){
-    p.stunTurns--;
-    if(p.stunTurns>0){
-      showNotif(`😵 ${p.name} مقيّد — أدوار متبقية: ${p.stunTurns}`);
-      // انتقل تلقائياً للدور التالي
-      const nextT=G.players.length>1?1-G.turn:G.turn;
-      const nc=randCard();
-      if(G.pMode==='online') syncDeck(G.turn,nextT,nc);
-      render();
-      setTimeout(()=>doNextTurn(nextT,nc),1200);
-      return;
+
+  setTimeout(()=>{
+    p.hand=nextCard; p.drawCount++;
+    // إضافة نقطة قدرة عند بداية الدور (لو الإعداد مفعّل)
+    if(CONFIG.DRAW_GIVES_POINT && nextCard){
+      const maxPts=CONFIG.MAX_AB_POINTS;
+      if((p.abilityPoints[nextCard.sc]||0)<maxPts)
+        p.abilityPoints[nextCard.sc]=(p.abilityPoints[nextCard.sc]||0)+1;
     }
-  }
-  render();
-  startTimer(G.turn);
+    // تقليل عداد الـ stun
+    if(p.stunTurns>0){
+      p.stunTurns--;
+      if(p.stunTurns>0){
+        showNotif(`😵 ${p.name} مقيّد — أدوار متبقية: ${p.stunTurns}`);
+        const nextT=G.players.length>1?1-G.turn:G.turn;
+        const nc=randCard();
+        if(G.pMode==='online') syncDeck(G.turn,nextT,nc);
+        render();
+        setTimeout(()=>doNextTurn(nextT,nc),1200);
+        return;
+      }
+    }
+    render();
+    // نضيف hand-card-in للكرت الجديد بعد الـ render
+    setTimeout(()=>{
+      const h2=document.getElementById(newHalfId);
+      const newEl=h2?.querySelector('.hand-card,.hand-empty');
+      if(newEl) newEl.classList.add('hand-card-in');
+    }, 20);
+    startTimer(G.turn);
+  }, 180);
 }
 
 /* للـ solo والـ local */
