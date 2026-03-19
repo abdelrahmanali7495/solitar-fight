@@ -182,6 +182,11 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 .half.opponent.myturn{background:linear-gradient(to bottom,rgba(0) 0%,transparent 60%);}
 /* pinfo يعلق في الأعلى */
 .half .pinfo{flex-shrink:0;margin-bottom:1px;}
+/* اسم المنافس في half-top: نلغي تأثير الـ rotate عليه ونعكس الاتجاه */
+.half.opponent .pinfo{
+  transform:rotate(180deg) scaleX(-1);
+  flex-direction:row-reverse;
+}
 /* stacks-row تلتصق بالشريط الأوسط (أسفل half) بمسافة بسيطة */
 .half .stacks-row{flex-shrink:0;margin-top:4px;margin-bottom:4px;}
 /* hand-area تلتصق في الأسفل */
@@ -473,22 +478,25 @@ body.mode-small .stacks-row {
 .card-destroy-anim{animation:cardDestroy .45s ease-in forwards!important;pointer-events:none!important;}
 .boost-pop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(20px,4vw,30px);pointer-events:none;z-index:1001;animation:boostPop 1.1s forwards;text-shadow:0 0 18px currentColor;}
 
-/* ─── HAND CARD DRAW ANIMATIONS ─── */
-@keyframes handCardOut{
-  0%  {opacity:1;transform:scale(1) translateY(0);}
-  40% {opacity:.5;transform:scale(.85) translateY(6px) rotate(-3deg);}
-  100%{opacity:0;transform:scale(.6) translateY(20px) rotate(-8deg);}
+/* ─── HAND CARD DRAW ANIMATIONS — flip أفقي سلس ─── */
+@keyframes handFlipOut{
+  0%  {transform:scaleX(1);opacity:1;filter:brightness(1);}
+  100%{transform:scaleX(0);opacity:.6;filter:brightness(1.6);}
 }
-/* تأثير الإعصار — يظهر الكرت الجديد في دوامة */
-@keyframes handCardTornado{
-  0%  {opacity:0;transform:scale(0) rotate(-360deg) translateY(30px);filter:blur(4px);}
-  35% {opacity:.7;transform:scale(1.15) rotate(-180deg) translateY(-8px);filter:blur(1px);}
-  60% {opacity:1;transform:scale(1.05) rotate(-20deg) translateY(-3px);filter:blur(0);}
-  80% {transform:scale(.97) rotate(5deg) translateY(1px);}
-  100%{opacity:1;transform:scale(1) rotate(0deg) translateY(0);filter:blur(0);}
+@keyframes handFlipIn{
+  0%  {transform:scaleX(0);opacity:.6;filter:brightness(1.6);}
+  100%{transform:scaleX(1);opacity:1;filter:brightness(1);}
 }
-.hand-card-out{animation:handCardOut .22s ease-in forwards!important;pointer-events:none!important;}
-.hand-card-in {animation:handCardTornado .42s cubic-bezier(.25,.46,.45,.94) forwards!important;}
+.hand-card-out{
+  animation:handFlipOut .18s ease-in forwards!important;
+  pointer-events:none!important;
+  transform-origin:center center;
+}
+.hand-card-in{
+  animation:handFlipIn .18s ease-out forwards!important;
+  transform-origin:center center;
+  transform:scaleX(0);
+}
 
 /* ─── ABILITY FLASH CARD ─── */
 @keyframes abilityFlash{
@@ -2250,7 +2258,10 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       showNotif(extra.target==='opp'?'🌪️ إعصار اجتاح أرض الخصم!':'🌪️ إعصار اجتاح أرضك!');
 
       const blizzTargetIdx=extra.target==='opp'?(G.players.indexOf(opp)):(pIdx);
-      const blizzHalfId=blizzTargetIdx===0?'half-bot':'half-top';
+      // في الأونلاين: نحدد halfId حسب منظور اللاعب الحالي
+      const blizzHalfId=(G.pMode==='online')
+        ?(blizzTargetIdx===G.myIdx?'half-bot':'half-top')
+        :(blizzTargetIdx===0?'half-bot':'half-top');
       const blizzHalf=document.getElementById(blizzHalfId);
 
       // قلب الكروت بالترتيب — فرق 60ms بين كل كرت
@@ -2762,7 +2773,7 @@ function freezeRandomSlots(p,count,preSlots,turns){
 /* ══════════════════════════════════════════════════
    DECK & TURN LOGIC
    ══════════════════════════════════════════════════ */
-/* مساعد: تأثير بصري على كرت اليد عند السحب */
+/* مساعد: تأثير flip على كرت اليد عند السحب — يشمل hand-empty كمان */
 function animateHandDraw(pIdx, afterAnim){
   // في الأونلاين: اللاعب يشوف نفسه دايماً في half-bot
   const halfId = (G.pMode==='online') ? (pIdx===G.myIdx?'half-bot':'half-top') : (pIdx===0?'half-bot':'half-top');
@@ -2770,7 +2781,16 @@ function animateHandDraw(pIdx, afterAnim){
   const handEl=half?.querySelector('.hand-card,.hand-empty');
   if(handEl){
     handEl.classList.add('hand-card-out');
-    setTimeout(afterAnim, 200);
+    // بعد الـ flip-out (18ms) نكمل — وبعد render نضيف flip-in تلقائياً
+    setTimeout(()=>{
+      afterAnim();
+      // بعد render بنص ثانية صغيرة نضيف hand-card-in للعنصر الجديد
+      setTimeout(()=>{
+        const h2=document.getElementById(halfId);
+        const newEl=h2?.querySelector('.hand-card,.hand-empty');
+        if(newEl) newEl.classList.add('hand-card-in');
+      }, 20);
+    }, 180);
   } else {
     afterAnim();
   }
@@ -2803,13 +2823,6 @@ function onDeckClick(pIdx){
         }
         if(G.pMode==='online') syncDeck(pIdx, -1, newCard);
         render();
-        // تأثير ظهور الكرت الجديد — في الأونلاين يظهر في نصف اللاعب الصح
-        setTimeout(()=>{
-          const halfId2=(G.pMode==='online')?(pIdx===G.myIdx?'half-bot':'half-top'):(pIdx===0?'half-bot':'half-top');
-          const half2=document.getElementById(halfId2);
-          const newHandEl=half2?.querySelector('.hand-card');
-          if(newHandEl) newHandEl.classList.add('hand-card-in');
-        },30);
       });
     }
   } else {
@@ -2824,12 +2837,6 @@ function onDeckClick(pIdx){
       }
       if(G.pMode==='online') syncDeck(pIdx, -1, newCard);
       render();
-      setTimeout(()=>{
-        const halfId2=(G.pMode==='online')?(pIdx===G.myIdx?'half-bot':'half-top'):(pIdx===0?'half-bot':'half-top');
-        const half2=document.getElementById(halfId2);
-        const newHandEl=half2?.querySelector('.hand-card');
-        if(newHandEl) newHandEl.classList.add('hand-card-in');
-      },30);
     });
   }
 }
