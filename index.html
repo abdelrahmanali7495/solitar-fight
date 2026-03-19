@@ -3108,27 +3108,41 @@ function freezeRandomSlots(p,count,preSlots,turns){
 /* ══════════════════════════════════════════════════
    DECK & TURN LOGIC
    ══════════════════════════════════════════════════ */
-/* مساعد: تأثير flip على كرت اليد عند السحب — يشمل hand-empty كمان */
-function animateHandDraw(pIdx, afterAnim){
-  // في الأونلاين: اللاعب يشوف نفسه دايماً في half-bot
-  const halfId = (G.pMode==='online') ? (pIdx===G.myIdx?'half-bot':'half-top') : (pIdx===0?'half-bot':'half-top');
-  const half=document.getElementById(halfId);
-  const handEl=half?.querySelector('.hand-card,.hand-empty');
+
+/* ─── دالة مساعدة مركزية: flip-out على half معين → afterAnim() → flip-in ─── */
+function animHandTransition(halfId, afterAnim){
+  const half = document.getElementById(halfId);
+  const handEl = half?.querySelector('.hand-card,.hand-empty');
+  const FLIP = 180;
+  function addFlipIn(){
+    setTimeout(()=>{
+      const h2 = document.getElementById(halfId);
+      const newEl = h2?.querySelector('.hand-card,.hand-empty');
+      if(newEl){
+        newEl.style.transform = 'scaleX(0)';
+        newEl.classList.remove('hand-card-in');
+        void newEl.offsetWidth; // force reflow
+        newEl.style.transform = '';
+        newEl.classList.add('hand-card-in');
+      }
+    }, 20);
+  }
   if(handEl){
     handEl.classList.add('hand-card-out');
-    // بعد الـ flip-out (18ms) نكمل — وبعد render نضيف flip-in تلقائياً
-    setTimeout(()=>{
-      afterAnim();
-      // بعد render بنص ثانية صغيرة نضيف hand-card-in للعنصر الجديد
-      setTimeout(()=>{
-        const h2=document.getElementById(halfId);
-        const newEl=h2?.querySelector('.hand-card,.hand-empty');
-        if(newEl) newEl.classList.add('hand-card-in');
-      }, 20);
-    }, 180);
+    setTimeout(()=>{ afterAnim(); addFlipIn(); }, FLIP);
   } else {
-    afterAnim();
+    afterAnim(); addFlipIn();
   }
+}
+
+/* مساعد: يحسب halfId من pIdx */
+function halfIdOf(pIdx){
+  return (G.pMode==='online') ? (pIdx===G.myIdx?'half-bot':'half-top') : (pIdx===0?'half-bot':'half-top');
+}
+
+/* مساعد: تأثير flip على كرت اليد عند السحب — يشمل hand-empty كمان */
+function animateHandDraw(pIdx, afterAnim){
+  animHandTransition(halfIdOf(pIdx), afterAnim);
 }
 
 function onDeckClick(pIdx){
@@ -3140,13 +3154,18 @@ function onDeckClick(pIdx){
     if(p.hand){
       timerProcessing=true;
       stopTimer();
-      animateHandDraw(pIdx, ()=>{
+      // نعمل flip-out على كرت اللاعب الحالي، ثم doNextTurn يكمل الباقي
+      const curHalfId = halfIdOf(pIdx);
+      const curHalf = document.getElementById(curHalfId);
+      const curHandEl = curHalf?.querySelector('.hand-card,.hand-empty');
+      if(curHandEl) curHandEl.classList.add('hand-card-out');
+      setTimeout(()=>{
         p.hand=null;
         const nextTurnIdx = G.players.length>1 ? 1-pIdx : pIdx;
         const nextCard = randCard();
         if(G.pMode==='online') syncDeck(pIdx, nextTurnIdx, nextCard);
         doNextTurn(nextTurnIdx, nextCard);
-      });
+      }, 180);
     } else {
       animateHandDraw(pIdx, ()=>{
         const newCard=randCard();
@@ -3178,49 +3197,46 @@ function onDeckClick(pIdx){
 
 /* تنفيذ الانتقال للدور التالي — نفس الكود للي بيرسل وللي بيستقبل */
 function doNextTurn(nextTurnIdx, nextCard){
-  const prevP=G.players[G.turn];
+  const prevTurnIdx = G.turn;
+  const prevP = G.players[prevTurnIdx];
   tickFreezeCounters(prevP);
-  G.turn=nextTurnIdx;
-  const p=G.players[G.turn];
-  p._frozenHits={};
+  G.turn = nextTurnIdx;
+  const p = G.players[G.turn];
+  p._frozenHits = {};
 
-  // تأثير قلب: نشيل الكرت القديم (hand-empty أو hand-card) بـ flip-out
-  // ثم نضع الكرت الجديد مع flip-in
-  const newHalfId = (G.pMode==='online') ? (nextTurnIdx===G.myIdx?'half-bot':'half-top') : (nextTurnIdx===0?'half-bot':'half-top');
-  const newHalfEl = document.getElementById(newHalfId);
-  const oldHandEl = newHalfEl?.querySelector('.hand-card,.hand-empty');
-  if(oldHandEl){
-    oldHandEl.classList.add('hand-card-out');
-  }
+  const prevHalfId = halfIdOf(prevTurnIdx);
+  const nextHalfId = halfIdOf(nextTurnIdx);
 
+  // الخطوة 1: flip-out على half اللاعب السابق (بيختفي كرته / فراغه)
+  const prevHalf = document.getElementById(prevHalfId);
+  const prevHandEl = prevHalf?.querySelector('.hand-card,.hand-empty');
+  if(prevHandEl) prevHandEl.classList.add('hand-card-out');
+
+  // الخطوة 2: بعد 180ms نحدّث الـ state ونعمل flip-out→in على half اللاعب الجديد
   setTimeout(()=>{
-    p.hand=nextCard; p.drawCount++;
-    // إضافة نقطة قدرة عند بداية الدور (لو الإعداد مفعّل)
+    p.hand = nextCard; p.drawCount++;
     if(CONFIG.DRAW_GIVES_POINT && nextCard){
-      const maxPts=CONFIG.MAX_AB_POINTS;
-      if((p.abilityPoints[nextCard.sc]||0)<maxPts)
-        p.abilityPoints[nextCard.sc]=(p.abilityPoints[nextCard.sc]||0)+1;
+      const maxPts = CONFIG.MAX_AB_POINTS;
+      if((p.abilityPoints[nextCard.sc]||0) < maxPts)
+        p.abilityPoints[nextCard.sc] = (p.abilityPoints[nextCard.sc]||0) + 1;
     }
     // تقليل عداد الـ stun
-    if(p.stunTurns>0){
+    if(p.stunTurns > 0){
       p.stunTurns--;
-      if(p.stunTurns>0){
+      if(p.stunTurns > 0){
         showNotif(`😵 ${p.name} مقيّد — أدوار متبقية: ${p.stunTurns}`);
-        const nextT=G.players.length>1?1-G.turn:G.turn;
-        const nc=randCard();
-        if(G.pMode==='online') syncDeck(G.turn,nextT,nc);
+        const nextT = G.players.length>1 ? 1-G.turn : G.turn;
+        const nc = randCard();
+        if(G.pMode==='online') syncDeck(G.turn, nextT, nc);
         render();
-        setTimeout(()=>doNextTurn(nextT,nc),1200);
+        setTimeout(()=>doNextTurn(nextT, nc), 1200);
         return;
       }
     }
-    render();
-    // نضيف hand-card-in للكرت الجديد بعد الـ render
-    setTimeout(()=>{
-      const h2=document.getElementById(newHalfId);
-      const newEl=h2?.querySelector('.hand-card,.hand-empty');
-      if(newEl) newEl.classList.add('hand-card-in');
-    }, 20);
+    // flip-out على half اللاعب الجديد (الكرت القديم إن وُجد) ثم render ثم flip-in
+    animHandTransition(nextHalfId, ()=>{
+      render();
+    });
     startTimer(G.turn);
   }, 180);
 }
@@ -3539,6 +3555,23 @@ function applyRemoteDeck(d){
   const p=G.players[d.pIdx];if(!p)return;
   if(G.gMode==='turns'){
     if(d.nextTurnIdx===-1||d.nextTurnIdx===undefined){
+      // سحب كرت جديد بدون تغيير دور — flip على half اللاعب
+      animHandTransition(halfIdOf(d.pIdx), ()=>{
+        p.hand=d.nextCard; p.drawCount++;
+        if(CONFIG.DRAW_GIVES_POINT){
+          const maxPts=CONFIG.MAX_AB_POINTS;
+          if((p.abilityPoints[d.nextCard.sc]||0)<maxPts)
+            p.abilityPoints[d.nextCard.sc]=(p.abilityPoints[d.nextCard.sc]||0)+1;
+        }
+        render();
+      });
+    } else {
+      p.hand=null;
+      doNextTurn(d.nextTurnIdx, d.nextCard);
+    }
+  } else {
+    // مود السرعة — flip على half اللاعب
+    animHandTransition(halfIdOf(d.pIdx), ()=>{
       p.hand=d.nextCard; p.drawCount++;
       if(CONFIG.DRAW_GIVES_POINT){
         const maxPts=CONFIG.MAX_AB_POINTS;
@@ -3546,18 +3579,7 @@ function applyRemoteDeck(d){
           p.abilityPoints[d.nextCard.sc]=(p.abilityPoints[d.nextCard.sc]||0)+1;
       }
       render();
-    } else {
-      p.hand=null;
-      doNextTurn(d.nextTurnIdx, d.nextCard);
-    }
-  } else {
-    p.hand=d.nextCard; p.drawCount++;
-    if(CONFIG.DRAW_GIVES_POINT){
-      const maxPts=CONFIG.MAX_AB_POINTS;
-      if((p.abilityPoints[d.nextCard.sc]||0)<maxPts)
-        p.abilityPoints[d.nextCard.sc]=(p.abilityPoints[d.nextCard.sc]||0)+1;
-    }
-    render();
+    });
   }
 }
 
