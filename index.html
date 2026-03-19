@@ -416,10 +416,17 @@ body.mode-small .stacks-row {
 .pile-card-down.trapped::after{content:'💣';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;opacity:.7;}
 /* أشواك الجليد */
 .pile-card-up.thorned{box-shadow:0 0 0 2px rgba(100,200,255,.7),0 0 12px rgba(100,200,255,.4)!important;border-color:rgba(100,200,255,.8)!important;}
-.pile-card-up.thorned::after{content:'🌵';position:absolute;top:2px;right:2px;font-size:9px;opacity:.9;pointer-events:none;}
+.pile-card-up.thorned::after{content:'🌵';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22px;opacity:.85;pointer-events:none;text-shadow:0 0 8px rgba(100,200,255,.9);}
+/* تعليمة: لإضافة صورة مخصصة بدل الصبارة، أضف background-image للـ ::after أو استخدم .thorn-overlay-img */
+.thorn-overlay-img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:70%;object-fit:contain;pointer-events:none;z-index:5;opacity:.85;}
+/* ─── لإضافة صورة مخصصة: أضف <img class="thorn-overlay-img" src="رابط-صورتك"> داخل الكرت ─── */
 /* قنبلة موقوتة */
 .pile-card-up.timebomb{box-shadow:0 0 0 2px rgba(255,100,0,.8),0 0 16px rgba(255,100,0,.5)!important;border-color:rgba(255,80,0,.9)!important;}
-.pile-card-up.timebomb::after{content:'⏰';position:absolute;top:2px;right:2px;font-size:9px;pointer-events:none;}
+.pile-card-up.timebomb::after{content:'⏰';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:24px;opacity:.85;pointer-events:none;text-shadow:0 0 10px rgba(255,100,0,.9);}
+.timebomb-count{position:absolute;bottom:2px;right:2px;font-size:10px;font-weight:900;color:#ffffff;background:rgba(200,50,0,.9);border-radius:4px;padding:0 4px;line-height:1.6;pointer-events:none;z-index:10;border:1px solid rgba(255,100,0,.6);}
+/* تعليمة: لإضافة صورة مخصصة بدل المنبه، عدّل السطر التالي وضع رابط صورتك */
+/* const TIMEBOMB_OVERLAY_IMG = "رابط-صورة-المنبه"; */
+.timebomb-overlay-img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:70%;object-fit:contain;pointer-events:none;z-index:5;opacity:.85;}
 @keyframes bombPulse{0%,100%{box-shadow:0 0 0 2px rgba(255,100,0,.8),0 0 10px rgba(255,100,0,.4);}50%{box-shadow:0 0 0 3px rgba(255,50,0,1),0 0 25px rgba(255,50,0,.8);}}
 .pile-card-up.timebomb{animation:bombPulse 1s ease-in-out infinite!important;}
 /* board pick mode highlight */
@@ -1022,6 +1029,7 @@ body.mode-small .stacks-row {
     </div>
 
     <button class="abtn abtn-gold" onclick="applySettings()" style="margin-top:6px">✅ حفظ الإعدادات</button>
+    <button class="abtn" onclick="exportPlayerVersion()" style="background:linear-gradient(135deg,#1a0e2e,#0e0718);border:1px solid rgba(160,100,255,.45);color:#c084fc;padding:12px;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;width:100%;margin-top:8px;transition:all .22s;" onmouseover="this.style.borderColor='rgba(160,100,255,.8)';this.style.boxShadow='0 0 18px rgba(160,100,255,.25)'" onmouseout="this.style.borderColor='rgba(160,100,255,.45)';this.style.boxShadow='none'">📦 استخراج نسخة اللاعبين</button>
     <button class="abtn abtn-dim" onclick="cancelSettings()" style="margin-top:8px">← رجوع</button>
   </div>
 </div>
@@ -1163,6 +1171,20 @@ const CARD_IMAGES = {
    │  ظهر الكرت — ضع رابط صورة ظهر الكرت هنا        │
    └──────────────────────────────────────────────────┘ */
 const CARD_BACK_IMAGE = "https://i.postimg.cc/65tFW5mF/الظهر.png";
+
+/* ┌──────────────────────────────────────────────────┐
+   │  صورة أشواك الجليد — ضع رابط صورتك هنا         │
+   │  (ستظهر فوق صورة الكرت بدلاً من 🌵)            │
+   │  اتركها فارغة "" عشان يظهر إيموجي الصبارة       │
+   └──────────────────────────────────────────────────┘ */
+const THORN_OVERLAY_IMAGE = "";  /* مثال: "https://i.postimg.cc/xxx/thorn.png" */
+
+/* ┌──────────────────────────────────────────────────┐
+   │  صورة لا وقت (المنبه) — ضع رابط صورتك هنا      │
+   │  (ستظهر فوق صورة الكرت بدلاً من ⏰)             │
+   │  اتركها فارغة "" عشان يظهر إيموجي المنبه        │
+   └──────────────────────────────────────────────────┘ */
+const TIMEBOMB_OVERLAY_IMAGE = "";  /* مثال: "https://i.postimg.cc/xxx/bomb.png" */
 
 /* ┌──────────────────────────────────────────────────┐
    │  خلفية الساحة — ضع رابط الصورة هنا             │
@@ -1325,6 +1347,100 @@ function cancelSettings(){
   if(_settingsFrom==='size') showScreen('size-screen');
   else if(_settingsFrom==='online') showOnline();
   else showMenu();
+}
+
+function exportPlayerVersion(){
+  // نطبّق الإعدادات الحالية أولاً
+  applySettings();
+
+  // نقرأ الـ HTML الكامل
+  let src = document.documentElement.outerHTML;
+
+  // ── استبدال القيم الافتراضية في CONFIG_DEFAULTS ──
+  src = src.replace(
+    /const CONFIG_DEFAULTS\s*=\s*\{[\s\S]*?\};/,
+    `const CONFIG_DEFAULTS = {
+  TURN_SECONDS    : ${CONFIG.TURN_SECONDS},
+  PLAYER_HP       : ${CONFIG.PLAYER_HP},
+  MAX_AB_POINTS   : ${CONFIG.MAX_AB_POINTS},
+  DRAW_GIVES_POINT: ${CONFIG.DRAW_GIVES_POINT},
+};`
+  );
+
+  // ── استبدال AB_VALUES_DEFAULTS ──
+  src = src.replace(
+    /const AB_VALUES_DEFAULTS\s*=\s*\{[\s\S]*?\};/,
+    `const AB_VALUES_DEFAULTS = {
+  frost_turns    : ${AB_VALUES.frost_turns},
+  lightning_count: ${AB_VALUES.lightning_count},
+  sun_strike_dmg : ${AB_VALUES.sun_strike_dmg},
+  vitality_pts   : ${AB_VALUES.vitality_pts},
+  all_seeing_heal: ${AB_VALUES.all_seeing_heal},
+  controller_turns: ${AB_VALUES.controller_turns},
+  absorb_drain   : ${AB_VALUES.absorb_drain},
+  finale_trap_dmg: ${AB_VALUES.finale_trap_dmg},
+  ice_thorns_dmg : ${AB_VALUES.ice_thorns_dmg},
+  ice_thorns_count: ${AB_VALUES.ice_thorns_count},
+  split_half     : true,
+  timebomb_turns : ${AB_VALUES.timebomb_turns},
+  timebomb_dmg   : ${AB_VALUES.timebomb_dmg},
+};`
+  );
+
+  // ── استبدال AB_MODE_CONFIG_DEFAULTS ──
+  const mc = AB_MODE_CONFIG;
+  const fmtMode = (mode) => {
+    const entries = Object.entries(mc[mode]).map(([k,v])=>`${k}:${v}`).join(',');
+    return `{${entries}}`;
+  };
+  src = src.replace(
+    /const AB_MODE_CONFIG_DEFAULTS\s*=\s*\{[\s\S]*?\};/,
+    `const AB_MODE_CONFIG_DEFAULTS = {
+  turns: ${fmtMode('turns')},
+  speed: ${fmtMode('speed')},
+};`
+  );
+
+  // ── استبدال تكاليف القدرات في ABILITY_DEF ──
+  // نبحث عن كل قدرة ونستبدل cost بتاعها
+  Object.values(ABILITY_DEF).forEach(suitDef => {
+    suitDef.abilities.forEach(ab => {
+      // regex يستهدف id:'blizzard',...cost:5
+      const escapedId = ab.id.replace(/_/g,'\\_');
+      src = src.replace(
+        new RegExp(`(id\\s*:\\s*['"]${ab.id}['"][^}]*?cost\\s*:)\\s*\\d+`, 'g'),
+        `$1${ab.cost}`
+      );
+    });
+  });
+
+  // ── حذف زر الإعدادات (كل الأزرار التي تحتوي showSettings أو applySettings بما فيها زر الاستخراج) ──
+  // حذف زر الإعدادات من شاشة اختيار الحجم
+  src = src.replace(
+    /<button[^>]*onclick="[^"]*showSettings[^"]*"[^>]*>[\s\S]*?<\/button>/g,
+    ''
+  );
+  // حذف زر الإعدادات من شاشة الأونلاين
+  src = src.replace(
+    /<div[^>]*id="online-settings-row"[^>]*>[\s\S]*?<\/div>/g,
+    '<div id="online-settings-row" style="display:none;"></div>'
+  );
+  // حذف شاشة الإعدادات كاملة
+  src = src.replace(
+    /<div[^>]*id="settings-screen"[^>]*>[\s\S]*?<\/div>\s*(?=<!-- ══)/,
+    ''
+  );
+
+  // ── تنزيل الملف ──
+  const blob = new Blob([src], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'solitaire_fight_players.html';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
+  showNotif('📦 تم تصدير نسخة اللاعبين!');
 }
 
 /* ═════════════════════════════════════════════════════ */
@@ -1817,8 +1933,8 @@ function renderHalf(halfId,pIdx){
 
       // Board pick mode
       const bpm=_boardPickMode;
-      const isBPMSelf = bpm&&(bpm.mode==='burning_sun_pick'||bpm.mode==='mine_pick_self'||bpm.mode==='finale_pick')&&pIdx===bpm.pIdx;
-      const isBPMOpp  = bpm&&(bpm.mode==='mine_pick_opp'||bpm.mode==='split_pick_opp')&&pIdx!==(bpm.pIdx);
+      const isBPMSelf = bpm&&(bpm.mode==='burning_sun_pick'||bpm.mode==='mine_pick_self'||bpm.mode==='finale_pick'||bpm.mode==='split_pick_self')&&pIdx===bpm.pIdx;
+      const isBPMOpp  = bpm&&(bpm.mode==='mine_pick_opp')&&pIdx!==(bpm.pIdx);
       const isBPMTarget= (isBPMSelf||isBPMOpp)&&stack.length>0;
 
       const tc=document.createElement('div');
@@ -1840,8 +1956,7 @@ function renderHalf(halfId,pIdx){
         <div class="ci-tl"><span class="ci-val">${top.val}</span><span class="ci-ssm">${top.suit}</span></div>
         <span class="ci-slg">${top.suit}</span>
         <div class="ci-br"><span class="ci-val">${top.val}</span><span class="ci-ssm">${top.suit}</span></div>
-      </div>${isFrozen?`<span class="freeze-badge">${frozenTurns}</span>`:''}`;
-      if(isBPMTarget){
+      </div>${isFrozen?`<span class="freeze-badge">${frozenTurns}</span>`:''}${isTimebomb?`<span class="timebomb-count">⏰${p.timebombSlots[si]}</span>${TIMEBOMB_OVERLAY_IMAGE?`<img class="timebomb-overlay-img" src="${TIMEBOMB_OVERLAY_IMAGE}" alt="">`:''}`:''}${isThorned?`${THORN_OVERLAY_IMAGE?`<img class="thorn-overlay-img" src="${THORN_OVERLAY_IMAGE}" alt="">`:''}`:''}`;      if(isBPMTarget){
         const csi=si,cpIdx=pIdx;
         tc.onclick=(e)=>{e.stopPropagation();onBoardPickClick(cpIdx,csi);};
       } else if(canPlayNow){
@@ -2158,10 +2273,10 @@ function openAbilityModal(pIdx,sc){
   grid.innerHTML='';
   def.abilities.forEach(ab=>{
     const modeEnabled=AB_MODE_CONFIG[G.gMode]?AB_MODE_CONFIG[G.gMode][ab.id]!==false:true;
-    const canAfford=pts>=ab.cost&&modeEnabled;
+    if(!modeEnabled) return; // القدرات المقفولة لا تظهر خالص
+    const canAfford=pts>=ab.cost;
     const card=document.createElement('div');
     card.className=`ab-card ab-card-${sc.toLowerCase()}${!canAfford?' disabled':''}`;
-    if(!modeEnabled) card.title='🚫 هذه القدرة معطّلة في هذا المود';
     card.innerHTML=`
       <div class="ab-card-img">
         ${ab.img?`<img src="${ab.img}" alt="${ab.name}" onerror="this.parentNode.innerHTML='<span>${ab.ico}</span>'">`:`<span>${ab.ico}</span>`}
@@ -2227,8 +2342,7 @@ function _doTriggerAbility(pIdx,sc,ab){
     return;
   }
   if(ab.id==='split'){
-    if(!opp){showNotif('⚠️ هذه القدرة تتطلب خصماً!');return;}
-    enterBoardPickMode(pIdx, sc, ab, 'split_pick_opp');
+    enterBoardPickMode(pIdx, sc, ab, 'split_pick_self');
     return;
   }
   execAbility(pIdx,sc,ab.id,ab.cost,{});
@@ -2268,6 +2382,13 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       const FLIP_STAGGER=60;
       const FLIP_DUR=180; // مدة الاختفاء
       let maxDelay=0;
+      // blizzard يغير الكرت الأمامي — نشيل الأشواك والقنبلة الموقوتة لأن الكرت اتغير
+      for(let i=0;i<cols;i++){
+        if(target.stacks[i]&&target.stacks[i].length>0){
+          if(target.thornedSlots&&target.thornedSlots[i]) delete target.thornedSlots[i];
+          if(target.timebombSlots&&target.timebombSlots[i]) delete target.timebombSlots[i];
+        }
+      }
       for(let i=0;i<cols;i++){
         if(!(target.stacks[i]&&target.stacks[i].length>0)) continue;
         const delay=i*FLIP_STAGGER;
@@ -2333,6 +2454,9 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
         const bsHalfId=pIdx===0?'half-bot':'half-top';
         animCardDestroy(bsHalfId, si, ()=>{
           p.stacks[si].pop();
+          // إزالة الشوكة والقنبلة بدون ضرر لو كانت موجودة
+          if(p.thornedSlots&&p.thornedSlots[si]) delete p.thornedSlots[si];
+          if(p.timebombSlots&&p.timebombSlots[si]) delete p.timebombSlots[si];
           showNotif('🔥 شمس حارقة — أحرقت بطاقة!');
           if(totalCards(p)===0){endGame(pIdx,'cards');return;}
           render();
@@ -2346,7 +2470,7 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       if(!opp) break;
       const dmg=AB_VALUES.sun_strike_dmg;
       opp.hp=Math.max(0,opp.hp-dmg);
-      showDmg(`-${dmg}☄️`,'#f87171');
+      showDmg(`-${dmg}☄️`,'#f87171',420);
       showNotif(`☄️ ضربة شمس — الخصم خسر ${dmg} HP!`);
       if(checkHPWin()) return;
       break;
@@ -2397,6 +2521,26 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
         const oppCard=opp.stacks[oi]&&opp.stacks[oi].length>0?opp.stacks[oi].pop():null;
         if(myCard) opp.stacks[oi].push(myCard);
         if(oppCard) p.stacks[mi].push(oppCard);
+
+        // نقل الأشواك مع الكرت المبادل
+        if(!p.thornedSlots) p.thornedSlots={};
+        if(!opp.thornedSlots) opp.thornedSlots={};
+        const myWasThorned=!!p.thornedSlots[mi];
+        const oppWasThorned=!!opp.thornedSlots[oi];
+        delete p.thornedSlots[mi];
+        delete opp.thornedSlots[oi];
+        if(myWasThorned) opp.thornedSlots[oi]=true;
+        if(oppWasThorned) p.thornedSlots[mi]=true;
+
+        // نقل القنبلة الموقوتة مع الكرت المبادل
+        if(!p.timebombSlots) p.timebombSlots={};
+        if(!opp.timebombSlots) opp.timebombSlots={};
+        const myBombVal=p.timebombSlots[mi];
+        const oppBombVal=opp.timebombSlots[oi];
+        delete p.timebombSlots[mi];
+        delete opp.timebombSlots[oi];
+        if(myBombVal!==undefined) opp.timebombSlots[oi]=myBombVal;
+        if(oppBombVal!==undefined) p.timebombSlots[mi]=oppBombVal;
         // تحديث الكروت في الـ DOM مباشرة بدون render كامل
         function updateFlipCard(tc, card){
           if(!tc||!card) return;
@@ -2466,16 +2610,18 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       if(si===undefined||si===null) break;
       const targetPIdx=extra.targetPIdx!==undefined?extra.targetPIdx:pIdx;
       const targetP=G.players[targetPIdx];
-      if(!targetP||!targetP.stacks[si]||targetP.stacks[si].length===0) break;
+      if(!targetP||!targetP.stacks[si]||targetP.stacks[si].length<2) break;
+      // نبحث عن عمود فارغ
+      const freeColIdx=targetP.stacks.findIndex(s=>s.length===0);
+      if(freeColIdx===-1){showNotif('⚠️ لا يوجد عمود فارغ — الانشطار لا يعمل!');p.abilityPoints[sc]=Math.min(CONFIG.MAX_AB_POINTS,(p.abilityPoints[sc]||0)+cost);break;}
       const half=Math.ceil(targetP.stacks[si].length/2);
-      const splitHalfId=targetPIdx===0?'half-bot':'half-top';
-      showNotif(`⚡🌙 انشطار — دمّرت نصف العمود (${half} كرت)!`);
-      animDestroyMulti(splitHalfId, [si], ()=>{
-        for(let k=0;k<half;k++){if(targetP.stacks[si].length>0)targetP.stacks[si].pop();}
-        if(totalCards(targetP)===0){endGame(1-targetPIdx,'cards');return;}
-        render();
-      });
+      // نأخذ النصف الأسفل (الأول في المصفوفة) ونضعه في العمود الفارغ
+      const splitCards=targetP.stacks[si].splice(0,half);
+      targetP.stacks[freeColIdx]=splitCards;
+      const splitHalfId=(G.pMode==='online')?(targetPIdx===G.myIdx?'half-bot':'half-top'):(targetPIdx===0?'half-bot':'half-top');
+      showNotif(`⚡🌙 انشطار — قسّمت العمود إلى نصفين (${half} + ${targetP.stacks[si].length} كرت)!`);
       if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,'split',syncExtra);
+      render();
       return;
     }
     /* ─── CLUBS NEW ─── */
@@ -2500,7 +2646,7 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       const drain=Math.min(AB_VALUES.absorb_drain,opp.hp);
       opp.hp=Math.max(0,opp.hp-drain);
       p.hp=Math.min(p.maxHp,p.hp+drain);
-      showDmg(`🌑-${drain}/+${drain}`,'#4ade80');
+      showDmg(`🌑-${drain}/+${drain}`,'#4ade80',420);
       showNotif(`🌑 يمتص كل شيء — سرقت ${drain} HP!`);
       if(checkHPWin()) return;
       break;
@@ -2527,6 +2673,8 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
         animDestroyMulti(fnHalfId, targets, ()=>{
           targets.forEach(i=>{
             if(p.trappedSlots&&p.trappedSlots[i]) delete p.trappedSlots[i];
+            if(p.thornedSlots&&p.thornedSlots[i]) delete p.thornedSlots[i];
+            if(p.timebombSlots&&p.timebombSlots[i]) delete p.timebombSlots[i];
             p.stacks[i].pop();
           });
           if(totalCards(p)===0){endGame(1-pIdx,'cards');return;}
@@ -2581,7 +2729,15 @@ function destroyRandomTopCards(p,count,preSlots){
     for(let i=available.length-1;i>0;i--){const j=ri(i+1);[available[i],available[j]]=[available[j],available[i]];}
     slots=available.slice(0,count);
   }
-  slots.forEach(i=>{if(p.stacks[i]&&p.stacks[i].length>0) p.stacks[i].pop();});
+  slots.forEach(i=>{
+    if(p.stacks[i]&&p.stacks[i].length>0){
+      p.stacks[i].pop();
+      // لو الكرت المدمور كان شائكاً تُزال الشوكة بدون ضرر
+      if(p.thornedSlots&&p.thornedSlots[i]) delete p.thornedSlots[i];
+      // لو كان عليه قنبلة موقوتة تُزال كمان
+      if(p.timebombSlots&&p.timebombSlots[i]) delete p.timebombSlots[i];
+    }
+  });
   return slots;
 }
 
@@ -2610,7 +2766,7 @@ function enterBoardPickMode(pIdx,sc,ab,mode){
     'mine_pick_self'  :'🔄 اختر بطاقة من أرضك للتبادل',
     'mine_pick_opp'   :'🔄 الآن اختر بطاقة من أرض الخصم',
     'finale_pick'     :'💥 اختر البطاقة المركزية للتفجير',
-    'split_pick_opp'  :'⚡🌙 اختر عموداً من أرض الخصم للانشطار',
+    'split_pick_self' :'⚡🌙 اختر عموداً من أرضك للانشطار',
   };
   showNotif(msgs[mode]||'اختر بطاقة من الأرض');
   render();
@@ -2662,10 +2818,15 @@ function onBoardPickClick(pIdx, si){
     execAbility(bPIdx,sc,'finale',0,{type:'self',si});
     return;
   }
-  if(mode==='split_pick_opp'){
-    if(pIdx===bPIdx) return; // يجب يختار من أرض الخصم
+  if(mode==='split_pick_self'){
+    if(pIdx!==bPIdx) return; // يختار من أرضه هو
+    // نتحقق أن فيه عمود فارغ آخر قبل التنفيذ
+    const hasFreeCol=p.stacks.some(s=>s.length===0);
+    if(!hasFreeCol){showNotif('⚠️ لا يوجد عمود فارغ — الانشطار لا يعمل!');cancelBoardPickMode();return;}
+    // نتحقق أن العمود المختار فيه أكثر من كرت واحد
+    if(!p.stacks[si]||p.stacks[si].length<2){showNotif('⚠️ يجب أن يحتوي العمود على كرتين على الأقل!');return;}
     _boardPickMode=null;
-    execAbility(bPIdx,sc,'split',0,{si,targetPIdx:pIdx});
+    execAbility(bPIdx,sc,'split',0,{si,targetPIdx:bPIdx});
     return;
   }
 }
@@ -2896,7 +3057,7 @@ function tickFreezeCounters(p){
         // انفجار!
         const dmg=AB_VALUES.timebomb_dmg||20;
         p.hp=Math.max(0,p.hp-dmg);
-        showDmg(`-${dmg}⏰`,'#f87171');
+        showDmg(`-${dmg}⏰`,'#f87171',420);
         showNotif(`⏰ انفجرت القنبلة الموقوتة! -${dmg} HP`);
         checkHPWin();
       }
@@ -2912,10 +3073,15 @@ function checkHPWin(){
 }
 function checkSpeedWin(){return checkHPWin();}
 
-function showDmg(txt,color){
-  const el=document.createElement('div');
-  el.className='dmg-pop';el.textContent=txt;el.style.color=color;el.style.textShadow=`0 0 22px ${color}`;
-  document.body.appendChild(el);setTimeout(()=>el.remove(),950);
+function showDmg(txt,color,delay){
+  const doShow=()=>{
+    const el=document.createElement('div');
+    el.className='dmg-pop';el.textContent=txt;el.style.color=color;el.style.textShadow=`0 0 22px ${color}`;
+    // رفع الـ z-index فوق فلاش الكارت (2000) وتحريكه للأعلى أكثر
+    el.style.zIndex='2100';
+    document.body.appendChild(el);setTimeout(()=>el.remove(),950);
+  };
+  if(delay){setTimeout(doShow,delay);}else{doShow();}
 }
 
 function showNotif(txt){
@@ -3154,7 +3320,7 @@ function applyRemoteMove(d){
     delete p.thornedSlots[d.si];
     const thornDmg=AB_VALUES.ice_thorns_dmg||5;
     p.hp=Math.max(0,p.hp-thornDmg);
-    showDmg(`-${thornDmg}🌵`,'#a8c4f0');
+    showDmg(`-${thornDmg}🌵`,'#a8c4f0',0);
     if(checkHPWin())return;
   }
   // قنابل موقوتة — أزلها بدون ضرر لو اللاعب نزّل الكرت
