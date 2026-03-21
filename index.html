@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
+<html lang="ar" dir="rtl"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Solitaire Fight ⚔️</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Dolitaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&amp;family=Cairo:wght@400;600;700&amp;display=swap" rel="stylesheet">
 <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
 <style>
 :root {
@@ -14,11 +12,6 @@
   --text: #e8e0d0;
   --text-dim: #6a6058;
   --glow-gold: 0 0 18px rgba(255 255 255 / 45%);
-  --cw: 56px;
-  --ch: 84px;
-  --peek: 13px;
-  --hand-w: 88px;
-  --hand-h: 132px;
 /* ===================== DEFAULT = ميدان كبير (8×10) — كروت أصغر ===================== */
   --cw: 45px;
   --ch: 73.5px;
@@ -31,8 +24,8 @@
 
 /* ===================== ميدان سريع (SMALL 6×8) — كروت الأرض أكبر ===================== */
 body.mode-small {
-  --cw: 60px;   /* كروت الأرض أكبر */
-  --ch: 98px;
+  --cw: 67px;   /* كروت الأرض أكبر */
+  --ch: 107px;
   --peek: 15px;
 }
 
@@ -40,9 +33,6 @@ body.mode-small {
 body.mode-small .stacks-row {
   gap: 2px;
 }
-
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;overflow:hidden;touch-action:manipulation;}
 
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;touch-action:manipulation;}
@@ -64,51 +54,28 @@ body{background:var(--darker);font-family:'Cairo',sans-serif;color:var(--text);
 .logo-wrap{text-align:center;margin-bottom:28px;}
 .logo-main{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,4.5vw,44px);color:var(--gold);text-shadow:var(--glow-gold),0 3px 8px rgba(0,0,0,.9);}
 .logo-line{width:180px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:11px auto;}
-.logo-sub{font-size:11px;color:var(--text-dim);letter-spacing:4px;text-transform:uppercase;}
+.logo-sub{font-size:11px;color:#fff1a2;letter-spacing:4px;text-transform:uppercase;}
 .menu-box{background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.50));border:1px solid rgba(255,215,0,.18);border-radius:16px;padding:24px 28px;width:100%;max-width:350px;box-shadow:0 24px 64px rgba(0,0,0,.65);}
 .sec-lbl{text-align:center;font-size:11px;color:var(--gold);letter-spacing:4px;text-transform:uppercase;margin-bottom:14px;opacity:.75;}
 .mbtn{width:100%;padding:13px 15px;margin-bottom:8px;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;gap:11px;transition:all .22s;position:relative;overflow:hidden;}
 .mbtn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.06);transform:translateX(-100%);transition:transform .28s}
 .mbtn:hover::before,.mbtn:active::before{transform:translateX(0)}.mbtn:hover{transform:translateY(-2px)}
-.mbtn-solo{background:linear-gradient(135deg, rgb(255 215 0), #040400);border:1px solid rgb(255 255 255 / 35%);color:#ffffff}
-.mbtn-solo:hover{border-color:rgba(39,174,96,.75);box-shadow:0 0 18px rgba(39,174,96,.2)}
-.mbtn-local{background:linear-gradient(135deg, #ffb52d, #000000);border:1px solid rgb(250 253 255 / 35%);color:#ffffff}
-.mbtn-local:hover{border-color:rgba(41,128,185,.75);box-shadow:0 0 18px rgba(41,128,185,.2)}
-.mbtn-online{background:linear-gradient(135deg, #ff9900, #180707);border:1px solid rgb(255 248 248 / 35%);color:#ffffff}
+
+.mbtn-online{background:linear-gradient(135deg, #9c5c9b, #362454);border:1px solid rgb(255 248 248 / 35%);color:#ffffff}
 .mbtn-online:hover{border-color:rgba(200,50,50,.75);box-shadow:0 0 18px rgba(200,50,50,.2)}
 .mbtn-ico{font-size:21px;flex-shrink:0}.mbtn-t{text-align:right}.mbtn-t span{display:block}.mbtn-t .sm{font-size:11px;opacity:.55;font-weight:400}
-.submenu{display:none;margin-top:3px;padding:10px;background:rgba(0,0,0,.35);border-radius:8px;border:1px solid rgba(255,215,0,.08)}
-.submenu.open{display:block}
-.smbtn{width:100%;padding:9px 12px;margin-bottom:7px;border:none;border-radius:7px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px;transition:all .2s}
-.smbtn:last-child{margin-bottom:0}
-.smbtn-t{background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.28);color:#4ade80}.smbtn-t:hover{background:rgba(39,174,96,.22)}
-.smbtn-s{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.28);color:#f87171}.smbtn-s:hover{background:rgba(231,76,60,.22)}
-hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
-
-/* ─── PRE-GAME SIZE SELECTION ─── */
-#size-screen{align-items:center;justify-content:center;overflow:hidden;position:relative;}
-.size-box{background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99));border:1px solid rgba(255,215,0,.18);border-radius:16px;padding:28px 24px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.65);}
-.size-title{font-family:'Cinzel Decorative',serif;font-size:15px;color:var(--gold);text-align:center;margin-bottom:6px;}
-.size-sub{text-align:center;font-size:11px;color:var(--text-dim);margin-bottom:20px;letter-spacing:1px;}
-.size-opts{display:flex;gap:10px;margin-bottom:18px;}
-.size-opt{flex:1;padding:16px 10px;border:2px solid rgba(255,215,0,.18);border-radius:12px;cursor:pointer;background:rgba(0,0,0,.35);transition:all .22s;text-align:center;}
-.size-opt:hover{border-color:rgba(255,215,0,.55);background:rgba(255,215,0,.05);transform:translateY(-2px);}
-.size-opt.selected{border-color:var(--gold);background:rgba(255,215,0,.1);box-shadow:0 0 18px rgba(255,215,0,.2);}
-.size-opt-ico{font-size:28px;margin-bottom:6px;}
-.size-opt-name{font-family:'Cinzel Decorative',serif;font-size:12px;color:var(--gold);margin-bottom:4px;}
-.size-opt-desc{font-size:10px;color:var(--text-dim);line-height:1.5;}
 
 /* ─── ONLINE ─── */
 #online-screen{align-items:center;justify-content:center;overflow-y:auto;}
-.setup-box{background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.99));border:1px solid rgba(255,215,0,.18);border-radius:16px;padding:26px 24px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.65);margin:16px;}
-.setup-title{font-family:'Cinzel Decorative',serif;font-size:16px;color:var(--gold);text-align:center;margin-bottom:18px;}
+.setup-box{background:linear-gradient(145deg,rgba(22,22,38,.97),rgba(8,8,14,.50));border:1px solid rgba(255,215,0,.18);border-radius:16px;padding:26px 24px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.65);margin:16px;}
+.setup-title{font-family:'Cinzel Decorative',serif;font-size:16px;color:var(--gold);text-align:center;margin-bottom:18px;text-shadow:0 0 20px rgba(255,215,0,.3);}
 .online-btns{display:flex;gap:8px;margin-bottom:14px;}
 .obtn{flex:1;padding:14px 8px;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .22s;}
 .obtn-ico{font-size:24px;}
-.obtn-create{background:linear-gradient(135deg,#0e2e1a,#071510);border:1px solid rgba(39,174,96,.4);color:#4ade80;}
-.obtn-create:hover{border-color:rgba(39,174,96,.8);box-shadow:0 0 18px rgba(39,174,96,.2);transform:translateY(-2px);}
-.obtn-join{background:linear-gradient(135deg,#101e38,#080f1e);border:1px solid rgba(41,128,185,.4);color:#60a5fa;}
-.obtn-join:hover{border-color:rgba(41,128,185,.8);box-shadow:0 0 18px rgba(41,128,185,.2);transform:translateY(-2px);}
+.obtn-create{background:linear-gradient(135deg,#1a0e2e,#0d0718);border:1px solid rgba(180,130,255,.45);color:#c084fc;}
+.obtn-create:hover{border-color:rgba(180,130,255,.85);box-shadow:0 0 18px rgba(160,100,255,.25);transform:translateY(-2px);}
+.obtn-join{background:linear-gradient(135deg,#1e1a0e,#130f07);border:1px solid rgba(255,215,0,.35);color:#FFD700;}
+.obtn-join:hover{border-color:rgba(255,215,0,.8);box-shadow:0 0 18px rgba(255,215,0,.2);transform:translateY(-2px);}
 .opanel{display:none;}.opanel.on{display:block;}
 .lbl{display:block;font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;margin-top:10px}
 .inp{width:100%;padding:10px 13px;background:rgba(0,0,0,.45);border:1px solid rgba(255,215,0,.18);border-radius:7px;color:var(--text);font-family:'Cairo',sans-serif;font-size:14px;outline:none;transition:border-color .2s;text-align:right}
@@ -160,18 +127,7 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 /* ─── SPLIT ─── */
 .game-split{flex:1;display:grid;grid-template-rows:1fr 38px 1fr;overflow:hidden;min-height:0;}
 .split-divider{background:transparent;position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.split-divider::before{display:none;}
-.split-divider::after{display:none;}
-/* ─── الخط المموج SVG ─── */
-.wavy-line-svg{
-  position:absolute;
-  top:50%;left:0;right:0;
-  width:100%;height:28px;
-  transform:translateY(-50%);
-  z-index:1;
-  pointer-events:none;
-  overflow:visible;
-}
+
 .divider-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(10,10,22,.98),rgba(5,5,14,.99));padding:4px 16px;border-radius:24px;border:1px solid rgba(255,215,0,.28);z-index:5;box-shadow:0 2px 20px rgba(0,0,0,.7),0 0 14px rgba(255,215,0,.07);}
 .divider-side{position:absolute;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:5px;z-index:5;}
 #divider-side-left{left:8px;}
@@ -179,7 +135,7 @@ hr.div{border:none;border-top:1px solid rgba(255,215,0,.09);margin:12px 0}
 .half{display:flex;flex-direction:column;align-items:center;padding:5px 6px;overflow:hidden;position:relative;transition:background .4s;}
 .half.opponent{transform:rotate(180deg);}
 .half.myturn{background:linear-gradient(to top,rgba(255,215,0,.07) 0%,transparent 60%);}
-.half.opponent.myturn{background:linear-gradient(to bottom,rgba(0) 0%,transparent 60%);}
+
 /* pinfo يعلق في الأعلى */
 .half .pinfo{flex-shrink:0;margin-bottom:1px;}
 /* اسم المنافس في half-top: نلغي تأثير الـ rotate عليه ونعكس الاتجاه */
@@ -293,20 +249,18 @@ body.mode-small .stacks-row {
 
 /* frozen card */
 .pile-card-down.frozen {
-  border-color: rgba(100,180,255,.6) !important;
-  /* شيلنا background الأزرق */
+  border-color: rgba(0) !important;
+  overflow: hidden;
 }
-
 .pile-card-down.frozen::after {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  /* ─── ضع رابط صورة الجليد هنا ─── */
-  background-image: url('');
+  width: 100%;
+  height: 100%;
+  background-image: url('https://i.postimg.cc/8CxbWnfj/jlyd-smyk.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -314,15 +268,29 @@ body.mode-small .stacks-row {
   pointer-events: none;
   filter: drop-shadow(0 0 6px rgba(100,180,255,.8));
 }
-
+.pile-card-down.frozen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(180, 230, 255, 0.35) 50%,
+    transparent 70%
+  );
+  transform: skewX(-15deg);
+  animation: ice-shimmer 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
 .pile-card-down.frozen .freeze-count { display: none; }
-
 .pile-card-up.frozen-top {
   border-color: rgba(100,180,255,.7) !important;
-  /* شيلنا background الأزرق */
-  /* شيلنا color الأزرق */
+  overflow: hidden;
 }
-
 .pile-card-up.frozen-top::before {
   content: '';
   position: absolute;
@@ -331,7 +299,6 @@ body.mode-small .stacks-row {
   transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
-  /* ─── ضع رابط صورة الجليد هنا ─── */
   background-image: url('https://i.postimg.cc/8CxbWnfj/jlyd-smyk.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -340,22 +307,44 @@ body.mode-small .stacks-row {
   pointer-events: none;
   filter: drop-shadow(0 0 6px rgba(100,180,255,.8));
 }
-
+.pile-card-up.frozen-top::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(180, 230, 255, 0.35) 50%,
+    transparent 70%
+  );
+  transform: skewX(-15deg);
+  animation: ice-shimmer 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
 .pile-card-up.frozen-top .freeze-badge {
   position: absolute;
   bottom: 2px;
   right: 2px;
   font-size: 8px;
-  /* شيلنا اللون الأزرق */
   font-weight: 700;
   background: rgba(6,18,48,.8);
   border-radius: 3px;
   padding: 0 2px;
 }
-
+@keyframes ice-shimmer {
+  0%   { left: -100%; opacity: 0; }
+  10%  { opacity: 1; }
+  50%  { left: 130%;  opacity: 1; }
+  60%  { opacity: 0; }
+  100% { left: 130%;  opacity: 0; }
+}
 /* باقي الكود بدون تغيير */
 .pile-card-up { position: absolute; width: 100%; height: var(--ch); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; user-select: none; transition: transform .15s, box-shadow .15s; overflow: hidden; cursor: default; }
-.pile-card-up.face-up { background: linear-gradient(155deg,#f9f5ea,#ece7d4); border: 2px solid rgba(0,0,0,.15); }
+.pile-card-up.face-up { background: linear-gradient(155deg,#f9f5ea,#ece7d4); border: 0px solid rgba(0,0,0,.15); }
 .pile-card-up.face-up.hearts, .pile-card-up.face-up.diamonds { color: #ffffff; }
 .pile-card-up.face-up.spades, .pile-card-up.face-up.clubs { color: #ffffff; }
 .pile-card-up.has-image .card-inner { display: none; }
@@ -408,15 +397,13 @@ body.mode-small .stacks-row {
 
 /* ─── ABILITY MODAL ─── */
 .ability-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
-.ability-box{background:linear-gradient(145deg,rgba(14,14,28,.99),rgba(6,6,16,.99));border:1px solid rgba(255,215,0,.25);border-radius:20px;padding:20px 16px 16px;width:calc(100% - 24px);max-width:400px;box-shadow:0 30px 90px rgba(0,0,0,.9);overflow-y:auto;max-height:92vh;}
+.ability-box{background:linear-gradient(145deg,rgba(18,14,32,.98),rgba(8,5,16,.95));border:1px solid rgba(255,215,0,.25);border-radius:20px;padding:20px 16px 16px;width:calc(100% - 24px);max-width:400px;box-shadow:0 30px 90px rgba(0,0,0,.9);overflow-y:auto;max-height:92vh;}
 .ab-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
 .ab-suit-icon{font-size:30px;flex-shrink:0;}
 .ab-header-txt{flex:1;}
 .ab-title{font-family:'Cinzel Decorative',serif;font-size:13px;color:var(--gold);}
 .ab-sub{font-size:11px;color:var(--text-dim);margin-top:2px;}
-/* شريط النقاط — مخفي (النقاط بتتعرض داخل كل كرت) */
-.ab-points-bar{display:none;}
-.ab-pts-label,.ab-pts-val,.ab-pts-max{display:none;}
+
 .ab-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;}
 .ab-card{border-radius:14px;padding:0px 0px 0px;cursor:pointer;transition:all .22s;text-align:center;position:relative;overflow:hidden;border:2px solid transparent;}
 .ab-card:hover{transform:translateY(-3px);}
@@ -424,8 +411,7 @@ body.mode-small .stacks-row {
 /* صندوق الصورة بدون padding وبدون خلفية */
 .ab-card-img{width:100%;aspect-ratio:2/3;border-radius:10px;background:none;display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:6px;overflow:hidden;position:relative;padding:0;}
 .ab-card-img img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
-/* اسم البطاقة — مخفي بصرياً لكن في الكود */
-.ab-card-name{display:none;}
+
 /* عنوان القدرة مع نقاطها */
 .ab-card-title-row{display:flex;align-items:center;justify-content:center;gap:5px;margin-bottom:4px;}
 .ab-card-ename{font-family:'Cinzel Decorative',serif;font-size:9px;color:var(--gold);line-height:1.3;}
@@ -449,7 +435,7 @@ body.mode-small .stacks-row {
 .ab-close{width:100%;padding:9px;border:none;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:var(--text-dim);font-family:'Cairo',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
 .ab-close:hover{background:rgba(255,255,255,.1);}
 /* target selection modal */
-.ab-target-box{background:linear-gradient(145deg,rgba(14,14,28,.99),rgba(6,6,16,.99));border:1px solid rgba(255,215,0,.25);border-radius:16px;padding:18px 16px;width:calc(100% - 24px);max-width:320px;box-shadow:0 30px 90px rgba(0,0,0,.9);}
+.ab-target-box{background:linear-gradient(145deg,rgba(18,14,32,.98),rgba(8,5,16,.95));border:1px solid rgba(255,215,0,.25);border-radius:16px;padding:18px 16px;width:calc(100% - 24px);max-width:320px;box-shadow:0 30px 90px rgba(0,0,0,.9);}
 .ab-target-title{font-family:'Cinzel Decorative',serif;font-size:13px;color:var(--gold);text-align:center;margin-bottom:12px;}
 .ab-target-btns{display:flex;gap:8px;}
 .ab-tgt{flex:1;padding:12px 8px;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .2s;}
@@ -471,6 +457,26 @@ body.mode-small .stacks-row {
 .pile-card-up.thorned {
   box-shadow: 0 0 0 2px rgba(100,200,255,.7), 0 0 12px rgba(100,200,255,.4) !important;
   border-color: rgba(100,200,255,.8) !important;
+  overflow: hidden;
+}
+
+.pile-card-up.thorned::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(200,240,255,.6) 50%,
+    transparent 70%
+  );
+  transform: skewX(-15deg);
+  animation: glass-shine 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
 }
 
 .pile-card-up.thorned::after {
@@ -490,21 +496,11 @@ body.mode-small .stacks-row {
   filter: drop-shadow(0 0 8px rgba(100,200,255,.9));
 }
 
-/* ─── لتغيير الصورة: غيّر الرابط في background-image أعلاه ─── */
-
-/* أو بديل: أضف <img class="thorn-overlay-img" src="رابط-صورتك"> داخل الكرت */
-.thorn-overlay-img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 70%;
-  height: 70%;
-  object-fit: contain;
-  pointer-events: none;
-  z-index: 5;
-  opacity: .85;
+@keyframes glass-shine {
+  0%   { left: -75%; }
+  40%, 100% { left: 150%; }
 }
+
 /* قنبلة موقوتة */
 .pile-card-up.timebomb {
   box-shadow: 0 0 0 2px rgba(255,100,0,.8), 0 0 16px rgba(255,100,0,.5) !important;
@@ -523,11 +519,15 @@ body.mode-small .stacks-row {
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
-  opacity: 1;
   pointer-events: none;
-  filter: drop-shadow(0 0 10px rgba(255,100,0,.9));
+  filter: drop-shadow(0 0 10px rgba(255,0,0,1));
+  animation: danger-pulse 1s ease-in-out infinite;
 }
 
+@keyframes danger-pulse {
+  0%, 100% { filter: drop-shadow(0 0 15px rgba(255,0,0,1)); }
+  50%       { filter: drop-shadow(0 0 0px rgba(255,0,0,0)); }
+}
 /* ─── لتغيير الصورة: غيّر الرابط في background-image أعلاه ─── */
 
 .timebomb-count {
@@ -544,20 +544,6 @@ body.mode-small .stacks-row {
   pointer-events: none;
   z-index: 10;
   border: 1px solid rgba(255,100,0,.6);
-}
-
-/* أو بديل: أضف <img class="timebomb-overlay-img" src="رابط-صورتك"> داخل الكرت */
-.timebomb-overlay-img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 70%;
-  height: 70%;
-  object-fit: contain;
-  pointer-events: none;
-  z-index: 5;
-  opacity: .85;
 }
 
 @keyframes bombPulse {
@@ -700,10 +686,6 @@ body.mode-small .stacks-row {
   font-size:clamp(50px,12vw,90px);
   background:linear-gradient(145deg,rgba(14,14,28,.99),rgba(6,6,16,.99));
 }
-@keyframes abilityFlashGlow{
-  0%,100%{box-shadow:0 0 40px rgba(255,215,0,.6),0 0 80px rgba(255,215,0,.3),0 20px 60px rgba(0,0,0,.9);}
-  50%{box-shadow:0 0 80px rgba(255,215,0,1),0 0 160px rgba(255,215,0,.6),0 20px 60px rgba(0,0,0,.9);}
-}
 
 /* ─── CARD FLIP ANIMATION — نص أول يختفي، نص تاني يظهر في نفس الاتجاه ─── */
 @keyframes cardFlipHide{
@@ -805,10 +787,161 @@ body.mode-small .stacks-row {
 @keyframes ld{0%,100%{content:'.'}33%{content:'..'}66%{content:'...'}}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:rgba(0,0,0,.18)}::-webkit-scrollbar-thumb{background:rgba(255,215,0,.2);border-radius:3px}
 </style>
+
+<script>
+
+(function(){
+
+  document.addEventListener('contextmenu', e => e.preventDefault());
+
+  document.addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+
+    if(e.key === 'F12') { e.preventDefault(); return false; }
+
+    if(e.ctrlKey || e.metaKey){
+      if(['s','u','p','a'].includes(k)){ e.preventDefault(); return false; }
+      if(e.shiftKey && ['i','j','c','k'].includes(k)){ e.preventDefault(); return false; }
+    }
+  });
+
+  let _dt = false;
+  const _dtCheck = () => {
+    const w = window.outerWidth - window.innerWidth > 160;
+    const h = window.outerHeight - window.innerHeight > 160;
+    if((w || h) && !_dt){
+      _dt = true;
+      document.body.style.filter = 'blur(8px)';
+    } else if(!w && !h && _dt){
+      _dt = false;
+      document.body.style.filter = '';
+    }
+  };
+  setInterval(_dtCheck, 1000);
+
+  document.addEventListener('dragstart', e => e.preventDefault());
+
+  document.addEventListener('keyup', e => {
+    if(e.key === 'PrintScreen'){
+      navigator.clipboard?.writeText('').catch(()=>{});
+    }
+  });
+})();
+</script>
+
+<script>
+
+const SFX = (function(){
+  let ctx = null;
+  let vol = 0.45;
+
+  function getCtx(){
+    if(!ctx){
+      try{ ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+    }
+
+    if(ctx && ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+
+  document.addEventListener('pointerdown', ()=>getCtx(), {once:true, passive:true});
+
+  function tone(freq, type, dur, volMult, delayStart){
+    const c = getCtx(); if(!c) return;
+    const g = c.createGain();
+    const o = c.createOscillator();
+    o.type = type||'sine';
+    o.frequency.setValueAtTime(freq, c.currentTime + (delayStart||0));
+    g.gain.setValueAtTime(0, c.currentTime + (delayStart||0));
+    g.gain.linearRampToValueAtTime(vol * (volMult||0.4), c.currentTime + (delayStart||0) + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + (delayStart||0) + dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(c.currentTime + (delayStart||0));
+    o.stop(c.currentTime + (delayStart||0) + dur + 0.05);
+  }
+
+  function noise(dur, volMult, delayStart){
+    const c = getCtx(); if(!c) return;
+    const buf = c.createBuffer(1, c.sampleRate * dur, c.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i] = (Math.random()*2-1);
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    const filter = c.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 1200;
+    filter.Q.value = 0.8;
+    const g = c.createGain();
+    g.gain.setValueAtTime(vol * (volMult||0.15), c.currentTime + (delayStart||0));
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + (delayStart||0) + dur);
+    src.connect(filter); filter.connect(g); g.connect(c.destination);
+    src.start(c.currentTime + (delayStart||0));
+  }
+
+  return {
+
+    play(){
+      tone(420, 'triangle', 0.08, 0.35);
+      noise(0.06, 0.12);
+      tone(280, 'sine', 0.12, 0.18, 0.03);
+    },
+
+    draw(){
+      tone(600, 'sine', 0.1, 0.2);
+      noise(0.08, 0.09);
+      tone(480, 'triangle', 0.15, 0.15, 0.04);
+    },
+
+    ability(){
+      tone(660, 'sine', 0.12, 0.3);
+      tone(880, 'sine', 0.18, 0.25, 0.06);
+      tone(1100,'sine', 0.14, 0.18, 0.13);
+      tone(440, 'triangle', 0.2, 0.12, 0.02);
+    },
+
+    damage(){
+      tone(160, 'sawtooth', 0.18, 0.35);
+      tone(120, 'sine', 0.22, 0.2, 0.05);
+      noise(0.1, 0.1);
+    },
+
+    tick(){
+      tone(880, 'sine', 0.07, 0.25);
+    },
+
+    win(){
+      [523,659,784,1047].forEach((f,i)=>{
+        tone(f,'sine', 0.3, 0.3, i*0.12);
+        tone(f*1.5,'triangle', 0.2, 0.12, i*0.12+0.05);
+      });
+    },
+
+    lose(){
+      tone(440,'sine', 0.3, 0.25);
+      tone(370,'sine', 0.35, 0.2, 0.15);
+      tone(294,'sine', 0.45, 0.15, 0.35);
+    },
+
+    freeze(){
+      tone(1200,'sine', 0.08, 0.2);
+      tone(1000,'sine', 0.12, 0.18, 0.06);
+      tone(800, 'sine', 0.16, 0.15, 0.13);
+      noise(0.12, 0.06, 0.02);
+    },
+
+    boom(){
+      tone(80,  'sawtooth', 0.35, 0.5);
+      tone(50,  'sine', 0.4, 0.35, 0.04);
+      noise(0.3, 0.25);
+      tone(160, 'square', 0.15, 0.2, 0.02);
+    },
+  };
+})();
+</script>
 </head>
 <body>
-<div class="game-bg" id="game-bg-el"></div>
-<div class="preload-bar"><div class="preload-fill" id="preload-fill"></div></div>
+<div class="game-bg" id="game-bg-el" style="background-image: url(&quot;https://i.postimg.cc/7LXPsvYx/ghabh-shryh-png-2.png&quot;);"></div>
+<div class="preload-bar" style="opacity: 0;"><div class="preload-fill" id="preload-fill" style="width: 100%;"></div></div>
 
 <!-- ══════════════ MENU ══════════════ -->
 <style>
@@ -841,29 +974,7 @@ body.mode-small .stacks-row {
   </div>
 
   <div class="menu-box">
-    <div class="sec-lbl">اختر طريقة اللعب</div>
-
-    <button class="mbtn mbtn-solo" onclick="toggleSub('sub-solo')">
-      <span class="mbtn-ico">🎮</span>
-      <div class="mbtn-t"><span>لاعب واحد</span></div>
-    </button>
-
-    <div id="sub-solo" class="submenu">
-      <button class="smbtn smbtn-t" onclick="goSizeScreen('solo','turns')">🔄 مود الأدوار</button>
-      <button class="smbtn smbtn-s" onclick="goSizeScreen('solo','speed')">⚡ مود السرعة</button>
-    </div>
-
-    <button class="mbtn mbtn-local" onclick="toggleSub('sub-local')" style="margin-top:4px">
-      <span class="mbtn-ico">👥</span>
-      <div class="mbtn-t"><span>لاعبين – نفس الجهاز</span></div>
-    </button>
-
-    <div id="sub-local" class="submenu">
-      <button class="smbtn smbtn-t" onclick="goSizeScreen('local','turns')">🔄 مود الأدوار</button>
-      <button class="smbtn smbtn-s" onclick="goSizeScreen('local','speed')">⚡ مود السرعة</button>
-    </div>
-
-    <hr class="div">
+    <div class="sec-lbl">ابدأ اللعب</div>
 
     <button class="mbtn mbtn-online" onclick="showOnline()">
       <span class="mbtn-ico">🌐</span>
@@ -876,13 +987,11 @@ body.mode-small .stacks-row {
 <div id="online-screen" class="screen">
   <div class="setup-box">
     <div class="setup-title">🌐 اللعب الأونلاين</div>
-    <div class="online-btns" id="online-choice">
+    <div class="online-btns" id="online-choice" style="display: flex;">
       <button class="obtn obtn-create" onclick="showOnlinePanel('create')"><span class="obtn-ico">➕</span><span>إنشاء غرفة</span></button>
       <button class="obtn obtn-join" onclick="showOnlinePanel('join')"><span class="obtn-ico">🔗</span><span>انضمام</span></button>
     </div>
-    <div id="online-settings-row" style="display:flex;justify-content:center;margin-bottom:6px;">
-      <button class="abtn" style="background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);color:var(--gold);padding:9px 18px;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;width:100%;" onclick="showSettingsFromOnline()">⚙️ إعدادات اللعبة</button>
-    </div>
+    <div id="online-settings-row" style="display:none;"></div>
     <div id="panel-create" class="opanel">
       <label class="lbl">اسمك</label><input class="inp" id="c-name" value="لاعب 1">
       <label class="lbl">مود اللعبة</label>
@@ -935,8 +1044,8 @@ body.mode-small .stacks-row {
     <span id="mbadge" class="mbadge turns">أدوار</span>
     <div class="timer-wrap" id="timer-wrap">
       <svg class="timer-ring" width="28" height="28" viewBox="0 0 28 28">
-        <circle class="timer-bg" cx="14" cy="14" r="11"/>
-        <circle class="timer-fg" id="timer-circle" cx="14" cy="14" r="11" stroke-dasharray="69.1" stroke-dashoffset="0"/>
+        <circle class="timer-bg" cx="14" cy="14" r="11"></circle>
+        <circle class="timer-fg" id="timer-circle" cx="14" cy="14" r="11" stroke-dasharray="69.1" stroke-dashoffset="0"></circle>
       </svg>
       <span class="timer-num" id="timer-num">30</span>
     </div>
@@ -951,8 +1060,8 @@ body.mode-small .stacks-row {
         <button class="qbtn" onclick="quitGame()" style="font-size:10px;padding:3px 9px;">✕</button>
         <div class="timer-vis-wrap" id="timer-vis-wrap">
           <svg class="timer-ring" width="34" height="34" viewBox="0 0 34 34">
-            <circle class="timer-bg" cx="17" cy="17" r="13"/>
-            <circle class="timer-fg-vis" id="timer-circle-vis" cx="17" cy="17" r="13" stroke-dasharray="81.68" stroke-dashoffset="0"/>
+            <circle class="timer-bg" cx="17" cy="17" r="13"></circle>
+            <circle class="timer-fg-vis" id="timer-circle-vis" cx="17" cy="17" r="13" stroke-dasharray="81.68" stroke-dashoffset="0"></circle>
           </svg>
           <span class="timer-num" id="timer-num-vis">30</span>
         </div>
@@ -993,211 +1102,18 @@ body.mode-small .stacks-row {
   </div>
 </div>
 
-<!-- ══════════════ SIZE SELECTION ══════════════ -->
-<div id="size-screen" class="screen">
-  <div class="bg-deco">
-    <span class="bg-suit">☀️</span><span class="bg-suit">❄️</span>
-    <span class="bg-suit">💣</span><span class="bg-suit">🌙</span>
-  </div>
-  <div class="size-box">
-    <div class="size-title">⚙️ إعداد اللعبة</div>
-    <div class="size-sub">اختر حجم الميدان قبل البداية</div>
-    <div class="size-opts">
-      <div class="size-opt selected" id="size-opt-large" onclick="selectSize('large')">
-        <div class="size-opt-ico">🗺️</div>
-        <div class="size-opt-name">ميدان كبير</div>
-        <div class="size-opt-desc">8 أعمدة<br>10 بطاقات لكل عمود<br>تحدٍّ أكبر</div>
-      </div>
-      <div class="size-opt" id="size-opt-small" onclick="selectSize('small')">
-        <div class="size-opt-ico">⚡</div>
-        <div class="size-opt-name">ميدان سريع</div>
-        <div class="size-opt-desc">6 أعمدة<br>8 بطاقات لكل عمود<br>بطاقات أكبر</div>
-      </div>
-    </div>
-    <button class="abtn abtn-gold" onclick="confirmSizeAndStart()">🚀 ابدأ اللعبة!</button>
-    <button class="abtn" style="background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);color:var(--gold);padding:12px;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;width:100%;margin-top:8px;" onclick="_settingsFrom='size';showSettings()">⚙️ إعدادات اللعبة</button>
-    <button class="abtn abtn-dim" onclick="cancelSizeScreen()" style="margin-top:8px">← رجوع</button>
-  </div>
-</div>
-
 <!-- ══════════════ SETTINGS SCREEN ══════════════ -->
-<div id="settings-screen" class="screen">
-  <div class="settings-box">
-    <div class="settings-title">⚙️ إعدادات اللعبة</div>
-    <div class="settings-sub">تُطبَّق هذه الإعدادات على الجلسة القادمة</div>
-
-    <!-- إعدادات عامة -->
-    <div class="sset-section">
-      <div class="sset-section-lbl">⚡ الإعدادات العامة</div>
-      <div class="sset-row">
-        <div class="sset-lbl">نقاط الصحة الابتدائية<span class="sset-hint">HP لكل لاعب عند البداية</span></div>
-        <input class="sset-inp" id="cfg-hp" type="number" min="10" max="999" value="100">
-      </div>
-      <div class="sset-row">
-        <div class="sset-lbl">وقت الدور (ثانية)<span class="sset-hint">مؤقت كل دور في مود الأدوار</span></div>
-        <input class="sset-inp" id="cfg-timer" type="number" min="5" max="300" value="30">
-      </div>
-      <div class="sset-row">
-        <div class="sset-lbl">الحد الأقصى لنقاط القدرة<span class="sset-hint">أقصى نقاط لكل نوع بطاقة</span></div>
-        <input class="sset-inp" id="cfg-maxpts" type="number" min="1" max="99" value="10">
-      </div>
-      <div class="sset-row">
-        <div class="sset-lbl">احتساب نقاط القدرة عند السحب<span class="sset-hint">الكرت المسحوب من الديك يضيف نقطة</span></div>
-        <div class="sset-toggle" id="cfg-draw-pts-toggle">
-          <button class="active" onclick="setToggle('cfg-draw-pts-toggle',0)">تفعيل</button>
-          <button onclick="setToggle('cfg-draw-pts-toggle',1)">إيقاف</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- قدرات السيوف -->
-    <div class="sset-section">
-      <div class="sset-section-lbl">❄️ السيوف — الأعاصير الثلجية</div>
-      <div class="sset-ab-grid">
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">🌪️ إعصار</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-blizzard" type="number" min="1" max="99" value="5">
-          </div>
-        </div>
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">🧊 صقيع</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-frost" type="number" min="1" max="99" value="5">
-            <label>أدوار</label><input class="sset-ab-inp" id="ab-val-frost" type="number" min="1" max="20" value="3">
-          </div>
-        </div>
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">⚡ برق</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-lightning" type="number" min="1" max="99" value="7">
-            <label>عدد</label><input class="sset-ab-inp" id="ab-val-lightning" type="number" min="1" max="8" value="3">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- قدرات القلوب -->
-    <div class="sset-section">
-      <div class="sset-section-lbl">☀️ القلوب — شمس</div>
-      <div class="sset-ab-grid">
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">🔥 شمس حارقة</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-burning_sun" type="number" min="1" max="99" value="3">
-          </div>
-        </div>
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">☄️ ضربة شمس</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-sun_strike" type="number" min="1" max="99" value="3">
-            <label>ضرر</label><input class="sset-ab-inp" id="ab-val-sun_strike" type="number" min="1" max="999" value="15">
-          </div>
-        </div>
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">✨ نشاط</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-vitality" type="number" min="1" max="99" value="9">
-            <label>شحن</label><input class="sset-ab-inp" id="ab-val-vitality" type="number" min="1" max="20" value="3">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- قدرات الماس -->
-    <div class="sset-section">
-      <div class="sset-section-lbl">🌙 الماس — قمر</div>
-      <div class="sset-ab-grid">
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">👁️ أرى كل شيء</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-all_seeing" type="number" min="1" max="99" value="4">
-            <label>HP+</label><input class="sset-ab-inp" id="ab-val-all_seeing" type="number" min="1" max="999" value="10">
-          </div>
-        </div>
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">🔄 هذه ملكي</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-mine" type="number" min="1" max="99" value="5">
-          </div>
-        </div>
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">🔒 المتحكم</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-controller" type="number" min="1" max="99" value="9">
-            <label>أدوار</label><input class="sset-ab-inp" id="ab-val-controller" type="number" min="1" max="20" value="3">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- قدرات البستوني -->
-    <div class="sset-section">
-      <div class="sset-section-lbl">⚫ البستوني — الثقب الأسود</div>
-      <div class="sset-ab-grid">
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">🌑 يمتص كل شيء</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-absorb" type="number" min="1" max="99" value="4">
-            <label>سرقة</label><input class="sset-ab-inp" id="ab-val-absorb" type="number" min="1" max="999" value="10">
-          </div>
-        </div>
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">➕ لم ننتهي بعد</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-not_over" type="number" min="1" max="99" value="6">
-          </div>
-        </div>
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">💣 النهاية</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-finale" type="number" min="1" max="99" value="9">
-            <label>فخ HP</label><input class="sset-ab-inp" id="ab-val-finale" type="number" min="1" max="999" value="30">
-          </div>
-        </div>
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">⏰ لا وقت</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-timebomb" type="number" min="1" max="99" value="7">
-            <label>أدوار</label><input class="sset-ab-inp" id="ab-val-timebomb_turns" type="number" min="1" max="20" value="3">
-            <label>ضرر</label><input class="sset-ab-inp" id="ab-val-timebomb_dmg" type="number" min="1" max="999" value="20">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- قدرات جديدة -->
-    <div class="sset-section">
-      <div class="sset-section-lbl">🆕 القدرات الجديدة</div>
-      <div class="sset-ab-grid">
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">🌵❄️ أشواك الجليد</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-ice_thorns" type="number" min="1" max="99" value="7">
-            <label>عدد</label><input class="sset-ab-inp" id="ab-val-ice_thorns_count" type="number" min="1" max="8" value="3">
-            <label>ضرر</label><input class="sset-ab-inp" id="ab-val-ice_thorns_dmg" type="number" min="1" max="999" value="5">
-          </div>
-        </div>
-        <div class="sset-ab-item">
-          <div class="sset-ab-name">⚡🌙 انشطار</div>
-          <div class="sset-ab-fields">
-            <label>تكلفة</label><input class="sset-ab-inp" id="ab-cost-split" type="number" min="1" max="99" value="7">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ════ تنظيم القدرات لكل مود ════ -->
+<!-- ════ تنظيم القدرات لكل مود ════ -->
     <div class="sset-section">
       <div class="sset-section-lbl">🎮 القدرات المتاحة لكل مود</div>
       <div style="font-size:10px;color:var(--text-dim);margin-bottom:10px;line-height:1.5;">
         فعّل أو عطّل أي قدرة في كل مود — ✅ متاحة | ❌ مقفولة
       </div>
-      <div id="sset-modes-grid" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <div id="sset-modes-grid" style="display:flex;flex-direction:column;gap:8px;"><div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 215, 0, 0.1); border-radius: 8px; padding: 8px 10px;"><div style="font-size:11px;color:var(--gold);margin-bottom:6px;font-weight:700;">🔄 مود الأدوار</div><div style="display: flex; flex-wrap: wrap; gap: 5px;"><button data-mode="turns" data-ab-id="blizzard" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🌪️ إعصار</button><button data-mode="turns" data-ab-id="frost" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🧊 صقيع</button><button data-mode="turns" data-ab-id="lightning" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ ⚡ برق</button><button data-mode="turns" data-ab-id="ice_thorns" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🌵❄️ أشواك الجليد</button><button data-mode="turns" data-ab-id="burning_sun" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🔥 شمس حارقة</button><button data-mode="turns" data-ab-id="sun_strike" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ ☄️ ضربة شمس</button><button data-mode="turns" data-ab-id="vitality" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ ✨ نشاط</button><button data-mode="turns" data-ab-id="all_seeing" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 👁️ أرى كل شيء</button><button data-mode="turns" data-ab-id="mine" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🔄 هذه ملكي</button><button data-mode="turns" data-ab-id="controller" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🔒 المتحكم</button><button data-mode="turns" data-ab-id="split" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ ⚡🌙 انشطار</button><button data-mode="turns" data-ab-id="absorb" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🌑 يمتص كل شيء</button><button data-mode="turns" data-ab-id="not_over" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ ➕ لم ننتهي بعد</button><button data-mode="turns" data-ab-id="finale" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 💣 النهاية</button><button data-mode="turns" data-ab-id="timebomb" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ ⏰ لا وقت</button></div></div><div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 215, 0, 0.1); border-radius: 8px; padding: 8px 10px;"><div style="font-size:11px;color:var(--gold);margin-bottom:6px;font-weight:700;">⚡ مود السرعة</div><div style="display: flex; flex-wrap: wrap; gap: 5px;"><button data-mode="speed" data-ab-id="blizzard" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🌪️ إعصار</button><button data-mode="speed" data-ab-id="frost" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(248, 113, 113, 0.3); background: rgba(248, 113, 113, 0.08); color: rgb(248, 113, 113); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">❌ 🧊 صقيع</button><button data-mode="speed" data-ab-id="lightning" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ ⚡ برق</button><button data-mode="speed" data-ab-id="ice_thorns" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🌵❄️ أشواك الجليد</button><button data-mode="speed" data-ab-id="burning_sun" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🔥 شمس حارقة</button><button data-mode="speed" data-ab-id="sun_strike" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ ☄️ ضربة شمس</button><button data-mode="speed" data-ab-id="vitality" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ ✨ نشاط</button><button data-mode="speed" data-ab-id="all_seeing" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 👁️ أرى كل شيء</button><button data-mode="speed" data-ab-id="mine" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🔄 هذه ملكي</button><button data-mode="speed" data-ab-id="controller" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(248, 113, 113, 0.3); background: rgba(248, 113, 113, 0.08); color: rgb(248, 113, 113); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">❌ 🔒 المتحكم</button><button data-mode="speed" data-ab-id="split" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ ⚡🌙 انشطار</button><button data-mode="speed" data-ab-id="absorb" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 🌑 يمتص كل شيء</button><button data-mode="speed" data-ab-id="not_over" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ ➕ لم ننتهي بعد</button><button data-mode="speed" data-ab-id="finale" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(74, 222, 128, 0.4); background: rgba(74, 222, 128, 0.1); color: rgb(74, 222, 128); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">✅ 💣 النهاية</button><button data-mode="speed" data-ab-id="timebomb" style="padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(248, 113, 113, 0.3); background: rgba(248, 113, 113, 0.08); color: rgb(248, 113, 113); font-size: 10px; cursor: pointer; font-family: Cairo, sans-serif; transition: 0.2s;">❌ ⏰ لا وقت</button></div></div></div>
     </div>
 
     <button class="abtn abtn-gold" onclick="applySettings()" style="margin-top:6px">✅ حفظ الإعدادات</button>
-    <button class="abtn" onclick="exportPlayerVersion()" style="background:linear-gradient(135deg,#1a0e2e,#0e0718);border:1px solid rgba(160,100,255,.45);color:#c084fc;padding:12px;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;width:100%;margin-top:8px;transition:all .22s;" onmouseover="this.style.borderColor='rgba(160,100,255,.8)';this.style.boxShadow='0 0 18px rgba(160,100,255,.25)'" onmouseout="this.style.borderColor='rgba(160,100,255,.45)';this.style.boxShadow='none'">📦 استخراج نسخة اللاعبين</button>
+    <button class="abtn" onclick="exportPlayerVersion()" style="background: linear-gradient(135deg, rgb(26, 14, 46), rgb(14, 7, 24)); border: 1px solid rgba(160, 100, 255, 0.8); color: rgb(192, 132, 252); padding: 12px; border-radius: 9px; cursor: pointer; font-family: Cairo, sans-serif; font-size: 15px; font-weight: 700; width: 100%; margin-top: 8px; transition: 0.22s; box-shadow: rgba(160, 100, 255, 0.25) 0px 0px 18px;" onmouseover="this.style.borderColor='rgba(160,100,255,.8)';this.style.boxShadow='0 0 18px rgba(160,100,255,.25)'" onmouseout="this.style.borderColor='rgba(160,100,255,.45)';this.style.boxShadow='none'">📦 استخراج نسخة اللاعبين</button>
     <button class="abtn abtn-dim" onclick="cancelSettings()" style="margin-top:8px">← رجوع</button>
   </div>
 </div>
@@ -1212,11 +1128,7 @@ body.mode-small .stacks-row {
         <div class="ab-sub" id="ab-sub">اختر قدرة لتفعيلها</div>
       </div>
     </div>
-    <div class="ab-points-bar">
-      <span class="ab-pts-label">النقاط المتاحة</span>
-      <span class="ab-pts-val" id="ab-pts-val">0</span>
-      <span class="ab-pts-max" id="ab-pts-max">/ 10</span>
-    </div>
+
     <div class="ab-cards-grid" id="ab-cards-grid"></div>
     <button class="ab-close" onclick="closeAbilityModal()">← إغلاق</button>
   </div>
@@ -1259,154 +1171,112 @@ body.mode-small .stacks-row {
 </div>
 
 <script>
-/* ══════════════════════════════════════════════════════════════
-   ██████╗ ██████╗  ██████╗ ████████╗
-  ██╔══██╗██╔═══██╗██╔═══██╗╚══██╔══╝
-  ██████╔╝██║   ██║██║   ██║   ██║
-  ██╔══██╗██║   ██║██║   ██║   ██║
-  ██║  ██║╚██████╔╝╚██████╔╝   ██║
-   ╚═╝  ╚═╝ ╚═════╝  ╚═════╝   ╚═╝   CUSTOM IMAGES
-   ══════════════════════════════════════════════════════════════ */
 
-/* ┌──────────────────────────────────────────────────┐
-   │  صور الكروت — ضع رابط كل كرت هنا               │
-   └──────────────────────────────────────────────────┘ */
 const CARD_IMAGES = {
 
-  /* ♠  SPADES  ─────────────────────────────────── */
-  "A_S"  : "https://i.postimg.cc/MTh7HmVL/S_ice_A.png",   /* Ace   of Spades   */
-  "2_S"  : "https://i.postimg.cc/432bkgds/S_ice_2.png",   /* 2     of Spades   */
-  "3_S"  : "https://i.postimg.cc/cJkMySH4/S_ice_3.png",   /* 3     of Spades   */
-  "4_S"  : "https://i.postimg.cc/7LtM8k6D/i_S_ice_4.png", /* 4     of Spades   */
-  "5_S"  : "https://i.postimg.cc/KYprS2zY/S_ice_5.png",   /* 5     of Spades   */
-  "6_S"  : "https://i.postimg.cc/R0pQ5BFH/S_ice_6.png",   /* 6     of Spades   */
-  "7_S"  : "https://i.postimg.cc/C1ZCwQBz/S_ice_7.png",   /* 7     of Spades   */
-  "8_S"  : "https://i.postimg.cc/50H5fRYY/S_ice_8.png",   /* 8     of Spades   */
-  "9_S"  : "https://i.postimg.cc/sXBP3NQW/S_ice_9.png",   /* 9     of Spades   */
-  "10_S" : "https://i.postimg.cc/QtBgjy9c/S_ice_10.png",  /* 10    of Spades   */
-  "J_S"  : "https://i.postimg.cc/tT1d9MZD/S_ice_J.png",   /* Jack  of Spades   */
-  "Q_S"  : "https://i.postimg.cc/Jny3R2D2/S_ice_Q.png",   /* Queen of Spades   */
-  "K_S"  : "https://i.postimg.cc/26PQy7hc/S_ice_K.png",   /* King  of Spades   */
+  
+  "A_S"  : "https://i.postimg.cc/jSmCK4Qh/A.png",   
+  "2_S"  : "https://i.postimg.cc/1324PrcG/2.png",   
+  "3_S"  : "https://i.postimg.cc/RZyq9LQ1/3.png",   
+  "4_S"  : "https://i.postimg.cc/Vkp51WBt/4.png", 
+  "5_S"  : "https://i.postimg.cc/XYmX3kcj/5.png",   
+  "6_S"  : "https://i.postimg.cc/FH81mVgs/6.png",   
+  "7_S"  : "https://i.postimg.cc/ht6hg1b4/7.png",   
+  "8_S"  : "https://i.postimg.cc/sgq1y49v/8.png",   
+  "9_S"  : "https://i.postimg.cc/NjSLYk7w/9.png",   
+  "10_S" : "https://i.postimg.cc/7ZfbpW7w/10.png",  
+  "J_S"  : "https://i.postimg.cc/6pyTDmRN/J.png",   
+  "Q_S"  : "https://i.postimg.cc/kgBDkp89/Q.png",   
+  "K_S"  : "https://i.postimg.cc/g2nrfTRp/K.png",   
 
-  /* ♥  HEARTS  ─────────────────────────────────── */
-  "A_H"  : "https://i.postimg.cc/VL9qsM67/H_sun_A.png",   /* Ace   of Hearts   */
-  "2_H"  : "https://i.postimg.cc/jd6HqN5m/H_sun_2.png",   /* 2     of Hearts   */
-  "3_H"  : "https://i.postimg.cc/kXNQM84Z/H_sun_3.png",   /* 3     of Hearts   */
-  "4_H"  : "https://i.postimg.cc/hP8L4xjY/H_sun_4.png",   /* 4     of Hearts   */
-  "5_H"  : "https://i.postimg.cc/YqN62g0w/H_sun_5.png",   /* 5     of Hearts   */
-  "6_H"  : "https://i.postimg.cc/CxFjR1ny/H_sun_6.png",   /* 6     of Hearts   */
-  "7_H"  : "https://i.postimg.cc/kgnx24R3/H_sun_7.png",   /* 7     of Hearts   */
-  "8_H"  : "https://i.postimg.cc/W12Md3qj/H_sun_8.png",   /* 8     of Hearts   */
-  "9_H"  : "https://i.postimg.cc/g2YvxJLm/H_sun_9.png",   /* 9     of Hearts   */
-  "10_H" : "https://i.postimg.cc/qvk8NR6J/H_sun_10.png",  /* 10    of Hearts   */
-  "J_H"  : "https://i.postimg.cc/htS9XjQG/H_sun_J.png",   /* Jack  of Hearts   */
-  "Q_H"  : "https://i.postimg.cc/QdXpFtKT/H_sun_q.png",   /* Queen of Hearts   */
-  "K_H"  : "https://i.postimg.cc/3xKgkR0p/H_sun_k.png",   /* King  of Hearts   */
+  
+  "A_H"  : "https://i.postimg.cc/9QGsFWyz/A.png",   
+  "2_H"  : "https://i.postimg.cc/DwqRy210/2.png",   
+  "3_H"  : "https://i.postimg.cc/QdpvxXct/3.png",   
+  "4_H"  : "https://i.postimg.cc/YC1TqpQC/4.png",   
+  "5_H"  : "https://i.postimg.cc/BnWd08Pv/5.png",   
+  "6_H"  : "https://i.postimg.cc/wjKSptRv/6.png",   
+  "7_H"  : "https://i.postimg.cc/t40Lj1nJ/7.png",   
+  "8_H"  : "https://i.postimg.cc/Vky38S0J/8.png",   
+  "9_H"  : "https://i.postimg.cc/rw6vkdRM/9.png",   
+  "10_H" : "https://i.postimg.cc/dVMzY7kz/10.png",  
+  "J_H"  : "https://i.postimg.cc/cLqVSKg2/J.png",   
+  "Q_H"  : "https://i.postimg.cc/W1RQvDFB/Q.png",   
+  "K_H"  : "https://i.postimg.cc/4xCrgK7M/K.png",   
 
-  /* ♦  DIAMONDS  ───────────────────────────────── */
-  "A_D"  : "https://i.postimg.cc/SxNMyvHF/B_moon_1.png",  /* Ace   of Diamonds */
-  "2_D"  : "https://i.postimg.cc/xTPmV2p1/B_moon_2.png",  /* 2     of Diamonds */
-  "3_D"  : "https://i.postimg.cc/8zP610xp/B_moon_3.png",  /* 3     of Diamonds */
-  "4_D"  : "https://i.postimg.cc/tCz6GjvQ/B_moon_4.png",  /* 4     of Diamonds */
-  "5_D"  : "https://i.postimg.cc/65KZP30Y/B_moon_5.png",  /* 5     of Diamonds */
-  "6_D"  : "https://i.postimg.cc/rFT4HmJ0/B_moon_6.png",  /* 6     of Diamonds */
-  "7_D"  : "https://i.postimg.cc/gkph7JDx/B_moon_7.png",  /* 7     of Diamonds */
-  "8_D"  : "https://i.postimg.cc/X7W5PJ8v/B_moon_8.png",  /* 8     of Diamonds */
-  "9_D"  : "https://i.postimg.cc/wxLJFJht/B_moon_9.png",  /* 9     of Diamonds */
-  "10_D" : "https://i.postimg.cc/J0NknV1K/B_moon_10.png", /* 10    of Diamonds */
-  "J_D"  : "https://i.postimg.cc/D0rXZk2B/B_moon_j.png",  /* Jack  of Diamonds */
-  "Q_D"  : "https://i.postimg.cc/3NXvR5K1/B_moon.png",    /* Queen of Diamonds */
-  "K_D"  : "https://i.postimg.cc/7h3268xN/B_moon_K.png",  /* King  of Diamonds */
+  
+  "A_D"  : "https://i.postimg.cc/Kj6vbqFQ/A.png",  
+  "2_D"  : "https://i.postimg.cc/rsBFTncj/2.png",  
+  "3_D"  : "https://i.postimg.cc/fyGTs2ZY/3.png",  
+  "4_D"  : "https://i.postimg.cc/906F28V7/4.png",  
+  "5_D"  : "https://i.postimg.cc/5yYNZdcz/5.png",  
+  "6_D"  : "https://i.postimg.cc/6q25DJsR/6.png",  
+  "7_D"  : "https://i.postimg.cc/PJprBsGW/7.png",  
+  "8_D"  : "https://i.postimg.cc/cCp4W9Zg/8.png",  
+  "9_D"  : "https://i.postimg.cc/Kzs8qcWz/9.png",  
+  "10_D" : "https://i.postimg.cc/XJDYHNPW/10.png", 
+  "J_D"  : "https://i.postimg.cc/4dFxL40R/J.png",  
+  "Q_D"  : "https://i.postimg.cc/V6HkGsh8/Q.png",    
+  "K_D"  : "https://i.postimg.cc/PxF53f7k/K.png",  
 
-  /* ♣  CLUBS  ──────────────────────────────────── */
-  "A_C"  : "https://i.postimg.cc/PxcCrVbj/F_BH_A.png",   /* Ace   of Clubs    */
-  "2_C"  : "https://i.postimg.cc/250qgSVp/F_BH_2.png",   /* 2     of Clubs    */
-  "3_C"  : "https://i.postimg.cc/vm01CZcy/F_BH_3.png",   /* 3     of Clubs    */
-  "4_C"  : "https://i.postimg.cc/cJFKPLrZ/F_BH_4.png",   /* 4     of Clubs    */
-  "5_C"  : "https://i.postimg.cc/bvmG4wsj/F_BH_5.png",   /* 5     of Clubs    */
-  "6_C"  : "https://i.postimg.cc/ydWJKCZR/F_BH_6.png",   /* 6     of Clubs    */
-  "7_C"  : "https://i.postimg.cc/85sFGg6m/F_BH_7.png",   /* 7     of Clubs    */
-  "8_C"  : "https://i.postimg.cc/k4DVCPbs/F_BH_8.png",   /* 8     of Clubs    */
-  "9_C"  : "https://i.postimg.cc/qRgtrH31/F_BH_9.png",   /* 9     of Clubs    */
-  "10_C" : "https://i.postimg.cc/9Mz42H7K/F_BH_10.png",  /* 10    of Clubs    */
-  "J_C"  : "https://i.postimg.cc/bJMZNVxB/F_BH_J.png",   /* Jack  of Clubs    */
-  "Q_C"  : "https://i.postimg.cc/d1XhtN2b/F_BH_Q.png",   /* Queen of Clubs    */
-  "K_C"  : "https://i.postimg.cc/vBj4H27d/F_BH_K.png",   /* King  of Clubs    */
+  
+  "A_C"  : "https://i.postimg.cc/gkpTSCCd/A.png",   
+  "2_C"  : "https://i.postimg.cc/FF36xrnB/2.png",   
+  "3_C"  : "https://i.postimg.cc/NGmnxsPJ/3.png",   
+  "4_C"  : "https://i.postimg.cc/TwW4Ff23/4.png",   
+  "5_C"  : "https://i.postimg.cc/yYKbQMM6/5.png",   
+  "6_C"  : "https://i.postimg.cc/qMGZ9mrc/6.png",   
+  "7_C"  : "https://i.postimg.cc/gkKBfMpq/7.png",   
+  "8_C"  : "https://i.postimg.cc/28xXPHYG/8.png",   
+  "9_C"  : "https://i.postimg.cc/sgVbXkmP/9.png",   
+  "10_C" : "https://i.postimg.cc/4NvrXf6F/10.png",  
+  "J_C"  : "https://i.postimg.cc/qvkWRPws/J.png",   
+  "Q_C"  : "https://i.postimg.cc/3RDcVYrN/Q.png",   
+  "K_C"  : "https://i.postimg.cc/8PdqTpRX/K.png",   
 
 };
 
-/* ┌──────────────────────────────────────────────────┐
-   │  ظهر الكرت — ضع رابط صورة ظهر الكرت هنا        │
-   └──────────────────────────────────────────────────┘ */
 const CARD_BACK_IMAGE = "https://i.postimg.cc/65tFW5mF/الظهر.png";
 
-/* ┌──────────────────────────────────────────────────┐
-   │  صورة أشواك الجليد — ضع رابط صورتك هنا         │
-   │  (ستظهر فوق صورة الكرت بدلاً من 🌵)            │
-   │  اتركها فارغة "" عشان يظهر إيموجي الصبارة       │
-   └──────────────────────────────────────────────────┘ */
-const THORN_OVERLAY_IMAGE = "";  /* مثال: "https://i.postimg.cc/xxx/thorn.png" */
+const THORN_OVERLAY_IMAGE = "";  
 
-/* ┌──────────────────────────────────────────────────┐
-   │  صورة لا وقت (المنبه) — ضع رابط صورتك هنا      │
-   │  (ستظهر فوق صورة الكرت بدلاً من ⏰)             │
-   │  اتركها فارغة "" عشان يظهر إيموجي المنبه        │
-   └──────────────────────────────────────────────────┘ */
-const TIMEBOMB_OVERLAY_IMAGE = "";  /* مثال: "https://i.postimg.cc/xxx/bomb.png" */
+const TIMEBOMB_OVERLAY_IMAGE = "";  
 
-/* ┌──────────────────────────────────────────────────┐
-   │  خلفية الساحة — ضع رابط الصورة هنا             │
-   └──────────────────────────────────────────────────┘ */
-const BOARD_BG_IMAGE = "https://i.postimg.cc/qMYYQQKk/khlfyat-saht-png-2.png";
+const BOARD_BG_IMAGE = "https://i.postimg.cc/7LXPsvYx/ghabh-shryh-png-2.png";
 
-/* ┌──────────────────────────────────────────────────┐
-   │  إعدادات اللعبة — القيم الافتراضية              │
-   └──────────────────────────────────────────────────┘ */
 const CONFIG_DEFAULTS = {
   TURN_SECONDS    : 30,
   PLAYER_HP       : 100,
   MAX_AB_POINTS   : 10,
-  DRAW_GIVES_POINT: true,   // الكرت المسحوب يضيف نقطة قدرة
+  DRAW_GIVES_POINT: true,
 };
-// القيم الحية — تتغيّر من شاشة الإعدادات
+
 let CONFIG = Object.assign({}, CONFIG_DEFAULTS);
 
-// قيم تأثيرات القدرات — قابلة للتعديل
 const AB_VALUES_DEFAULTS = {
   frost_turns    : 3,
   lightning_count: 3,
-  sun_strike_dmg : 15,
-  vitality_pts   : 3,
+  sun_strike_dmg : 20,
+  vitality_pts   : 4,
   all_seeing_heal: 10,
   controller_turns: 3,
   absorb_drain   : 10,
+   not_over            :  3,
   finale_trap_dmg: 30,
-  // ─── قدرات جديدة ───
-  ice_thorns_dmg : 5,   // ضرر كل شوكة
-  ice_thorns_count: 3,  // عدد الشوك
-  split_half     : true, // انشطار — النص
-  timebomb_turns : 3,   // لا وقت — عدد أدوار
-  timebomb_dmg   : 20,  // لا وقت — ضرر
+  ice_thorns_dmg : 5,
+  ice_thorns_count: 3,
+  split_half     : true,
+  timebomb_turns : 3,
+  timebomb_dmg   : 20,
 };
 let AB_VALUES = Object.assign({}, AB_VALUES_DEFAULTS);
 
-/* ══════════════════════════════════════════════════════
-   ⚙️ تحكم في القدرات لكل مود — turns/speed
-   true = متاحة | false = مقفولة
-   ══════════════════════════════════════════════════════ */
 const AB_MODE_CONFIG_DEFAULTS = {
-  turns: {blizzard:true,frost:true,lightning:true,ice_thorns:true,
-          burning_sun:true,sun_strike:true,vitality:true,
-          all_seeing:true,mine:true,controller:true,split:true,
-          absorb:true,not_over:true,finale:true,timebomb:true},
-  speed: {blizzard:true,frost:false,lightning:true,ice_thorns:true,
-          burning_sun:true,sun_strike:true,vitality:true,
-          all_seeing:true,mine:true,controller:false,split:true,
-          absorb:true,not_over:true,finale:true,timebomb:true},
+  turns: {blizzard:true,frost:true,lightning:true,ice_thorns:true,burning_sun:true,sun_strike:true,vitality:true,all_seeing:true,mine:true,controller:true,split:true,absorb:true,not_over:true,finale:true,timebomb:true},
+  speed: {blizzard:true,frost:false,lightning:true,ice_thorns:true,burning_sun:true,sun_strike:true,vitality:true,all_seeing:true,mine:true,controller:false,split:true,absorb:true,not_over:true,finale:true,timebomb:false},
 };
 let AB_MODE_CONFIG = JSON.parse(JSON.stringify(AB_MODE_CONFIG_DEFAULTS));
 
-/* ── Settings helpers ── */
 function setToggle(id, activeIdx){
   const btns=document.getElementById(id).querySelectorAll('button');
   btns.forEach((b,i)=>b.classList.toggle('active',i===activeIdx));
@@ -1421,12 +1291,12 @@ function getNum(id, fallback){
   return isNaN(v)?fallback:v;
 }
 function showSettings(){
-  // تعبئة الحقول بالقيم الحالية
+
   document.getElementById('cfg-hp').value       = CONFIG.PLAYER_HP;
   document.getElementById('cfg-timer').value    = CONFIG.TURN_SECONDS;
   document.getElementById('cfg-maxpts').value   = CONFIG.MAX_AB_POINTS;
   setToggle('cfg-draw-pts-toggle', CONFIG.DRAW_GIVES_POINT?0:1);
-  // قيم تأثيرات القدرات
+
   Object.entries({blizzard:5,frost:5,lightning:7,ice_thorns:7,burning_sun:3,sun_strike:3,vitality:9,all_seeing:4,mine:5,controller:9,split:7,absorb:4,not_over:6,finale:9,timebomb:7}).forEach(([id])=>{
     const el=document.getElementById('ab-cost-'+id);
     if(!el) return;
@@ -1443,7 +1313,7 @@ function showSettings(){
     const el=document.getElementById('ab-val-'+id);
     if(el) el.value=val;
   });
-  // ─── رسم جدول القدرات لكل مود ───
+
   const grid=document.getElementById('sset-modes-grid');
   if(grid){
     grid.innerHTML='';
@@ -1463,7 +1333,7 @@ function showSettings(){
           btn.dataset.mode=mode;btn.dataset.abId=ab.id;
           btn.onclick=function(){
             AB_MODE_CONFIG[this.dataset.mode][this.dataset.abId]=!AB_MODE_CONFIG[this.dataset.mode][this.dataset.abId];
-            showSettings(); // إعادة رسم
+            showSettings();
           };
           abGrid.appendChild(btn);
         });
@@ -1472,20 +1342,15 @@ function showSettings(){
       grid.appendChild(modeSection);
     });
   }
-  if(!_settingsFrom) _settingsFrom='size';
   showScreen('settings-screen');
 }
-let _settingsFrom='size';
-function showSettingsFromOnline(){
-  _settingsFrom='online';
-  showSettings();
-}
+
 function applySettings(){
   CONFIG.PLAYER_HP       = Math.max(1, getNum('cfg-hp',100));
   CONFIG.TURN_SECONDS    = Math.max(5, getNum('cfg-timer',30));
   CONFIG.MAX_AB_POINTS   = Math.max(1, getNum('cfg-maxpts',10));
   CONFIG.DRAW_GIVES_POINT= getToggle('cfg-draw-pts-toggle')===0;
-  // تكاليف القدرات
+
   const abIds=['blizzard','frost','lightning','ice_thorns','burning_sun','sun_strike','vitality','all_seeing','mine','controller','split','absorb','not_over','finale','timebomb'];
   abIds.forEach(id=>{
     const el=document.getElementById('ab-cost-'+id);
@@ -1498,7 +1363,7 @@ function applySettings(){
   });
   AB_VALUES.frost_turns     = Math.max(1,getNum('ab-val-frost',3));
   AB_VALUES.lightning_count = Math.max(1,getNum('ab-val-lightning',3));
-  AB_VALUES.sun_strike_dmg  = Math.max(1,getNum('ab-val-sun_strike',15));
+  AB_VALUES.sun_strike_dmg  = Math.max(1,getNum('ab-val-sun_strike',20));
   AB_VALUES.vitality_pts    = Math.max(1,getNum('ab-val-vitality',3));
   AB_VALUES.all_seeing_heal = Math.max(1,getNum('ab-val-all_seeing',10));
   AB_VALUES.controller_turns= Math.max(1,getNum('ab-val-controller',3));
@@ -1511,20 +1376,14 @@ function applySettings(){
   showNotif('✅ تم حفظ الإعدادات!');
   cancelSettings();
 }
-function cancelSettings(){
-  if(_settingsFrom==='size') showScreen('size-screen');
-  else if(_settingsFrom==='online') showOnline();
-  else showMenu();
-}
+function cancelSettings(){showOnline();}
 
 function exportPlayerVersion(){
-  // نطبّق الإعدادات الحالية أولاً
+
   applySettings();
 
-  // نقرأ الـ HTML الكامل
   let src = document.documentElement.outerHTML;
 
-  // ── استبدال القيم الافتراضية في CONFIG_DEFAULTS ──
   src = src.replace(
     /const CONFIG_DEFAULTS\s*=\s*\{[\s\S]*?\};/,
     `const CONFIG_DEFAULTS = {
@@ -1535,7 +1394,6 @@ function exportPlayerVersion(){
 };`
   );
 
-  // ── استبدال AB_VALUES_DEFAULTS ──
   src = src.replace(
     /const AB_VALUES_DEFAULTS\s*=\s*\{[\s\S]*?\};/,
     `const AB_VALUES_DEFAULTS = {
@@ -1555,7 +1413,6 @@ function exportPlayerVersion(){
 };`
   );
 
-  // ── استبدال AB_MODE_CONFIG_DEFAULTS ──
   const mc = AB_MODE_CONFIG;
   const fmtMode = (mode) => {
     const entries = Object.entries(mc[mode]).map(([k,v])=>`${k}:${v}`).join(',');
@@ -1569,11 +1426,9 @@ function exportPlayerVersion(){
 };`
   );
 
-  // ── استبدال تكاليف القدرات في ABILITY_DEF ──
-  // نبحث عن كل قدرة ونستبدل cost بتاعها
   Object.values(ABILITY_DEF).forEach(suitDef => {
     suitDef.abilities.forEach(ab => {
-      // regex يستهدف id:'blizzard',...cost:5
+
       const escapedId = ab.id.replace(/_/g,'\\_');
       src = src.replace(
         new RegExp(`(id\\s*:\\s*['"]${ab.id}['"][^}]*?cost\\s*:)\\s*\\d+`, 'g'),
@@ -1582,24 +1437,21 @@ function exportPlayerVersion(){
     });
   });
 
-  // ── حذف زر الإعدادات (كل الأزرار التي تحتوي showSettings أو applySettings بما فيها زر الاستخراج) ──
-  // حذف زر الإعدادات من شاشة اختيار الحجم
   src = src.replace(
     /<button[^>]*onclick="[^"]*showSettings[^"]*"[^>]*>[\s\S]*?<\/button>/g,
     ''
   );
-  // حذف زر الإعدادات من شاشة الأونلاين
+
   src = src.replace(
     /<div[^>]*id="online-settings-row"[^>]*>[\s\S]*?<\/div>/g,
     '<div id="online-settings-row" style="display:none;"></div>'
   );
-  // حذف شاشة الإعدادات كاملة
+
   src = src.replace(
     /<div[^>]*id="settings-screen"[^>]*>[\s\S]*?<\/div>\s*(?=<!-- ══)/,
     ''
   );
 
-  // ── تنزيل الملف ──
   const blob = new Blob([src], {type:'text/html;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1611,15 +1463,8 @@ function exportPlayerVersion(){
   showNotif('📦 تم تصدير نسخة اللاعبين!');
 }
 
-/* ═════════════════════════════════════════════════════ */
 const ABLY_KEY = "UcDcBw.YJJl6g:LDwkET05nlae7VeirAz44uL8hE16cLZ8MyrSFwCnolk";
 
-/* ══════════════════════════════════════════════════════
-   ABILITY DEFINITIONS — النظام الجديد
-   كل كرت ينزله اللاعب يضيف نقطة واحدة للـ suit بتاعه
-   النقاط بتتراكم لحد MAX_AB_POINTS ثم تتوقف
-   اللاعب يضغط على الـ badge عشان يفتح الموديل ويختار
-   ══════════════════════════════════════════════════════ */
 const ABILITY_DEF = {
   S: {
     suit:'❄️', name:'الأعاصير الثلجية', color:'#a8c4f0',
@@ -1628,25 +1473,25 @@ const ABILITY_DEF = {
         id:'blizzard', name:'إعصار', ico:'🌪️',
         desc:'يغيّر كل كروت الصف الأمامي عشوائياً — اختر نفسك أو الخصم',
         cost:5, modesAllowed:['turns','speed'],
-        img:'https://i.postimg.cc/pXm6NSdn/اعصار.jpg',
+        img:'https://i.postimg.cc/Fsc7GrCp/اعصار.png',
       },
       {
         id:'frost', name:'صقيع', ico:'🧊',
         desc:'يجمد 2 كروت عشوائية للخصم لـ 3 أدوار',
         cost:5, modesAllowed:['turns'],
-        img:'',
+        img:'https://i.postimg.cc/3xTWcszp/صقيع.png',
       },
       {
         id:'lightning', name:'برق', ico:'⚡',
         desc:'يدمر 3 كروت عشوائية من صفك الأمامي',
         cost:7, modesAllowed:['turns','speed'],
-        img:'',
+        img:'https://i.postimg.cc/65RyzWbf/برق.png',
       },
       {
         id:'ice_thorns', name:'أشواك الجليد', ico:'🌵❄️',
         desc:'ضع أشواكاً على 3 كروت مكشوفة للخصم — لو نزّلها يخسر 5 HP لكل كرت',
-        cost:7, modesAllowed:['turns','speed'],
-        img:'',
+        cost:3, modesAllowed:['turns','speed'],
+        img:'https://i.postimg.cc/g2WrTC18/اشواك_الجليد.png',
       },
     ]
   },
@@ -1657,19 +1502,19 @@ const ABILITY_DEF = {
         id:'burning_sun', name:'شمس حارقة', ico:'🔥',
         desc:'احرق بطاقة من اختيارك (اختر العمود)',
         cost:3,
-        img:'',
+        img:'https://i.postimg.cc/DfRSqJ60/شمس_حارقه.png',
       },
       {
         id:'sun_strike', name:'ضربة شمس', ico:'☄️',
-        desc:'يخسر الخصم 15 نقطة حياة',
-        cost:3,
-        img:'',
+        desc:'يخسر الخصم 20 نقطة حياة',
+        cost:5,
+        img:'https://i.postimg.cc/GhYHzLg4/ضربة_شمس.png',
       },
       {
         id:'vitality', name:'نشاط', ico:'✨',
-        desc:'اكسب 3 نقاط قدرة لأي suit من اختيارك',
+        desc:'اكسب 3 نقاط قدرة لأي عنصر من اختيارك',
         cost:9,
-        img:'',
+        img:'https://i.postimg.cc/156fMm7K/نشاط.png',
       },
     ]
   },
@@ -1680,25 +1525,25 @@ const ABILITY_DEF = {
         id:'all_seeing', name:'أرى كل شيء', ico:'👁️',
         desc:'+10 HP لك + كرت إضافي على أرض الخصم',
         cost:4, modesAllowed:['turns','speed'],
-        img:'تجربه 1.png',
+        img:'https://i.postimg.cc/sfbMpQmV/اري_كل_شيء.png ',
       },
       {
         id:'mine', name:'هذه ملكي', ico:'🔄',
         desc:'بادِل بطاقة من أرضك مع بطاقة من أرض الخصم',
         cost:5, modesAllowed:['turns','speed'],
-        img:'تجربه 2.png',
+        img:'https://i.postimg.cc/NGKy971p/هذه_ملكي.png',
       },
       {
         id:'controller', name:'المتحكم', ico:'🔒',
         desc:'يمنع الخصم من اللعب لـ 3 أدوار متتالية',
         cost:9, modesAllowed:['turns'],
-        img:'',
+        img:'https://i.postimg.cc/66F8d2cQ/متحكم.png',
       },
       {
         id:'split', name:'انشطار', ico:'⚡🌙',
         desc:'في حالة وجود مكان فارغ اختر عمود و اقسمه نصفين',
-        cost:7, modesAllowed:['turns','speed'],
-        img:'',
+        cost:5, modesAllowed:['turns','speed'],
+        img:'https://i.postimg.cc/8kx7hJ48/انشطار.png',
       },
     ]
   },
@@ -1708,32 +1553,31 @@ const ABILITY_DEF = {
       {
         id:'absorb', name:'يمتص كل شيء', ico:'🌑',
         desc:'يخصم 10 من الخصم ويضيفها لك',
-        cost:4, modesAllowed:['turns','speed'],
-        img:'',
+        cost:5, modesAllowed:['turns','speed'],
+        img:'https://i.postimg.cc/44YK7bz1/يمتص_كل_شيء.png',
       },
       {
         id:'not_over', name:'لم ننتهي بعد', ico:'➕',
         desc:'أضف بطاقتين جديدتين إلى أرض الخصم',
-        cost:6, modesAllowed:['turns','speed'],
-        img:'',
+        cost:7, modesAllowed:['turns','speed'],
+        img:'https://i.postimg.cc/NGKy9714/لم_ننتهي_بعد.png',
       },
       {
         id:'finale', name:'النهاية', ico:'💣',
         desc:'فجّر 3 بطاقات من أرضك أو ازرع فخاً في كروت الخصم المخفية',
         cost:9, modesAllowed:['turns','speed'],
-        img:'https://i.postimg.cc/YC31RJG1/alnhayh.jpg',
+        img:'https://i.postimg.cc/8k7FJBh4/النهايه.png',
       },
       {
         id:'timebomb', name:'لا وقت', ico:'⏰',
         desc:'ضع قنبلة موقوتة على كرت مكشوف للخصم — تنفجر بعد 3 أدوار بـ 20 HP إلا لو أزالها',
-        cost:7, modesAllowed:['turns','speed'],
-        img:'',
+        cost:3, modesAllowed:['turns','speed'],
+        img:'https://i.postimg.cc/HWrJc4Q5/مسالة_وقت.png',
       },
     ]
   },
 };
 
-/* ── Init ── */
 (function(){
   if(BOARD_BG_IMAGE&&BOARD_BG_IMAGE.trim())
     document.getElementById('game-bg-el').style.backgroundImage=`url('${BOARD_BG_IMAGE.trim()}')`;
@@ -1751,7 +1595,6 @@ const ABILITY_DEF = {
   });
 })();
 
-/* ── Card utils ── */
 const SUITS=['♠','♥','♦','♣'],SNAMES=['spades','hearts','diamonds','clubs'],
       SCODES=['S','H','D','C'],VALS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'],
       VNUMS={A:1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13};
@@ -1762,7 +1605,6 @@ function cardImg(c){const k=imgKey(c),v=CARD_IMAGES[k];if(!v||typeof v!=='string
 function backImg(){const v=CARD_BACK_IMAGE;return(v&&v.trim().length>0)?v.trim():null;}
 function canPlay(h,t){const d=Math.abs(h.num-t.num);return d===1||d===12;}
 
-/* ── Player factory ── */
 function mkPlayer(name,id,preStacks){
   const cols=G.boardCols||8;
   const cardsPerCol=G.cardsPerCol||10;
@@ -1780,8 +1622,8 @@ function mkPlayer(name,id,preStacks){
     abilityPoints:{S:0,H:0,D:0,C:0},
     frozenSlots:{},
     trappedSlots:{},
-    thornedSlots:{},    // {stackIdx: true} — أشواك الجليد
-    timebombSlots:{},   // {stackIdx: turnsLeft} — قنابل موقوتة
+    thornedSlots:{},
+    timebombSlots:{},
     bonusCards:0,
     stunTurns:0,
   };
@@ -1789,11 +1631,9 @@ function mkPlayer(name,id,preStacks){
 function totalCards(p){return p.stacks.reduce((a,s)=>a+s.length,0);}
 function topOf(p,si){const s=p.stacks[si];return s.length?s[s.length-1]:null;}
 
-/* ── Global ── */
 let G={};
 let timerInterval=null, timerLeft=0;
 
-/* ── Screens ── */
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function showMenu(){stopTimer();stopOnline();document.body.classList.remove('mode-small');showScreen('menu-screen');}
 function showOnline(){
@@ -1824,50 +1664,24 @@ function backToOnlineChoice(){
   document.getElementById('st-join').className='status';
   document.getElementById('codebox').classList.remove('on');
 }
-function toggleSub(id){const el=document.getElementById(id),was=el.classList.contains('open');document.querySelectorAll('.submenu').forEach(s=>s.classList.remove('open'));if(!was)el.classList.add('open');}
 
-/* ── Size selection screen ── */
-let _pendingPMode=null,_pendingGMode=null,_pendingOnlineData=null,_selectedSize='large';
-function goSizeScreen(pMode,gMode,onlineData=null){
-  _pendingPMode=pMode; _pendingGMode=gMode; _pendingOnlineData=onlineData;
-  _selectedSize='large';
-  document.getElementById('size-opt-large').classList.add('selected');
-  document.getElementById('size-opt-small').classList.remove('selected');
-  showScreen('size-screen');
-}
-function selectSize(sz){
-  _selectedSize=sz;
-  document.getElementById('size-opt-large').classList.toggle('selected',sz==='large');
-  document.getElementById('size-opt-small').classList.toggle('selected',sz==='small');
-}
+let _selectedSize='large';
 function onlineSelectSize(sz){
   _selectedSize=sz;
   document.getElementById('online-size-large').classList.toggle('selected',sz==='large');
   document.getElementById('online-size-small').classList.toggle('selected',sz==='small');
-}
-function confirmSizeAndStart(){
-  const cols=_selectedSize==='small'?6:8;
-  const perCol=_selectedSize==='small'?8:10;
-  document.body.classList.toggle('mode-small',_selectedSize==='small');
-  startGame(_pendingPMode,_pendingGMode,_pendingOnlineData,cols,perCol);
-}
-function cancelSizeScreen(){
-  if(_pendingPMode==='online'){showOnline();}else{showMenu();}
 }
 function codeDigitInput(idx){const el=document.getElementById('cd'+idx);el.value=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(-1);if(el.value&&idx<3)document.getElementById('cd'+(idx+1)).focus();}
 function codeDigitKey(idx,e){if(e.key==='Backspace'&&!document.getElementById('cd'+idx).value&&idx>0)document.getElementById('cd'+(idx-1)).focus();if(e.key==='Enter')joinRoom();}
 function getCodeFromDigits(){return[0,1,2,3].map(i=>document.getElementById('cd'+i).value).join('');}
 function copyCode(){const code=document.getElementById('code-val').textContent;if(code==='----')return;navigator.clipboard&&navigator.clipboard.writeText(code).then(()=>{const el=document.querySelector('.code-copy-hint');el.textContent='✅ تم النسخ!';setTimeout(()=>el.textContent='اضغط على الكود لنسخه',2000);});}
 
-/* ══════════════════════════════════════════════════
-   TIMER
-   ══════════════════════════════════════════════════ */
 const CIRC=69.1;
-let timerProcessing=false; // منع double-fire بين التايمر والضغط
+let timerProcessing=false;
 
 function startTimer(pIdx){
   stopTimer();
-  if(G.gMode!=='turns'||G.players.length===1) return;
+  if(G.gMode!=='turns') return;
   timerLeft=CONFIG.TURN_SECONDS;
   timerProcessing=false;
   updateTimerUI();
@@ -1894,6 +1708,7 @@ function updateTimerUI(){
   if(visCircle) visCircle.style.strokeDashoffset=CIRC_VIS*(1-pct);
   if(visNum) visNum.textContent=Math.max(0,timerLeft);
   if(visWrap) visWrap.classList.toggle('urgent',timerLeft<=8);
+  if(timerLeft>0&&timerLeft<=8) SFX.tick();
 }
 function onTimerExpire(pIdx){
   stopTimer();
@@ -1902,28 +1717,21 @@ function onTimerExpire(pIdx){
   showNotif('⏰ انتهى الوقت! انتقل الدور');
   const p=G.players[pIdx];
   p.hand=null;
-  const nextTurnIdx=G.players.length>1 ? 1-pIdx : pIdx;
+  const nextTurnIdx=1-pIdx;
   const nextCard=randCard();
   if(G.pMode==='online') syncDeck(pIdx, nextTurnIdx, nextCard);
   doNextTurn(nextTurnIdx, nextCard);
 }
 
-/* ══════════════════════════════════════════════════
-   START GAME
-   ══════════════════════════════════════════════════ */
 function startGame(pMode,gMode,onlineData=null,boardCols=8,cardsPerCol=10){
   G={pMode,gMode,players:[],turn:0,started:Date.now(),ended:false,
      myIdx:onlineData?onlineData.myIdx:0,online:onlineData,
      boardCols,cardsPerCol};
-  if(pMode==='solo'){
-    G.players=[mkPlayer('أنت',0)];
-  } else {
-    const n1=onlineData?onlineData.n1:'لاعب 1';
-    const n2=onlineData?onlineData.n2:'لاعب 2';
-    const s1=onlineData&&onlineData.stacks1?onlineData.stacks1:null;
-    const s2=onlineData&&onlineData.stacks2?onlineData.stacks2:null;
-    G.players=[mkPlayer(n1,0,s1),mkPlayer(n2,1,s2)];
-  }
+  const n1=onlineData?onlineData.n1:'لاعب 1';
+  const n2=onlineData?onlineData.n2:'لاعب 2';
+  const s1=onlineData&&onlineData.stacks1?onlineData.stacks1:null;
+  const s2=onlineData&&onlineData.stacks2?onlineData.stacks2:null;
+  G.players=[mkPlayer(n1,0,s1),mkPlayer(n2,1,s2)];
   if(gMode==='turns'){
     G.players[0].hand=randCard();G.players[0].drawCount++;
     startTimer(0);
@@ -1935,44 +1743,25 @@ function startGame(pMode,gMode,onlineData=null,boardCols=8,cardsPerCol=10){
   const b=document.getElementById('mbadge');
   b.textContent=gMode==='turns'?'🔄 أدوار':'⚡ سرعة';
   b.className='mbadge '+gMode;
-  // إخفاء التايمر في وضع السرعة
+
   document.getElementById('timer-wrap').style.display=gMode==='turns'?'flex':'none';
   const vtw=document.getElementById('timer-vis-wrap');
   if(vtw) vtw.style.display=gMode==='turns'?'flex':'none';
   render();
 }
 
-/* ══════════════════════════════════════════════════
-   RENDER
-   ══════════════════════════════════════════════════ */
 function render(){
-  // إزالة شريط الإلغاء القديم
+
   const oldBar=document.getElementById('bpm-cancel-bar');
   if(oldBar) oldBar.remove();
 
-  if(G.players.length===1){
-    document.getElementById('half-top').innerHTML='';
-    document.getElementById('half-top').classList.remove('myturn','stunned');
-    renderHalf('half-bot',0);
-    const hb=document.getElementById('half-bot');
-    hb.classList.toggle('myturn',G.gMode==='turns');
-    hb.classList.toggle('stunned',G.players[0].stunTurns>0);
-  } else if(G.pMode==='local'){
-    renderHalf('half-top',1);renderHalf('half-bot',0);
-    document.getElementById('half-top').classList.toggle('myturn',G.turn===1);
-    document.getElementById('half-top').classList.toggle('stunned',G.players[1].stunTurns>0);
-    document.getElementById('half-bot').classList.toggle('myturn',G.turn===0);
-    document.getElementById('half-bot').classList.toggle('stunned',G.players[0].stunTurns>0);
-  } else {
-    const opp=1-G.myIdx;
-    renderHalf('half-top',opp);renderHalf('half-bot',G.myIdx);
-    document.getElementById('half-top').classList.toggle('myturn',G.turn===opp);
-    document.getElementById('half-top').classList.toggle('stunned',G.players[opp].stunTurns>0);
-    document.getElementById('half-bot').classList.toggle('myturn',G.turn===G.myIdx);
-    document.getElementById('half-bot').classList.toggle('stunned',G.players[G.myIdx].stunTurns>0);
-  }
+  const opp=1-G.myIdx;
+  renderHalf('half-top',opp);renderHalf('half-bot',G.myIdx);
+  document.getElementById('half-top').classList.toggle('myturn',G.turn===opp);
+  document.getElementById('half-top').classList.toggle('stunned',G.players[opp].stunTurns>0);
+  document.getElementById('half-bot').classList.toggle('myturn',G.turn===G.myIdx);
+  document.getElementById('half-bot').classList.toggle('stunned',G.players[G.myIdx].stunTurns>0);
 
-  // شريط إلغاء board pick mode
   if(_boardPickMode){
     const bar=document.createElement('div');
     bar.id='bpm-cancel-bar';
@@ -1990,20 +1779,16 @@ function renderHalf(halfId,pIdx){
   const isMyTurn=G.gMode==='turns'&&G.turn===pIdx;
   const interact=canInteract(pIdx);
 
-  // ── Info bar ──
   const info=document.createElement('div');
   info.className='pinfo';
 
-  // HP color
   const hpPct=Math.max(0,p.hp/p.maxHp*100);
   const hpColor=hpPct>50?'#4ade80':hpPct>25?'#fbbf24':'#f87171';
   const hpTextColor=hpPct>50?'#4ade80':hpPct>25?'#fbbf24':'#f87171';
 
-  // Ability point badges — قابلة للضغط
   const suitProgEl=document.createElement('div');
   suitProgEl.className='suit-prog';
   const maxPts=CONFIG.MAX_AB_POINTS;
-  const myInteract=canInteract(pIdx);
   Object.entries(ABILITY_DEF).forEach(([sc,def])=>{
     const pts=p.abilityPoints[sc]||0;
     const isEmpty=pts===0;
@@ -2012,17 +1797,14 @@ function renderHalf(halfId,pIdx){
     badge.className=`sp-badge sp-${sc.toLowerCase()}${isMaxed?' maxed':''}${isEmpty?' empty':''}`;
     badge.title=`${def.name}: ${pts}/${maxPts} — اضغط لفتح القدرات`;
     badge.innerHTML=`${def.suit}<b>${pts}</b>`;
-    if(!isEmpty&&myInteract){
+    if(!isEmpty&&interact){
       badge.onclick=(e)=>{e.stopPropagation();openAbilityModal(pIdx,sc);};
     }
     suitProgEl.appendChild(badge);
   });
 
-  // stun indicator
   const stunEl=p.stunTurns>0?`<span style="font-size:10px;color:#c084fc;margin-right:4px;">😵×${p.stunTurns}</span>`:'';
 
-  // اسم اللاعب فقط في pinfo
-  // اللاعب 0 (half-bot): اسمه أقصى يسار — اللاعب 1 (half-top): اسمه أقصى يمين
   const nameAlign = halfId==='half-bot' ? 'margin-right:auto;margin-left:0;' : 'margin-left:auto;margin-right:0;';
   info.innerHTML=`
     <div class="pname" style="${nameAlign}">
@@ -2031,17 +1813,16 @@ function renderHalf(halfId,pIdx){
     </div>`;
   half.appendChild(info);
 
-  // ── وضع القدرات + HP في جانبي الشريط الأوسط ──
   const isBot = halfId==='half-bot';
   const sideId = isBot ? 'divider-side-left' : 'divider-side-right';
   const sideEl = document.getElementById(sideId);
   if(sideEl){
     sideEl.innerHTML='';
-    // container عمودي: badges فوق، HP تحت
+
     const sideWrap=document.createElement('div');
     sideWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:3px;';
     sideWrap.appendChild(suitProgEl);
-    // HP bar
+
     const hpWrap=document.createElement('div');
     hpWrap.style.cssText='display:flex;align-items:center;gap:3px;';
     hpWrap.innerHTML=`<div style="width:110px;height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${hpPct}%;background:${hpColor};border-radius:3px;transition:width .4s;"></div></div><span style="font-size:9px;font-weight:700;color:${hpTextColor};">${p.hp}</span>`;
@@ -2049,12 +1830,12 @@ function renderHalf(halfId,pIdx){
     sideEl.appendChild(sideWrap);
   }
 
-  /* ════ 🎯 منطقة التعديل — قراءة متغيرات الحجم من body عشان mode-small تشتغل صح ════ */
+  
   const cs=getComputedStyle(document.body);
   const cw=parseInt(cs.getPropertyValue('--cw'))||52;
   const ch=parseInt(cs.getPropertyValue('--ch'))||73;
   const pk=parseInt(cs.getPropertyValue('--peek'))||13;
-  /* ═══════════════════════════════════════════════════════════════════════════════════ */
+  
 
   const row=document.createElement('div');
   row.className='stacks-row';
@@ -2067,7 +1848,7 @@ function renderHalf(halfId,pIdx){
     const isFrozen=frozenTurns>0;
     const maxPeek=(G.boardCols||8)<=6?5:9;
     const nPeek=Math.min(Math.max(0,cnt-1),maxPeek);
-    // ارتفاع ثابت دايماً بأقصى قدر (مش بيتغير لما تقل الكروت)
+
     const maxPileH=ch+maxPeek*pk;
     const pileH=maxPileH;
 
@@ -2082,7 +1863,7 @@ function renderHalf(halfId,pIdx){
     pile.className='stack-pile';
     pile.style.height=pileH+'px';
     pile.style.width=cw+'px';
-    // ارتفاع الكروت الفعلي (للوميض)
+
     const actualCardsH = cnt===0 ? 0 : ch + Math.min(cnt-1,maxPeek)*pk;
     pile.dataset.cardsH = actualCardsH;
     pile.dataset.pileH  = maxPileH;
@@ -2093,7 +1874,7 @@ function renderHalf(halfId,pIdx){
       tc.style.top=(maxPileH-ch)+'px';tc.style.zIndex='20';
       tc.textContent='✓';pile.appendChild(tc);
     } else {
-      // الكرت الأخير face-up — دايماً في القاع
+
       const topOffset=maxPileH-ch;
       const img=cardImg(top);
       const isPlayableTurn=G.gMode==='speed'?true:isMyTurn;
@@ -2101,7 +1882,6 @@ function renderHalf(halfId,pIdx){
       const canPlayNow=interact&&isPlayableTurn&&p.hand&&canPlay(p.hand,top)&&!isFrozen&&!isStunned;
       const canPlayFrozen=interact&&isPlayableTurn&&p.hand&&canPlay(p.hand,top)&&isFrozen&&!isStunned;
 
-      // Board pick mode
       const bpm=_boardPickMode;
       const isBPMSelf = bpm&&(bpm.mode==='burning_sun_pick'||bpm.mode==='mine_pick_self'||bpm.mode==='finale_pick'||bpm.mode==='split_pick_self')&&pIdx===bpm.pIdx;
       const isBPMOpp  = bpm&&(bpm.mode==='mine_pick_opp')&&pIdx!==(bpm.pIdx);
@@ -2119,14 +1899,14 @@ function renderHalf(halfId,pIdx){
       if(isTimebomb) cls+=' timebomb';
       tc.className=cls;
       tc.style.top=topOffset+'px';tc.style.zIndex=String(nPeek+2);
-      if(img) tc.style.backgroundImage=`url('${img}')`;tc.style.backgroundSize='100% 100%';   // 👈 هنا
-         tc.style.backgroundPosition='center';  // 👈 هنا
-         tc.style.backgroundRepeat='no-repeat'; // 👈 هنا
+      if(img) tc.style.backgroundImage=`url('${img}')`;tc.style.backgroundSize='100% 100%';
+         tc.style.backgroundPosition='center';
+         tc.style.backgroundRepeat='no-repeat';
       tc.innerHTML=`<div class="card-inner">
         <div class="ci-tl"><span class="ci-val">${top.val}</span><span class="ci-ssm">${top.suit}</span></div>
         <span class="ci-slg">${top.suit}</span>
         <div class="ci-br"><span class="ci-val">${top.val}</span><span class="ci-ssm">${top.suit}</span></div>
-      </div>${isFrozen?`<span class="freeze-badge">${frozenTurns}</span>`:''}${isTimebomb?`<span class="timebomb-count">⏰${p.timebombSlots[si]}</span>${TIMEBOMB_OVERLAY_IMAGE?`<img class="timebomb-overlay-img" src="${TIMEBOMB_OVERLAY_IMAGE}" alt="">`:''}`:''}${isThorned?`${THORN_OVERLAY_IMAGE?`<img class="thorn-overlay-img" src="${THORN_OVERLAY_IMAGE}" alt="">`:''}`:''}`;      if(isBPMTarget){
+      </div>${isFrozen?`<span class="freeze-badge">${frozenTurns}</span>`:''}${isTimebomb?`<span class="timebomb-count">⏰${p.timebombSlots[si]}</span>`:''}`;      if(isBPMTarget){
         const csi=si,cpIdx=pIdx;
         tc.onclick=(e)=>{e.stopPropagation();onBoardPickClick(cpIdx,csi);};
       } else if(canPlayNow){
@@ -2136,7 +1916,6 @@ function renderHalf(halfId,pIdx){
       }
       pile.appendChild(tc);
 
-      // الكروت المتراكمة — تنزل من القاع للأعلى
       const back=backImg();
       const isTrapped=p.trappedSlots&&p.trappedSlots[si];
       for(let d=0;d<nPeek;d++){
@@ -2144,7 +1923,7 @@ function renderHalf(halfId,pIdx){
         dc.style.top=(topOffset-(nPeek-d)*pk)+'px';dc.style.zIndex=String(d+1);
         let dcCls='pile-card-down';
         if(isFrozen) dcCls+=' frozen';
-        // الفخ يظهر فقط للاعب نفسه (مش للخصم)
+
         const showTrap=isTrapped&&canInteract(pIdx)&&d===0;
         if(showTrap) dcCls+=' trapped';
         if(canPlayNow){dcCls+=' pile-card-clickable';dc.style.cursor='pointer';const csi=si;dc.onclick=()=>playCard(pIdx,csi,false);}
@@ -2163,12 +1942,9 @@ function renderHalf(halfId,pIdx){
   }
   half.appendChild(row);
 
-  // ── Hand + Deck ──
   const handArea=document.createElement('div');
   handArea.className='hand-area';
-  // الـ deck:
-  // - وضع السرعة: كل لاعب يقدر يضغطه (بشرط canInteract)
-  // - وضع الأدوار: بس اللاعب الذي دوره الحالي
+
   const deckOk = interact && (G.gMode==='speed' ? true : isMyTurn);
   const deck=document.createElement('div');
   deck.className='deck-pile'+(deckOk?'':' deck-off');
@@ -2180,8 +1956,7 @@ function renderHalf(halfId,pIdx){
 
   const handEl=document.createElement('div');
   if(p.hand){
-    const isOpponentInOnline=G.pMode==='online'&&pIdx!==G.myIdx;
-    if(isOpponentInOnline){
+    if(pIdx!==G.myIdx){
       handEl.className='hand-card';
       handEl.style.cssText=`width:var(--hand-w);height:var(--hand-h);border-radius:9px;background:linear-gradient(155deg,#1a2a44,#0c1828);border:2.5px solid rgba(255,215,0,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;overflow:hidden;`;
       const bkh=backImg();
@@ -2205,7 +1980,6 @@ function renderHalf(halfId,pIdx){
   handArea.appendChild(handEl);
   half.appendChild(handArea);
 
-  // ── تأثير بصري دائم للاعب المقيّد ──
   if(p.stunTurns>0){
     half.style.position='relative';
     const sOverlay=document.createElement('div');
@@ -2224,11 +1998,6 @@ function canInteract(pIdx){
   return true;
 }
 
-function isPlayerStunned(pIdx){
-  return G.players[pIdx]&&G.players[pIdx].stunTurns>0;
-}
-
-/* ════ 🎯 منطقة التعديل — تأثير بصري: وميض العمود + جزيئات ════ */
 function spawnParticles(suitName){
   const colors={S:'#a8c4f0',H:'#f87171',D:'#fbbf24',C:'#4ade80'};
   const sc=(suitName||'').toUpperCase();
@@ -2257,7 +2026,7 @@ function spawnParticles(suitName){
 
 function animCardPlay(halfId, si){
   try{
-    // تأثير الجزيئات
+
     const half=document.getElementById(halfId);
     if(half){
       const topCard=half.querySelectorAll('.stack-col')[si]?.querySelector('.pile-card-up');
@@ -2268,7 +2037,7 @@ function animCardPlay(halfId, si){
         spawnParticles(sn);
       }
     }
-    // وميض على قد الكروت الموجودة بس — overlay مؤقت
+
     setTimeout(()=>{
       const h=document.getElementById(halfId);
       if(!h) return;
@@ -2279,7 +2048,7 @@ function animCardPlay(halfId, si){
       const cardsH=parseInt(pileEl.dataset.cardsH)||0;
       const pileH=parseInt(pileEl.dataset.pileH)||pileEl.offsetHeight;
       if(cardsH<=0) return;
-      // نضع overlay بارتفاع الكروت الفعلي في أسفل الـ pile
+
       const flash=document.createElement('div');
       flash.style.cssText=`
         position:absolute;
@@ -2296,9 +2065,7 @@ function animCardPlay(halfId, si){
     },0);
   }catch(e){}
 }
-/* ══════════════════════════════════════════════════════════════════ */
 
-/* ── تأثير بصري: كرت يتدمر من القدرات ── */
 function animCardDestroy(halfId, si, cb){
   try{
     const half=document.getElementById(halfId);
@@ -2315,7 +2082,6 @@ function animCardDestroy(halfId, si, cb){
   if(cb)cb();
 }
 
-/* ── تأثير تدمير لمجموعة كروت ── */
 function animDestroyMulti(halfId, siList, cb){
   if(!siList||siList.length===0){if(cb)cb();return;}
   let done=0;
@@ -2326,15 +2092,12 @@ function animDestroyMulti(halfId, siList, cb){
   });
 }
 
-/* ══════════════════════════════════════════════════
-   CORE GAME LOGIC
-   ══════════════════════════════════════════════════ */
 function playCard(pIdx,si,isFrozenPlay){
   if(G.ended) return;
   const p=G.players[pIdx];
   if(!p.hand) return;
   if(G.gMode==='turns'&&G.turn!==pIdx) return;
-  // مقيّد؟
+
   if(p.stunTurns>0){showNotif('😵 أنت مقيّد — لا تستطيع اللعب!');return;}
   const top=topOf(p,si);
   if(!top||!canPlay(p.hand,top)) return;
@@ -2356,7 +2119,6 @@ function playCard(pIdx,si,isFrozenPlay){
   p.hand=top;
   p.removed++;
 
-  // ── أشواك الجليد: لو الكرت كان شائكاً يخسر HP ──
   if(p.thornedSlots&&p.thornedSlots[si]&&!isFrozenPlay){
     delete p.thornedSlots[si];
     const thornDmg=AB_VALUES.ice_thorns_dmg||5;
@@ -2366,23 +2128,18 @@ function playCard(pIdx,si,isFrozenPlay){
     if(checkHPWin()) return;
   }
 
-  // ── إضافة نقطة قدرة للـ suit المنزّل ──
   const maxPts=CONFIG.MAX_AB_POINTS;
   if((p.abilityPoints[top.sc]||0)<maxPts){
     p.abilityPoints[top.sc]=(p.abilityPoints[top.sc]||0)+1;
   }
 
-  // ── فحص الفخ: إذا الكرت المنزّل كان تحته فخ ──
-  // (الكرت المنزّل هو top وكان في الصف الأمامي — الفخ على الكروت المخفية تحته)
-  // نتحقق: هل الـ stack بعد pop فيه كرت والذي يبقى في top جديد هو محفوظ كفخ؟
-  // القنبلة الموقوتة: لو اللاعب نزّل الكرت بنفسه تُزال بدون ضرر
   if(p.timebombSlots&&p.timebombSlots[si]){
     delete p.timebombSlots[si];
     showNotif('⏰ أزلت القنبلة الموقوتة في الوقت المناسب!');
   }
 
   if(p.trappedSlots&&p.trappedSlots[si]){
-    // الفخ انفجر!
+
     delete p.trappedSlots[si];
     const trapDmg=AB_VALUES.finale_trap_dmg||30;
     p.hp=Math.max(0,p.hp-trapDmg);
@@ -2391,7 +2148,7 @@ function playCard(pIdx,si,isFrozenPlay){
     if(checkHPWin()) return;
   }
 
-  if(G.gMode==='speed'&&G.players.length>1){
+  if(G.gMode==='speed'){
     const opp=1-pIdx,dmg=top.num;
     G.players[opp].hp=Math.max(0,G.players[opp].hp-dmg);
     showDmg(`-${dmg}💔`,'#f87171');
@@ -2401,28 +2158,19 @@ function playCard(pIdx,si,isFrozenPlay){
   if(G.pMode==='online') syncMove(pIdx,si,top);
   if(totalCards(p)===0){endGame(pIdx,'cards');return;}
 
-  // تأثير بصري: الكرت ينزل — وميض في نصف اللاعب اللي لعب فقط
-  // في الأونلاين: halfId يتحدد حسب منظور اللاعب الحالي (myIdx)
-  const halfId = (G.pMode==='online') ? (pIdx===G.myIdx?'half-bot':'half-top') : (pIdx===0?'half-bot':'half-top');
+  const halfId = halfIdOf(pIdx);
+  SFX.play();
   animCardPlay(halfId,si);
   render();
 }
 
-/* ══════════════════════════════════════════════════
-   ABILITY SYSTEM — النظام الجديد
-   ══════════════════════════════════════════════════ */
-
-/* المتغيرات المؤقتة للـ modals */
 let _abilityPIdx=null, _abilitySC=null;
-let _swapStep=0, _swapMyCard=null; // لقدرة "هذه ملكي"
+let _swapStep=0, _swapMyCard=null;
 let _pendingAbilityId=null;
-
-// القدرات المرتبطة بالأدوار — مقفولة في مود السرعة
-const TURNS_ONLY_ABILITIES = new Set(['frost','controller']);
 
 function openAbilityModal(pIdx,sc){
   if(!canInteract(pIdx)) return;
-  if(G.gMode==='turns' && G.players.length>1 && G.turn!==pIdx){
+  if(G.gMode==='turns' && G.turn!==pIdx){
     showNotif('⏳ القدرات متاحة في دورك فقط!');
     return;
   }
@@ -2436,14 +2184,12 @@ function openAbilityModal(pIdx,sc){
   document.getElementById('ab-suit-icon').style.color=def.color;
   document.getElementById('ab-title').textContent=def.name;
   document.getElementById('ab-sub').textContent=`${pts} / ${maxPts} نقطة متاحة`;
-  document.getElementById('ab-pts-val').textContent=pts;
-  document.getElementById('ab-pts-max').textContent=`/ ${maxPts}`;
 
   const grid=document.getElementById('ab-cards-grid');
   grid.innerHTML='';
   def.abilities.forEach(ab=>{
     const modeEnabled=AB_MODE_CONFIG[G.gMode]?AB_MODE_CONFIG[G.gMode][ab.id]!==false:true;
-    if(!modeEnabled) return; // القدرات المقفولة لا تظهر خالص
+    if(!modeEnabled) return;
     const canAfford=pts>=ab.cost;
     const card=document.createElement('div');
     card.className=`ab-card ab-card-${sc.toLowerCase()}${!canAfford?' disabled':''}`;
@@ -2451,7 +2197,6 @@ function openAbilityModal(pIdx,sc){
       <div class="ab-card-img">
         ${ab.img?`<img src="${ab.img}" alt="${ab.name}" onerror="this.parentNode.innerHTML='<span>${ab.ico}</span>'">`:`<span>${ab.ico}</span>`}
       </div>
-      <div class="ab-card-name" aria-hidden="false" style="display:none">${ab.name}</div>
       <div class="ab-card-title-row">
         <span class="ab-card-ename">${ab.ico} ${ab.desc.split('—')[0].trim()}</span>
       </div>
@@ -2473,25 +2218,20 @@ function closeAbilityModal(){
   _abilityPIdx=null; _abilitySC=null; _pendingAbilityId=null;
 }
 
-/* تفعيل القدرة — بعض القدرات تحتاج تحديد هدف أو اختيار إضافي */
 function triggerAbility(pIdx,sc,ab){
   closeAbilityModal();
-  // ═══ لا نعرض الفلاش هنا — بيتعرض بعد إكمال الاختيارات في execAbility ═══
+
   _doTriggerAbility(pIdx,sc,ab);
 }
 
 function _doTriggerAbility(pIdx,sc,ab){
-  const opp=G.players.length>1?G.players[1-pIdx]:null;
+  const opp=G.players[1-pIdx];
 
   if(ab.id==='blizzard'){
-    if(!opp){
-      execAbility(pIdx,sc,'blizzard',ab.cost,{target:'self'});
-    } else {
-      openTargetModal('🌪️ اختر هدف الإعصار',
-        ()=>execAbility(pIdx,sc,'blizzard',ab.cost,{target:'self'}),
-        ()=>execAbility(pIdx,sc,'blizzard',ab.cost,{target:'opp'})
-      );
-    }
+    openTargetModal('🌪️ اختر هدف الإعصار',
+      ()=>execAbility(pIdx,sc,'blizzard',ab.cost,{target:'self'}),
+      ()=>execAbility(pIdx,sc,'blizzard',ab.cost,{target:'opp'})
+    );
     return;
   }
   if(ab.id==='burning_sun'){
@@ -2499,7 +2239,6 @@ function _doTriggerAbility(pIdx,sc,ab){
     return;
   }
   if(ab.id==='mine'){
-    if(!opp){showNotif('⚠️ هذه القدرة تتطلب خصماً!');return;}
     enterBoardPickMode(pIdx, sc, ab, 'mine_pick_self');
     return;
   }
@@ -2520,12 +2259,11 @@ function _doTriggerAbility(pIdx,sc,ab){
 
 function execAbility(pIdx,sc,abId,cost,extra,isRemote){
   const p=G.players[pIdx];
-  const opp=G.players.length>1?G.players[1-pIdx]:null;
-  // لو remote وفيه originalCost نستخدمه للخصم (حالة mine وgameabilities اللي بتخصم مسبقاً)
+  const opp=G.players[1-pIdx];
+
   const effectiveCost = isRemote && extra.originalCost!==undefined ? extra.originalCost : cost;
   if(effectiveCost>0) p.abilityPoints[sc]=Math.max(0,(p.abilityPoints[sc]||0)-effectiveCost);
 
-  // ═══ عرض فلاش بطاقة القدرة بعد اكتمال الاختيارات (مش للـ remote) ═══
   if(!isRemote){
     const abDef=ABILITY_DEF[sc]?.abilities.find(a=>a.id===abId);
     if(abDef) showAbilityFlash(abDef, null);
@@ -2534,7 +2272,7 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
   let syncExtra=Object.assign({},extra,{abId,cost});
 
   switch(abId){
-    /* ─── SPADES ─── */
+    
     case 'blizzard':{
       const target=extra.target==='opp'?opp:p;
       if(!target) break;
@@ -2544,17 +2282,13 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       showNotif(extra.target==='opp'?'🌪️ إعصار اجتاح أرض الخصم!':'🌪️ إعصار اجتاح أرضك!');
 
       const blizzTargetIdx=extra.target==='opp'?(G.players.indexOf(opp)):(pIdx);
-      // في الأونلاين: نحدد halfId حسب منظور اللاعب الحالي
-      const blizzHalfId=(G.pMode==='online')
-        ?(blizzTargetIdx===G.myIdx?'half-bot':'half-top')
-        :(blizzTargetIdx===0?'half-bot':'half-top');
+      const blizzHalfId=halfIdOf(blizzTargetIdx);
       const blizzHalf=document.getElementById(blizzHalfId);
 
-      // قلب الكروت بالترتيب — فرق 60ms بين كل كرت
       const FLIP_STAGGER=60;
-      const FLIP_DUR=180; // مدة الاختفاء
+      const FLIP_DUR=180;
       let maxDelay=0;
-      // blizzard يغير الكرت الأمامي — نشيل الأشواك والقنبلة الموقوتة لأن الكرت اتغير
+
       for(let i=0;i<cols;i++){
         if(target.stacks[i]&&target.stacks[i].length>0){
           if(target.thornedSlots&&target.thornedSlots[i]) delete target.thornedSlots[i];
@@ -2569,14 +2303,14 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
           const colEl=Array.from(blizzHalf.querySelectorAll('.stack-col'))[i];
           const tc=colEl?.querySelector('.pile-card-up');
           if(tc){
-            // بعد delay: ابدأ اختفاء الكرت القديم
+
             setTimeout(()=>{
               tc.classList.add('card-flip-out');
             }, delay);
-            // بعد delay+FLIP_DUR: غيّر البيانات في الـ state وأعد الرسم للعمود ده
+
             setTimeout(()=>{
               target.stacks[i][target.stacks[i].length-1]=newCards[i];
-              // تحديث الكرت مكانه مباشرة بدون re-render كامل
+
               const img=newCards[i]?cardImg(newCards[i]):null;
               tc.classList.remove('card-flip-out');
               if(img){tc.style.backgroundImage=`url('${img}')`;tc.classList.add('has-image');}
@@ -2592,17 +2326,17 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
           target.stacks[i][target.stacks[i].length-1]=newCards[i];
         }
       }
-      // بعد انتهاء كل الكروت: render كامل للتأكد من التزامن
+
       setTimeout(()=>render(), maxDelay+100);
       if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,'blizzard',syncExtra);
       return;
     }
     case 'frost':{
-      if(!opp) break;
       const turns=AB_VALUES.frost_turns;
       const slots=extra.slots||null;
       const result=freezeRandomSlots(opp,2,slots,turns);
       if(!extra.slots) syncExtra.slots=result;
+      SFX.freeze();
       showNotif(`🧊 صقيع — جمّدت 2 كروت للخصم لـ ${turns} أدوار!`);
       break;
     }
@@ -2612,21 +2346,21 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       if(!extra.slots) syncExtra.slots=removed;
       showNotif(`⚡ برق — دمّرت ${removed.length} بطاقات من أرضك!`);
       if(totalCards(p)===0){endGame(1-pIdx,'cards');return;}
-      // تأثير تدمير بصري
-      const lHalfId=pIdx===0?'half-bot':'half-top';
+
+      const lHalfId=halfIdOf(pIdx);
       animDestroyMulti(lHalfId, removed, ()=>render());
       if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,'lightning',syncExtra);
       return;
     }
-    /* ─── HEARTS ─── */
+    
     case 'burning_sun':{
       const si=extra.si;
       if(si===undefined||si===null) break;
       if(p.stacks[si]&&p.stacks[si].length>0){
-        const bsHalfId=pIdx===0?'half-bot':'half-top';
+        const bsHalfId=halfIdOf(pIdx);
         animCardDestroy(bsHalfId, si, ()=>{
           p.stacks[si].pop();
-          // إزالة الشوكة والقنبلة بدون ضرر لو كانت موجودة
+
           if(p.thornedSlots&&p.thornedSlots[si]) delete p.thornedSlots[si];
           if(p.timebombSlots&&p.timebombSlots[si]) delete p.timebombSlots[si];
           showNotif('🔥 شمس حارقة — أحرقت بطاقة!');
@@ -2639,7 +2373,6 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       break;
     }
     case 'sun_strike':{
-      if(!opp) break;
       const dmg=AB_VALUES.sun_strike_dmg;
       opp.hp=Math.max(0,opp.hp-dmg);
       showDmg(`-${dmg}☄️`,'#f87171',420);
@@ -2657,45 +2390,39 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       showNotif(`✨ نشاط — كسبت ${gain} نقاط ${ABILITY_DEF[targetSC].name}!`);
       break;
     }
-    /* ─── DIAMONDS ─── */
+    
     case 'all_seeing':{
       const heal=AB_VALUES.all_seeing_heal;
       p.hp=Math.min(p.maxHp,p.hp+heal);
       showBoost(`+${heal}💛`,'#fbbf24');
-      if(opp){
-        const extraCard=extra.card||randCard();
-        syncExtra.card=extraCard;
-        addExtraCardToOpponent(opp,extraCard);
-        showNotif(`👁️ أرى كل شيء — +${heal} HP لك + كرت على أرض الخصم!`);
-      } else {
-        showNotif(`👁️ +${heal} HP!`);
-      }
+      const extraCard=extra.card||randCard();
+      syncExtra.card=extraCard;
+      addExtraCardToOpponent(opp,extraCard);
+      showNotif(`👁️ أرى كل شيء — +${heal} HP لك + كرت على أرض الخصم!`);
       break;
     }
     case 'mine':{
       const mi=extra.myIdx, oi=extra.oppIdx;
-      if(mi===undefined||oi===undefined||!opp) break;
-      // نحدد halfId حسب منظور اللاعب الحالي (G.myIdx) في الأونلاين
-      const myHalfId=(G.pMode==='online')?(pIdx===G.myIdx?'half-bot':'half-top'):(pIdx===0?'half-bot':'half-top');
-      const oppHalfId=(G.pMode==='online')?(pIdx===G.myIdx?'half-top':'half-bot'):(pIdx===0?'half-top':'half-bot');
+      if(mi===undefined||oi===undefined) break;
+
+      const myHalfId=halfIdOf(pIdx);
+      const oppHalfId=halfIdOf(1-pIdx);
       const myHalfEl=document.getElementById(myHalfId);
       const oppHalfEl=document.getElementById(oppHalfId);
       const myTC=myHalfEl?.querySelectorAll('.stack-col')[mi]?.querySelector('.pile-card-up');
       const oppTC=oppHalfEl?.querySelectorAll('.stack-col')[oi]?.querySelector('.pile-card-up');
       const FLIP_DUR=180;
 
-      // الكرتين يختفوا مع بعض
       if(myTC) myTC.classList.add('card-flip-out');
       if(oppTC) oppTC.classList.add('card-flip-out');
 
       setTimeout(()=>{
-        // تبادل البيانات
+
         const myCard=p.stacks[mi]&&p.stacks[mi].length>0?p.stacks[mi].pop():null;
         const oppCard=opp.stacks[oi]&&opp.stacks[oi].length>0?opp.stacks[oi].pop():null;
         if(myCard) opp.stacks[oi].push(myCard);
         if(oppCard) p.stacks[mi].push(oppCard);
 
-        // نقل الأشواك مع الكرت المبادل
         if(!p.thornedSlots) p.thornedSlots={};
         if(!opp.thornedSlots) opp.thornedSlots={};
         const myWasThorned=!!p.thornedSlots[mi];
@@ -2705,7 +2432,6 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
         if(myWasThorned) opp.thornedSlots[oi]=true;
         if(oppWasThorned) p.thornedSlots[mi]=true;
 
-        // نقل القنبلة الموقوتة مع الكرت المبادل
         if(!p.timebombSlots) p.timebombSlots={};
         if(!opp.timebombSlots) opp.timebombSlots={};
         const myBombVal=p.timebombSlots[mi];
@@ -2714,7 +2440,7 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
         delete opp.timebombSlots[oi];
         if(myBombVal!==undefined) opp.timebombSlots[oi]=myBombVal;
         if(oppBombVal!==undefined) p.timebombSlots[mi]=oppBombVal;
-        // تحديث الكروت في الـ DOM مباشرة بدون render كامل
+
         function updateFlipCard(tc, card){
           if(!tc||!card) return;
           const img=cardImg(card);
@@ -2730,8 +2456,8 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
           tc.classList.add('card-flip-in');
           setTimeout(()=>tc.classList.remove('card-flip-in'),FLIP_DUR+50);
         }
-        updateFlipCard(myTC, oppCard);  // مكاني بيظهر كرت الخصم
-        updateFlipCard(oppTC, myCard);  // مكان الخصم بيظهر كرتي
+        updateFlipCard(myTC, oppCard);
+        updateFlipCard(oppTC, myCard);
         setTimeout(()=>render(), FLIP_DUR+100);
       }, FLIP_DUR);
 
@@ -2740,15 +2466,12 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       return;
     }
     case 'controller':{
-      if(!opp) break;
       const turns=AB_VALUES.controller_turns;
       opp.stunTurns=(opp.stunTurns||0)+turns;
       showNotif(`🔒 المتحكم — الخصم مقيّد لـ ${turns} أدوار!`);
-      // التأثير البصري الدائم بيتعمل في renderHalf تلقائياً كل render
-      // لكن نعمل flash مؤقت عند التفعيل للتنبيه
+
       setTimeout(()=>{
-        const ctrlOppIdx=1-pIdx;
-        const ctrlHalfId=ctrlOppIdx===0?'half-bot':'half-top';
+        const ctrlHalfId=halfIdOf(1-pIdx);
         const ctrlHalf=document.getElementById(ctrlHalfId);
         if(ctrlHalf){
           const flashBanner=document.createElement('div');
@@ -2761,12 +2484,11 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       },100);
       break;
     }
-    /* ─── SPADES NEW ─── */
+    
     case 'ice_thorns':{
-      if(!opp) break;
       const count=AB_VALUES.ice_thorns_count||3;
       const cols=G.boardCols||8;
-      // اختيار كروت مكشوفة عند الخصم
+
       const avail=[];
       for(let i=0;i<cols;i++){if(opp.stacks[i]&&opp.stacks[i].length>0&&!(opp.thornedSlots&&opp.thornedSlots[i]))avail.push(i);}
       for(let i=avail.length-1;i>0;i--){const j=ri(i+1);[avail[i],avail[j]]=[avail[j],avail[i]];}
@@ -2777,32 +2499,31 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       showNotif(`🌵❄️ أشواك الجليد — ${picked.length} كروت أصبحت شائكة!`);
       break;
     }
-    /* ─── DIAMONDS NEW ─── */
+    
     case 'split':{
       const si=extra.si;
       if(si===undefined||si===null) break;
       const targetPIdx=extra.targetPIdx!==undefined?extra.targetPIdx:pIdx;
       const targetP=G.players[targetPIdx];
       if(!targetP||!targetP.stacks[si]||targetP.stacks[si].length<2) break;
-      // نبحث عن عمود فارغ
+
       const freeColIdx=targetP.stacks.findIndex(s=>s.length===0);
       if(freeColIdx===-1){showNotif('⚠️ لا يوجد عمود فارغ — الانشطار لا يعمل!');p.abilityPoints[sc]=Math.min(CONFIG.MAX_AB_POINTS,(p.abilityPoints[sc]||0)+cost);break;}
       const half=Math.ceil(targetP.stacks[si].length/2);
-      // نأخذ النصف الأسفل (الأول في المصفوفة) ونضعه في العمود الفارغ
+
       const splitCards=targetP.stacks[si].splice(0,half);
       targetP.stacks[freeColIdx]=splitCards;
-      const splitHalfId=(G.pMode==='online')?(targetPIdx===G.myIdx?'half-bot':'half-top'):(targetPIdx===0?'half-bot':'half-top');
+      const splitHalfId=halfIdOf(targetPIdx);
       showNotif(`⚡🌙 انشطار — قسّمت العمود إلى نصفين (${half} + ${targetP.stacks[si].length} كرت)!`);
       if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,'split',syncExtra);
       render();
       return;
     }
-    /* ─── CLUBS NEW ─── */
+    
     case 'timebomb':{
-      if(!opp) break;
       const tbturns=AB_VALUES.timebomb_turns||3;
       const cols=G.boardCols||8;
-      // ضع القنبلة على كرت مكشوف عند الخصم
+
       const avail2=[];
       for(let i=0;i<cols;i++){if(opp.stacks[i]&&opp.stacks[i].length>0&&!(opp.timebombSlots&&opp.timebombSlots[i]))avail2.push(i);}
       if(!avail2.length){showNotif('⚠️ لا يوجد كروت لوضع القنبلة!');p.abilityPoints[sc]=Math.min(CONFIG.MAX_AB_POINTS,(p.abilityPoints[sc]||0)+cost);break;}
@@ -2813,9 +2534,8 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       showNotif(`⏰ لا وقت — قنبلة موقوتة على كرت الخصم! (${tbturns} أدوار)`);
       break;
     }
-    /* ─── CLUBS ─── */
+    
     case 'absorb':{
-      if(!opp) break;
       const drain=Math.min(AB_VALUES.absorb_drain,opp.hp);
       opp.hp=Math.max(0,opp.hp-drain);
       p.hp=Math.min(p.maxHp,p.hp+drain);
@@ -2825,7 +2545,6 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
       break;
     }
     case 'not_over':{
-      if(!opp) break;
       const c1=extra.cards&&extra.cards[0]?extra.cards[0]:randCard();
       const c2=extra.cards&&extra.cards[1]?extra.cards[1]:randCard();
       syncExtra.cards=[c1,c2];
@@ -2840,7 +2559,8 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
         if(si===undefined) break;
         const cols=G.boardCols||8;
         const targets=[si-1,si,si+1].filter(i=>i>=0&&i<cols&&p.stacks[i]&&p.stacks[i].length>0);
-        const fnHalfId=pIdx===0?'half-bot':'half-top';
+        const fnHalfId=halfIdOf(pIdx);
+        SFX.boom();
         showDmg('💥','#f87171');
         showNotif(`💥 النهاية — دمّرت ${targets.length} بطاقات!`);
         animDestroyMulti(fnHalfId, targets, ()=>{
@@ -2856,7 +2576,6 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
         if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,'finale',syncExtra);
         return;
       } else if(extra.type==='trap'){
-        if(!opp) break;
         const slot=extra.slot!==undefined?extra.slot:placeTrap(opp);
         syncExtra.slot=slot;
         if(slot!==null){
@@ -2865,7 +2584,7 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
           showNotif('🕸️ النهاية — وضعت فخاً خفياً في أرض الخصم!');
         } else {
           showNotif('⚠️ لا توجد كروت مخفية كافية للفخ!');
-          // أعد النقاط لو مش في مكان للفخ
+
           p.abilityPoints[sc]=Math.min(CONFIG.MAX_AB_POINTS,(p.abilityPoints[sc]||0)+cost);
         }
       }
@@ -2873,22 +2592,9 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
     }
   }
 
-  // نرسل للتاني فقط لو الحدث محلي (مش قادم من remote)
   if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,abId,syncExtra);
   if(opp&&checkHPWin()) return;
   render();
-}
-
-/* ── Ability helpers ── */
-function blizzardTopRow(target,preOrder){
-  const cols=G.boardCols||8;
-  const newCards=preOrder||Array.from({length:cols},()=>randCard());
-  for(let i=0;i<cols;i++){
-    if(target.stacks[i]&&target.stacks[i].length>0){
-      target.stacks[i][target.stacks[i].length-1]=newCards[i];
-    }
-  }
-  return newCards;
 }
 
 function destroyRandomTopCards(p,count,preSlots){
@@ -2905,9 +2611,9 @@ function destroyRandomTopCards(p,count,preSlots){
   slots.forEach(i=>{
     if(p.stacks[i]&&p.stacks[i].length>0){
       p.stacks[i].pop();
-      // لو الكرت المدمور كان شائكاً تُزال الشوكة بدون ضرر
+
       if(p.thornedSlots&&p.thornedSlots[i]) delete p.thornedSlots[i];
-      // لو كان عليه قنبلة موقوتة تُزال كمان
+
       if(p.timebombSlots&&p.timebombSlots[i]) delete p.timebombSlots[i];
     }
   });
@@ -2916,7 +2622,7 @@ function destroyRandomTopCards(p,count,preSlots){
 
 function placeTrap(opp){
   const cols=G.boardCols||8;
-  // نضع الفخ على كرت مخفي (مش الكرت الأمامي) في عمود فيه أكتر من كرت
+
   const available=[];
   for(let i=0;i<cols;i++){
     if(opp.stacks[i].length>1&&!(opp.trappedSlots&&opp.trappedSlots[i])) available.push(i);
@@ -2925,13 +2631,10 @@ function placeTrap(opp){
   return available[ri(available.length)];
 }
 
-/* ══════════════════════════════════════════════════
-   BOARD PICK MODE — اختيار الكروت من الأرض مباشرة
-   ══════════════════════════════════════════════════ */
-let _boardPickMode=null; // null أو {pIdx,sc,ab,mode,step,myPickedSi}
+let _boardPickMode=null;
 
 function enterBoardPickMode(pIdx,sc,ab,mode){
-  // خصم النقاط مسبقاً هنا (cancelBoardPickMode هيردها لو ألغى)
+
   G.players[pIdx].abilityPoints[sc]=Math.max(0,(G.players[pIdx].abilityPoints[sc]||0)-ab.cost);
   _boardPickMode={pIdx,sc,ab,mode,step:1,myPickedSi:null};
   const msgs={
@@ -2947,7 +2650,7 @@ function enterBoardPickMode(pIdx,sc,ab,mode){
 
 function cancelBoardPickMode(){
   if(!_boardPickMode) return;
-  // إعادة النقاط لو ألغى
+
   const {pIdx,sc,ab}=_boardPickMode;
   G.players[pIdx].abilityPoints[sc]=Math.min(CONFIG.MAX_AB_POINTS,
     (G.players[pIdx].abilityPoints[sc]||0)+ab.cost);
@@ -2956,18 +2659,17 @@ function cancelBoardPickMode(){
   render();
 }
 
-// يُستدعى من renderHalf عند الضغط على كرت أثناء board pick mode
 function onBoardPickClick(pIdx, si){
   if(!_boardPickMode) return;
   const {pIdx:bPIdx,sc,ab,mode}=_boardPickMode;
-  if(pIdx!==bPIdx && mode!=='mine_pick_opp') return; // مش دورك
+  if(pIdx!==bPIdx && mode!=='mine_pick_opp') return;
   const p=G.players[bPIdx];
-  const opp=G.players.length>1?G.players[1-bPIdx]:null;
+  const opp=G.players[1-bPIdx];
 
   if(mode==='burning_sun_pick'){
     if(pIdx!==bPIdx) return;
     _boardPickMode=null;
-    execAbility(bPIdx,sc,'burning_sun',0,{si}); // cost اتخصم مسبقاً
+    execAbility(bPIdx,sc,'burning_sun',0,{si});
     return;
   }
   if(mode==='mine_pick_self'){
@@ -2979,7 +2681,7 @@ function onBoardPickClick(pIdx, si){
     return;
   }
   if(mode==='mine_pick_opp'){
-    if(pIdx===bPIdx) return; // يجب يختار من أرض الخصم
+    if(pIdx===bPIdx) return;
     const myIdx=_boardPickMode.myPickedSi;
     const originalCost=_boardPickMode.ab.cost;
     _boardPickMode=null;
@@ -2993,11 +2695,11 @@ function onBoardPickClick(pIdx, si){
     return;
   }
   if(mode==='split_pick_self'){
-    if(pIdx!==bPIdx) return; // يختار من أرضه هو
-    // نتحقق أن فيه عمود فارغ آخر قبل التنفيذ
+    if(pIdx!==bPIdx) return;
+
     const hasFreeCol=p.stacks.some(s=>s.length===0);
     if(!hasFreeCol){showNotif('⚠️ لا يوجد عمود فارغ — الانشطار لا يعمل!');cancelBoardPickMode();return;}
-    // نتحقق أن العمود المختار فيه أكثر من كرت واحد
+
     if(!p.stacks[si]||p.stacks[si].length<2){showNotif('⚠️ يجب أن يحتوي العمود على كرتين على الأقل!');return;}
     _boardPickMode=null;
     execAbility(bPIdx,sc,'split',0,{si,targetPIdx:bPIdx});
@@ -3005,7 +2707,6 @@ function onBoardPickClick(pIdx, si){
   }
 }
 
-/* ── Target modal (بسيط — نفسك أو الخصم) ── */
 function openTargetModal(title,onSelf,onOpp){
   document.getElementById('target-title').textContent=title;
   document.getElementById('target-self-btn').onclick=()=>{
@@ -3019,7 +2720,6 @@ function openTargetModal(title,onSelf,onOpp){
   document.getElementById('target-overlay').style.display='flex';
 }
 
-/* ── Vitality picker (اختيار الـ suit) ── */
 function openVitalityPicker(pIdx,sc,ab){
   const overlay=document.getElementById('target-overlay');
   const box=overlay.querySelector('.ab-target-box');
@@ -3035,21 +2735,18 @@ function openVitalityPicker(pIdx,sc,ab){
   overlay.style.display='flex';
 }
 
-/* ── Bomb modal ── */
 function openBombModal(pIdx,sc,ab){
   _abilityPIdx=pIdx; _abilitySC=sc;
-  const opp=G.players.length>1?G.players[1-pIdx]:null;
+  const opp=G.players[1-pIdx];
   document.getElementById('bomb-self-btn').onclick=()=>{
     document.getElementById('bomb-overlay').style.display='none';
-    // enterBoardPickMode ستخصم النقاط بنفسها
+
     enterBoardPickMode(pIdx,sc,ab,'finale_pick');
   };
   document.getElementById('bomb-trap-btn').onclick=()=>{
     document.getElementById('bomb-overlay').style.display='none';
-    if(!opp){showNotif('⚠️ لا يوجد خصم!');return;}
     execAbility(pIdx,sc,'finale',ab.cost,{type:'trap'});
   };
-  document.getElementById('bomb-trap-btn').style.opacity=opp?'1':'.35';
   document.getElementById('bomb-overlay').style.display='flex';
 }
 function closeBombModal(){document.getElementById('bomb-overlay').style.display='none';}
@@ -3060,15 +2757,11 @@ function showBoost(txt,color){
   document.body.appendChild(el);setTimeout(()=>el.remove(),1200);
 }
 
-/* ════════════════════════════════════════════════════
-   ⚡ إعداد تأثير ظهور بطاقة القدرة — عدّل هنا
-   true = مفعّل | false = معطّل
-   ════════════════════════════════════════════════════ */
 const ABILITY_CARD_FLASH_ENABLED = true;
 
-/* ── تأثير ظهور كرت القدرة بحجم كبير في وسط الشاشة ── */
 function showAbilityFlash(ab, cb){
   if(!ABILITY_CARD_FLASH_ENABLED){if(cb)cb();return;}
+  SFX.ability();
   const el=document.createElement('div');
   el.className='ability-flash-card';
   if(ab.img && ab.img.trim()){
@@ -3105,11 +2798,6 @@ function freezeRandomSlots(p,count,preSlots,turns){
   return slots;
 }
 
-/* ══════════════════════════════════════════════════
-   DECK & TURN LOGIC
-   ══════════════════════════════════════════════════ */
-
-/* ─── دالة مساعدة مركزية: flip-out على half معين → afterAnim() → flip-in ─── */
 function animHandTransition(halfId, afterAnim){
   const half = document.getElementById(halfId);
   const handEl = half?.querySelector('.hand-card,.hand-empty');
@@ -3121,7 +2809,7 @@ function animHandTransition(halfId, afterAnim){
       if(newEl){
         newEl.style.transform = 'scaleX(0)';
         newEl.classList.remove('hand-card-in');
-        void newEl.offsetWidth; // force reflow
+        void newEl.offsetWidth;
         newEl.style.transform = '';
         newEl.classList.add('hand-card-in');
       }
@@ -3135,12 +2823,10 @@ function animHandTransition(halfId, afterAnim){
   }
 }
 
-/* مساعد: يحسب halfId من pIdx */
 function halfIdOf(pIdx){
-  return (G.pMode==='online') ? (pIdx===G.myIdx?'half-bot':'half-top') : (pIdx===0?'half-bot':'half-top');
+  return pIdx===G.myIdx?'half-bot':'half-top';
 }
 
-/* مساعد: تأثير flip على كرت اليد عند السحب — يشمل hand-empty كمان */
 function animateHandDraw(pIdx, afterAnim){
   animHandTransition(halfIdOf(pIdx), afterAnim);
 }
@@ -3154,14 +2840,14 @@ function onDeckClick(pIdx){
     if(p.hand){
       timerProcessing=true;
       stopTimer();
-      // نعمل flip-out على كرت اللاعب الحالي، ثم doNextTurn يكمل الباقي
+
       const curHalfId = halfIdOf(pIdx);
       const curHalf = document.getElementById(curHalfId);
       const curHandEl = curHalf?.querySelector('.hand-card,.hand-empty');
       if(curHandEl) curHandEl.classList.add('hand-card-out');
       setTimeout(()=>{
         p.hand=null;
-        const nextTurnIdx = G.players.length>1 ? 1-pIdx : pIdx;
+        const nextTurnIdx = 1-pIdx;
         const nextCard = randCard();
         if(G.pMode==='online') syncDeck(pIdx, nextTurnIdx, nextCard);
         doNextTurn(nextTurnIdx, nextCard);
@@ -3176,6 +2862,7 @@ function onDeckClick(pIdx){
             p.abilityPoints[newCard.sc]=(p.abilityPoints[newCard.sc]||0)+1;
         }
         if(G.pMode==='online') syncDeck(pIdx, -1, newCard);
+        SFX.draw();
         render();
       });
     }
@@ -3190,12 +2877,12 @@ function onDeckClick(pIdx){
           p.abilityPoints[newCard.sc]=(p.abilityPoints[newCard.sc]||0)+1;
       }
       if(G.pMode==='online') syncDeck(pIdx, -1, newCard);
+      SFX.draw();
       render();
     });
   }
 }
 
-/* تنفيذ الانتقال للدور التالي — نفس الكود للي بيرسل وللي بيستقبل */
 function doNextTurn(nextTurnIdx, nextCard){
   const prevTurnIdx = G.turn;
   const prevP = G.players[prevTurnIdx];
@@ -3207,12 +2894,10 @@ function doNextTurn(nextTurnIdx, nextCard){
   const prevHalfId = halfIdOf(prevTurnIdx);
   const nextHalfId = halfIdOf(nextTurnIdx);
 
-  // الخطوة 1: flip-out على half اللاعب السابق (بيختفي كرته / فراغه)
   const prevHalf = document.getElementById(prevHalfId);
   const prevHandEl = prevHalf?.querySelector('.hand-card,.hand-empty');
   if(prevHandEl) prevHandEl.classList.add('hand-card-out');
 
-  // الخطوة 2: بعد 180ms نحدّث الـ state ونعمل flip-out→in على half اللاعب الجديد
   setTimeout(()=>{
     p.hand = nextCard; p.drawCount++;
     if(CONFIG.DRAW_GIVES_POINT && nextCard){
@@ -3220,12 +2905,12 @@ function doNextTurn(nextTurnIdx, nextCard){
       if((p.abilityPoints[nextCard.sc]||0) < maxPts)
         p.abilityPoints[nextCard.sc] = (p.abilityPoints[nextCard.sc]||0) + 1;
     }
-    // تقليل عداد الـ stun
+
     if(p.stunTurns > 0){
       p.stunTurns--;
       if(p.stunTurns > 0){
         showNotif(`😵 ${p.name} مقيّد — أدوار متبقية: ${p.stunTurns}`);
-        const nextT = G.players.length>1 ? 1-G.turn : G.turn;
+        const nextT = 1-G.turn;
         const nc = randCard();
         if(G.pMode==='online') syncDeck(G.turn, nextT, nc);
         render();
@@ -3233,7 +2918,7 @@ function doNextTurn(nextTurnIdx, nextCard){
         return;
       }
     }
-    // flip-out على half اللاعب الجديد (الكرت القديم إن وُجد) ثم render ثم flip-in
+
     animHandTransition(nextHalfId, ()=>{
       render();
     });
@@ -3241,29 +2926,21 @@ function doNextTurn(nextTurnIdx, nextCard){
   }, 180);
 }
 
-/* للـ solo والـ local */
-function nextTurn(){
-  if(G.players.length===1){
-    G.players[0].hand=randCard(); G.players[0].drawCount++; render(); return;
-  }
-  const nextCard=randCard();
-  doNextTurn(1-G.turn, nextCard);
-}
-
 function tickFreezeCounters(p){
   Object.keys(p.frozenSlots).forEach(si=>{
     p.frozenSlots[si]--;
     if(p.frozenSlots[si]<=0) delete p.frozenSlots[si];
   });
-  // قنابل موقوتة — تنقص كل دور
+
   if(p.timebombSlots){
     Object.keys(p.timebombSlots).forEach(si=>{
       p.timebombSlots[si]--;
       if(p.timebombSlots[si]<=0){
         delete p.timebombSlots[si];
-        // انفجار!
+
         const dmg=AB_VALUES.timebomb_dmg||20;
         p.hp=Math.max(0,p.hp-dmg);
+        SFX.boom();
         showDmg(`-${dmg}⏰`,'#f87171',420);
         showNotif(`⏰ انفجرت القنبلة الموقوتة! -${dmg} HP`);
         checkHPWin();
@@ -3273,18 +2950,17 @@ function tickFreezeCounters(p){
 }
 
 function checkHPWin(){
-  for(let i=0;i<G.players.length;i++){
-    if(G.players[i].hp<=0){endGame(1-i,'hp');return true;}
-  }
+  if(G.players[0].hp<=0){endGame(1,'hp');return true;}
+  if(G.players[1].hp<=0){endGame(0,'hp');return true;}
   return false;
 }
-function checkSpeedWin(){return checkHPWin();}
 
 function showDmg(txt,color,delay){
   const doShow=()=>{
+    SFX.damage();
     const el=document.createElement('div');
     el.className='dmg-pop';el.textContent=txt;el.style.color=color;el.style.textShadow=`0 0 22px ${color}`;
-    // رفع الـ z-index فوق فلاش الكارت (2000) وتحريكه للأعلى أكثر
+
     el.style.zIndex='2100';
     document.body.appendChild(el);setTimeout(()=>el.remove(),950);
   };
@@ -3292,7 +2968,7 @@ function showDmg(txt,color,delay){
 }
 
 function showNotif(txt){
-  // إزالة أي إشعار موجود بنفس النص لمنع التراكم
+
   document.querySelectorAll('.notif').forEach(el=>{if(el.textContent===txt)el.remove();});
   const el=document.createElement('div');
   el.className='notif';el.textContent=txt;
@@ -3301,7 +2977,7 @@ function showNotif(txt){
 
 function endGame(wIdx,reason){
   if(G.ended) return;G.ended=true;stopTimer();
-  // إبلاغ اللاعب التاني بنهاية اللعبة في الأونلاين
+
   if(G.pMode==='online') syncEnd(wIdx,reason);
   const w=G.players[wIdx];
   const secs=Math.floor((Date.now()-G.started)/1000);
@@ -3309,29 +2985,12 @@ function endGame(wIdx,reason){
   const reasons={cards:'نزّل كل الكروت!',hp:'أنهى نقاط حياة الخصم!',quit:'المنافس غادر اللعبة!'};
   const reasonTxt=reasons[reason]||'';
 
-  // لاعب واحد — شاشة الفوز فقط
-  if(G.players.length===1){
-    document.getElementById('win-title').textContent='🏆 أنهيت!';
-    document.getElementById('win-sub').textContent=reasonTxt;
-    document.getElementById('win-stats').innerHTML=`
-      <div style="text-align:center"><div class="sval">${w.removed}</div><div class="slbl">كرت نزّلها</div></div>
-      <div style="text-align:center"><div class="sval">${w.hp}</div><div class="slbl">HP متبقي</div></div>
-      <div style="text-align:center"><div class="sval">${m}:${String(s).padStart(2,'0')}</div><div class="slbl">وقت اللعبة</div></div>
-      <div style="text-align:center"><div class="sval">${w.drawCount}</div><div class="slbl">كرت سحبها</div></div>`;
-    showScreen('win-screen');
-    return;
-  }
-
-  // لعبة متعددة — نحدد هل اللاعب الحالي فايز أو خاسر
-  // في الـ online: myIdx هو اللاعب الحالي
-  // في local / solo: نعرض الشاشتين حسب الفايز
   const loserIdx=1-wIdx;
   const loser=G.players[loserIdx];
-
-  // الشاشة اللي بتتعرض على جهاز اللاعب الحالي
-  const isCurrentPlayerWinner = (G.pMode==='online') ? G.myIdx===wIdx : true;
+  const isCurrentPlayerWinner = G.myIdx===wIdx;
 
   if(isCurrentPlayerWinner){
+    SFX.win();
     document.getElementById('win-title').textContent=`🏆 ${w.name} فاز!`;
     document.getElementById('win-sub').textContent=reasonTxt;
     document.getElementById('win-stats').innerHTML=`
@@ -3341,7 +3000,8 @@ function endGame(wIdx,reason){
       <div style="text-align:center"><div class="sval">${w.drawCount}</div><div class="slbl">كرت سحبها</div></div>`;
     showScreen('win-screen');
   } else {
-    // اللاعب الحالي خسر
+
+    SFX.lose();
     document.getElementById('lose-title').textContent=`💀 ${w.name} كسب!`;
     document.getElementById('lose-sub').textContent=`للأسف خسرت — ${reasonTxt}`;
     document.getElementById('lose-stats').innerHTML=`
@@ -3356,10 +3016,10 @@ function endGame(wIdx,reason){
 function quitGame(){
   if(confirm('تأكيد الخروج؟')){
     stopTimer();
-    // في الأونلاين: بلّغ اللاعب التاني أنك خرجت
+
     if(G && G.pMode==='online' && ach && !G.ended){
       try{ ach.publish('quit',{pIdx:G.myIdx}); }catch(e){}
-      // تأخير بسيط عشان الرسالة توصل قبل ما نغلق الاتصال
+
       setTimeout(()=>{stopOnline();showMenu();}, 300);
     } else {
       stopOnline();showMenu();
@@ -3371,9 +3031,6 @@ function restartGame(){
   startGame(G.pMode,G.gMode,null,G.boardCols||8,G.cardsPerCol||10);
 }
 
-/* ══════════════════════════════════════════════════
-   ABLY ONLINE
-   ══════════════════════════════════════════════════ */
 let abl=null,ach=null;
 function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:4},()=>c[ri(c.length)]).join('');}
 
@@ -3399,7 +3056,7 @@ async function createRoom(){
     ach.subscribe('join',msg=>{
       const gn=msg.data.name;
       setStatus('create',`✅ انضم ${gn}! جاري البدء<span class="ldots"></span>`,'ok');
-      // توليد الـ stacks للاعبَين هنا مرة واحدة فقط
+
       const stacks1=genStacks(cols,perCol);
       const stacks2=genStacks(cols,perCol);
       ach.publish('start',{mode,n1:name,n2:gn,cols,perCol,stacks1,stacks2});
@@ -3437,13 +3094,13 @@ function startOnlineGame(mode,n1,n2,myIdx,cols=8,perCol=10,stacks1,stacks2){
         showNotif(`🚪 ${oppName} غادر الغرفة!`);
         setTimeout(()=>{
           if(!G.ended){
-            // اعتبر اللاعب الحالي فائزاً
+
             endGame(G.myIdx,'quit');
           }
         },1500);
       }
     });
-    // اللاعب التاني (myIdx=1) يستمع للـ state_sync من الـ host
+
     if(myIdx===1){
       ach.subscribe('state_sync',msg=>{
         if(G.ended) return;
@@ -3452,7 +3109,7 @@ function startOnlineGame(mode,n1,n2,myIdx,cols=8,perCol=10,stacks1,stacks2){
       });
     }
   }
-  // الـ host (myIdx=0) يبعت state_sync كل 4 ثواني
+
   if(myIdx===0){
     if(window._stateSyncInterval) clearInterval(window._stateSyncInterval);
     window._stateSyncInterval=setInterval(()=>{
@@ -3467,7 +3124,6 @@ function syncDeck(pIdx,nextTurnIdx,nextCard){if(ach)ach.publish('deck',{pIdx,nex
 function syncAbility(pIdx,sc,abId,extra){if(ach)ach.publish('ability',{pIdx,sc,abId,extra});}
 function syncEnd(wIdx,reason){if(ach)ach.publish('end',{wIdx,reason});}
 
-/* ── مزامنة الحالة الكاملة — تُرسَل بعد كل حدث مهم من الـ host (myIdx=0) ── */
 function buildStateSnapshot(){
   return G.players.map(p=>({
     hp: p.hp,
@@ -3522,7 +3178,7 @@ function applyRemoteMove(d){
   const maxPts=CONFIG.MAX_AB_POINTS;
   if((p.abilityPoints[d.newHand.sc]||0)<maxPts)
     p.abilityPoints[d.newHand.sc]=(p.abilityPoints[d.newHand.sc]||0)+1;
-  // أشواك الجليد
+
   if(p.thornedSlots&&p.thornedSlots[d.si]){
     delete p.thornedSlots[d.si];
     const thornDmg=AB_VALUES.ice_thorns_dmg||5;
@@ -3530,7 +3186,7 @@ function applyRemoteMove(d){
     showDmg(`-${thornDmg}🌵`,'#a8c4f0',0);
     if(checkHPWin())return;
   }
-  // قنابل موقوتة — أزلها بدون ضرر لو اللاعب نزّل الكرت
+
   if(p.timebombSlots&&p.timebombSlots[d.si]) delete p.timebombSlots[d.si];
   if(p.trappedSlots&&p.trappedSlots[d.si]){
     delete p.trappedSlots[d.si];
@@ -3544,8 +3200,7 @@ function applyRemoteMove(d){
     if(checkHPWin())return;
   }
   if(totalCards(p)===0){endGame(d.pIdx,'cards');return;}
-  // نرسم أولاً ثم نضيف التأثير البصري
-  // من منظور اللاعب الحالي: إذا d.pIdx = myIdx → half-bot (أرضي) ، غيره → half-top (أرض الخصم)
+
   render();
   const remoteHalfId = d.pIdx===G.myIdx ? 'half-bot' : 'half-top';
   animCardPlay(remoteHalfId, d.si);
@@ -3555,7 +3210,7 @@ function applyRemoteDeck(d){
   const p=G.players[d.pIdx];if(!p)return;
   if(G.gMode==='turns'){
     if(d.nextTurnIdx===-1||d.nextTurnIdx===undefined){
-      // سحب كرت جديد بدون تغيير دور — flip على half اللاعب
+
       animHandTransition(halfIdOf(d.pIdx), ()=>{
         p.hand=d.nextCard; p.drawCount++;
         if(CONFIG.DRAW_GIVES_POINT){
@@ -3570,7 +3225,7 @@ function applyRemoteDeck(d){
       doNextTurn(d.nextTurnIdx, d.nextCard);
     }
   } else {
-    // مود السرعة — flip على half اللاعب
+
     animHandTransition(halfIdOf(d.pIdx), ()=>{
       p.hand=d.nextCard; p.drawCount++;
       if(CONFIG.DRAW_GIVES_POINT){
@@ -3588,10 +3243,10 @@ function applyRemoteAbility(d){
   if(!p) return;
   const extra=d.extra||{};
   const cost=extra.cost||0;
-  // عرض فلاش القدرة للاعب المستقبِل أيضاً
+
   const abDef=ABILITY_DEF[d.sc]?.abilities.find(a=>a.id===d.abId);
   if(abDef) showAbilityFlash(abDef, null);
-  // نمرر isRemote=true عشان نمنع الـ sync loop
+
   execAbility(d.pIdx,d.sc,d.abId,cost,extra,true);
 }
 
@@ -3602,5 +3257,5 @@ function stopOnline(){
 function stopTimer(){clearInterval(timerInterval);timerInterval=null;}
 function setStatus(w,msg,cls){const el=document.getElementById('st-'+w);el.innerHTML=msg;el.className='status on '+cls;}
 </script>
-</body>
-</html>
+
+<div class="notif">✅ تم حفظ الإعدادات!</div></body></html>
