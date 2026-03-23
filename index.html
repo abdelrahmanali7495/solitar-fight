@@ -1526,25 +1526,25 @@ const ABILITY_DEF = {
         id:'blizzard', name:'إعصار', ico:'🌪️',
         desc:'يغيّر كل كروت الصف الأمامي عشوائياً — اختر نفسك أو الخصم',
         cost:5, modesAllowed:['turns','speed'],
-        img:'https://i.postimg.cc/g0H2VcKv/اعصار.png',
+        img:'https://i.postimg.cc/NMq9Ndy8/اعصار_2.png',
       },
       {
         id:'frost', name:'صقيع', ico:'🧊',
         desc:'يجمد 2 كروت عشوائية للخصم لـ 3 أدوار',
         cost:5, modesAllowed:['turns'],
-        img:'https://i.postimg.cc/zfFGCDkg/صقيع.png',
+        img:'https://i.postimg.cc/3Rmp7s5M/sqyʿ-2.png',
       },
       {
         id:'lightning', name:'برق', ico:'⚡',
         desc:'يدمر 3 كروت عشوائية من صفك الأمامي',
         cost:7, modesAllowed:['turns','speed'],
-        img:'https://i.postimg.cc/GpxmF3jY/برق.png',
+        img:'https://i.postimg.cc/gJFXMgw3/برق_2.png',
       },
       {
         id:'ice_thorns', name:'أشواك الجليد', ico:'🌵❄️',
         desc:'ضع أشواكاً على 3 كروت مكشوفة للخصم — لو نزّلها يخسر 5 HP لكل كرت',
         cost:3, modesAllowed:['turns','speed'],
-        img:'https://i.postimg.cc/k5m5RRW5/اشواك.png',
+        img:'https://i.postimg.cc/XJSG2sZp/اشواك_2.png',
       },
     ]
   },
@@ -2423,6 +2423,8 @@ function _doTriggerAbility(pIdx,sc,ab){
 function execAbility(pIdx,sc,abId,cost,extra,isRemote){
   const p=G.players[pIdx];
   const opp=G.players.length>1?G.players[1-pIdx]:null;
+  // إعادة تعيين timerProcessing عند تنفيذ أي قدرة محلياً — يمنع تجمد اللعب بعد ice_thorns أو أي قدرة تعمل return مبكر
+  if(!isRemote) timerProcessing=false;
   // لو remote وفيه originalCost نستخدمه للخصم (حالة mine وgameabilities اللي بتخصم مسبقاً)
   const effectiveCost = isRemote && extra.originalCost!==undefined ? extra.originalCost : cost;
   if(effectiveCost>0) p.abilityPoints[sc]=Math.max(0,(p.abilityPoints[sc]||0)-effectiveCost);
@@ -2494,8 +2496,8 @@ function execAbility(pIdx,sc,abId,cost,extra,isRemote){
           target.stacks[i][target.stacks[i].length-1]=newCards[i];
         }
       }
-      // بعد انتهاء كل الكروت: render كامل للتأكد من التزامن
-      setTimeout(()=>render(), maxDelay+100);
+      // بعد انتهاء كل الكروت: render كامل للتأكد من التزامن + إعادة التايمر
+      setTimeout(()=>{ render(); if(G.gMode==='turns') startTimer(G.turn); }, maxDelay+100);
       if(G.pMode==='online'&&!isRemote) syncAbility(pIdx,sc,'blizzard',syncExtra);
       return;
     }
